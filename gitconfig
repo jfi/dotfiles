@@ -1,1 +1,119 @@
-/Users/James/.gitconfig
+[user]
+	name = James Inman
+	email = james@jamesinman.co.uk
+[color]
+  branch = auto
+  diff = auto
+  status = auto
+[color "branch"]
+  current = yellow reverse
+  local = yellow
+  remote = green
+[color "diff"]
+  meta = yellow bold
+  frag = magenta bold
+  old = red bold
+  new = green bold
+[color "status"]
+  added = yellow
+  changed = green
+  untracked = cyan
+[color]
+  ui = true
+[core]
+  whitespace = fix,-indent-with-non-tab,trailing-space,cr-at-eol
+  excludesfile = /Users/James/.gitignore
+  autocrlf = input
+  safecrlf = false
+	quotepath = false
+  editor = "mate -w"
+[alias]
+  # Spellings
+  ass = add
+  doff = diff
+  dff = diff
+  idff = diff
+  pl = pull
+  tpull = pull
+  oull = pull
+  ps = push
+  pushy = push
+  tpush = push
+  psuh = push
+  pish = push
+  satsh = stash
+  mregetool = mergetool
+  # Shortcuts
+  sst = status -sb
+  tst = status -sb
+  t = status -sb
+  ts = status -sb
+  st = status -sb
+  s = status -sb
+  b = branch
+  ci = commit
+  co = checkout
+  cob = checkout -b
+  cp = cherry-pick
+  a = add
+  aa = add --all
+  aap = add --all -p
+  au = add -u
+  aua = add -u .
+  ap = add -p
+  pr = pull --rebase
+  pullr = pull --rebase
+  tpr = pull --rebase
+  tome = pull
+  toyou = push
+  pop = stash pop
+  cl = clone
+  vi = commit -v
+  via = commit -va
+  viaa = commit -va --amend
+  sui = submodule update --init
+  pp = !sh -c 'git pull && git push'
+  mirror-branch = checkout -t
+  cot = checkout -t
+[branch]
+  autosetupmerge = true
+[branch "master"]
+  remote = "origin"
+  merge = "master"
+[merge]
+  tool = opendiff
+  stat = true
+[help]
+  autocorrect = 0
+[diff "exif"]
+  textconv = exiftool
+[diff "doc"]
+  textconv = strings
+[diff]
+  renamelimit = 0
+  mnemonicprefix = true
+  renames = copies
+[mergetool]
+  keepBackup = false
+[status]
+  showUntrackedFiles = all
+[push]
+  default = current
+[rerere]
+  enabled = true
+[advice]
+  statusHints = true
+  pushNonFastForward = false
+[url "git@github.com:"]
+  insteadOf = gh:
+  pushInsteadOf = github:
+  pushInsteadOf = git://github.com/
+[url "git://github.com/"]
+  insteadOf = github:
+[url "git@gist.github.com:"]
+  insteadOf = gst:
+  pushInsteadOf = gist:
+  pushInsteadOf = git://gist.github.com/
+[url "git://gist.github.com/"]
+  insteadOf = gist:
+
