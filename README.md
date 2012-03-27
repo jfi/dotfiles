@@ -6,4 +6,8 @@ Various configuration files:
 - .gitignore
 - .tm_properties
 
+**Setup**
+
+Install oh-my-zsh: `curl -L https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh | sh`
+
 Run `ruby install.rb` to copy the files to the correct locations.
