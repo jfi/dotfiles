@@ -4,3 +4,4 @@ Various configuration files:
 - ~/.oh-my-zsh/themes/robbyrussell.zsh-theme
 - .gitconfig
 - .tm_properties
+- .rspec
