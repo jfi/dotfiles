@@ -10,5 +10,7 @@ puts "robbyrussell.zsh-theme copied to ~/.oh-my-zsh/themes/robbyrussell.zsh-them
 puts ".tm_properties copied to ~/.tm_properties"
 `cp -f rspec ~/.rspec`
 puts ".rspec copied to ~/.rspec"
+`cp -f autotest ~/.autotest`
+puts ".autotest copied to ~/.autotest"
 
 puts "--- COMPLETE ---"

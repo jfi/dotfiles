@@ -6,6 +6,7 @@ Various configuration files:
 - .gitignore
 - .tm_properties
 - .rspec
+- .autotest
 
 **Setup**
 
