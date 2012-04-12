@@ -31,7 +31,9 @@ source $ZSH/oh-my-zsh.sh
 # Customize to your needs...
 export PATH=/usr/local/bin:/usr/local/sbin:/usr/local/mysql/bin:$PATH
 export DYLD_LIBRARY_PATH=/usr/local/mysql/lib:$DYLD_LIBRARY_PATH
+export JRUBY_OPTS=--1.9
 
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm"
 
 alias ustunnel='ssh -D 8080 elj@108.174.52.78 -p 80'
+alias jr='jruby -S'
