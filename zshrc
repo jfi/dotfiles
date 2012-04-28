@@ -36,4 +36,5 @@ export JRUBY_OPTS=--1.9
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm"
 
 alias ustunnel='ssh -D 8080 elj@108.174.52.78 -p 80'
-alias jr='jruby -S'
+alias jr='rvm use jruby && jruby -S'
+alias nd='nanoc compile && rake deploy'
