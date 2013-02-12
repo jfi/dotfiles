@@ -7,6 +7,10 @@ ZSH=$HOME/.oh-my-zsh
 # time that oh-my-zsh is loaded.
 ZSH_THEME="robbyrussell"
 
+# Example aliases
+# alias zshconfig="mate ~/.zshrc"
+# alias ohmyzsh="mate ~/.oh-my-zsh"
+
 # Set to this to use case-sensitive completion
 # CASE_SENSITIVE="true"
 
@@ -23,18 +27,13 @@ ZSH_THEME="robbyrussell"
 # COMPLETION_WAITING_DOTS="true"
 
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
+# Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
-plugins=(git ruby rails textmate bundler github osx rails3)
+plugins=(git)
 
 source $ZSH/oh-my-zsh.sh
 
 # Customize to your needs...
-export PATH=/usr/local/bin:/usr/local/sbin:/usr/local/mysql/bin:$PATH
-export DYLD_LIBRARY_PATH=/usr/local/mysql/lib:$DYLD_LIBRARY_PATH
-export JRUBY_OPTS=--1.9
+export PATH=/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin
 
-[[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm"
-
-alias ustunnel='ssh -D 8080 elj@108.174.52.78 -p 80'
-alias jr='rvm use jruby && jruby -S'
-alias nd='nanoc compile && rake deploy'
+alias specs='bundle exec rspec spec'
