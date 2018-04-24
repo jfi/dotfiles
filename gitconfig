@@ -1,6 +1,6 @@
 [user]
-	name = James Inman
-	email = james@jamesinman.co.uk
+  name = James Inman
+  email = james@jamesinman.co.uk
 [color]
   branch = auto
   diff = auto
@@ -25,8 +25,8 @@
   excludesfile = ~/.gitignore
   autocrlf = input
   safecrlf = false
-	quotepath = false
-  editor = "mate -w"
+  quotepath = false
+  editor = "subl -w"
 [alias]
   # Spellings
   ass = add
