@@ -1,0 +1,13 @@
+source /opt/homebrew/share/zsh-autocomplete/zsh-autocomplete.plugin.zsh
+source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+export EDITOR="zed --wait"
+export BETTER_ERRORS_EDITOR="code --wait"
+export BETTER_ERRORS_EDITOR_URL="zed://file/%{file}:%{line}"
+
+autoload -Uz vcs_info
+precmd() { vcs_info }
+zstyle ':vcs_info:git:*' formats '%b '
+
+setopt PROMPT_SUBST
+PROMPT='%F{green}%*%f %F{blue}%~%f %F{black}${vcs_info_msg_0_}%f$ '

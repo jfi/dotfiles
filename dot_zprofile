@@ -1,0 +1,10 @@
+# Add mise to PATH
+export PATH="/Users/james/.local/share/mise/shims:$PATH"
+# Add Postgres.app to PATH
+export PATH="/Applications/Postgres.app/Contents/Versions/latest/bin:$PATH"
+# Add homebrew
+eval "$(/opt/homebrew/bin/brew shellenv)"
+
+# Added by OrbStack: command-line tools and integration
+# This won't be added again if you remove it.
+source ~/.orbstack/shell/init.zsh 2>/dev/null || :
