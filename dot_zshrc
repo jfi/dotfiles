@@ -2,7 +2,7 @@ source /opt/homebrew/share/zsh-autocomplete/zsh-autocomplete.plugin.zsh
 source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 export EDITOR="zed --wait"
-export BETTER_ERRORS_EDITOR="code --wait"
+export BETTER_ERRORS_EDITOR="zed --wait"
 export BETTER_ERRORS_EDITOR_URL="zed://file/%{file}:%{line}"
 
 autoload -Uz vcs_info

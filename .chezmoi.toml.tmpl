@@ -1,0 +1,4 @@
+{{ $computerName := promptStringOnce . "computerName" "What is your computer name?" -}}
+
+[data]
+  computerName = "{{ $computerName }}"
