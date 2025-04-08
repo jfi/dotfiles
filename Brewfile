@@ -24,10 +24,14 @@ brew "zsh-autocomplete" # Zsh-autocomplete is a plugin for zsh that provides aut
 brew "zsh-syntax-highlighting" # Zsh-syntax-highlighting
 
 cask "1password" # 1Password is a password manager
+cask "affinity-designer" # Affinity Designer is a vector graphics editor
+cask "affinity-photo" # Affinity Photo is a raster graphics editor
+cask "affinity-publisher" # Affinity Publisher is a desktop publishing tool
 cask "applite" # Applite is a tool for managing applications from Cask
 cask "basecamp" # Basecamp is a project management tool
 cask "bruno" # Bruno is a tool for making HTTP requests
 cask "figma" # Figma is a collaborative design tool
+cask "github" # GitHub UI client
 cask "ghostty" # Terminal
 cask "iina" # Media player for macOS
 cask "kap" # Screen recording tool
@@ -39,13 +43,11 @@ cask "rectangle-pro" # Window management tool
 cask "setapp" # Setapp is a platform for other apps
 cask "syncalicious" # Syncalicious is a tool for syncing files between devices
 cask "tableplus" # TablePlus is a database management tool
+cask "the-unarchiver" # Better file extraction tool
 cask "zed" # Zed is a text editor for the terminal
 cask "zoom" # Zoom is a video conferencing tool
 
 mas "1Password for Safari", id: 1569813296 # 1Password for Safari
-mas "Affinity Designer 2", id: 1616831348 # Affinity Suite
-mas "Affinity Photo 2", id: 1616822987 # Affinity Suite
-mas "Affinity Publisher 2", id: 1606941598 # Affinity Suite
 mas "Anybox", id: 1593408455 # Bookmarks
 mas "Bear", id: 1091189122 # Notes
 mas "Canva", id: 897446215 # Design
@@ -64,7 +66,6 @@ mas "Prime Video", id: 545519333 # Video Streaming
 mas "Shapr3D", id: 1091675654 # 3D Modeling
 mas "Slack", id: 803453959 # Slack
 mas "Sofa", id: 1276554886 # To-Watch List
-mas "The Unarchiver", id: 425424353 # Better File Extraction
 mas "Things", id: 904280696 # To-Do List
 mas "Ulysses", id: 1225570693 # Writing
 mas "Under My Roof", id: 1524335878 # Home Inventory
