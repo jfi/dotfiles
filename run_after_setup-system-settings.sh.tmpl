@@ -1,8 +1,22 @@
 #!/bin/bash
 set -ex
 
-# Close open System Preferences windows so they're not overwritten
-osascript -e 'tell application "System Preferences" to quit'
+# Close open System Settings windows so they're not overwritten
+osascript <<EOF
+set isRunning to false
+
+-- Check if System Settings is in the process list
+tell application "System Events"
+    if exists (processes where name is "System Settings") then
+        set isRunning to true
+    end if
+end tell
+
+-- Quit the app if it's running
+if isRunning then
+    tell application "System Settings" to quit
+end if
+EOF
 
 # Ask for the administrator password upfront
 sudo -v
