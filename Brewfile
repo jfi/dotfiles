@@ -29,6 +29,7 @@ cask "affinity-photo" # Affinity Photo is a raster graphics editor
 cask "affinity-publisher" # Affinity Publisher is a desktop publishing tool
 cask "applite" # Applite is a tool for managing applications from Cask
 cask "basecamp" # Basecamp is a project management tool
+cask "balenaetcher" # BalenaEtcher is a tool for flashing images to USB drives
 cask "bruno" # Bruno is a tool for making HTTP requests
 cask "figma" # Figma is a collaborative design tool
 cask "github" # GitHub UI client
@@ -36,6 +37,7 @@ cask "ghostty" # Terminal
 cask "iina" # Media player for macOS
 cask "kap" # Screen recording tool
 cask "netnewswire" # NetNewsWire is a RSS reader
+cask "raspberry-pi-imager" # For flashing images to Raspberry Pi SD cards
 cask "raycast" # Launcher for macOS
 cask "numi" # Calculator for macOS
 cask "orbstack" # Orbstack is a tool for managing Docker containers
