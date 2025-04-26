@@ -347,3 +347,6 @@ fi
 /usr/libexec/plistbuddy ~/Library/preferences/com.apple.finder.plist -c "Set :DesktopViewSettings:IconViewSettings:gridSpacing 80.0"
 
 killall Finder &>/dev/null
+
+# Enable pam-watchid (sudo commands using the Apple Watch)
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/logicer16/pam-watchid/HEAD/install.sh)" -- enable
