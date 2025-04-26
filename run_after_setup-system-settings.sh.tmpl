@@ -319,14 +319,22 @@ duti -s dev.zed.Zed .yml all
 duti -s dev.zed.Zed .toml all
 
 # Make it harder to quit some apps
+# Safari
 /usr/libexec/PlistBuddy ~/Library/Containers/com.apple.Safari/Data/Library/Preferences/com.apple.Safari.plist -c "Delete NSUserKeyEquivalents:Quit\ Safari" || true
 /usr/libexec/PlistBuddy ~/Library/Containers/com.apple.Safari/Data/Library/Preferences/com.apple.Safari.plist -c "Add NSUserKeyEquivalents:Quit\ Safari string @~q"
 /usr/libexec/PlistBuddy ~/Library/Containers/com.apple.Safari/Data/Library/Preferences/com.apple.Safari.plist -c "Delete NSUserKeyEquivalents:Close\ Tab" || true
 /usr/libexec/PlistBuddy ~/Library/Containers/com.apple.Safari/Data/Library/Preferences/com.apple.Safari.plist -c "Add NSUserKeyEquivalents:Close\ Tab string @w"
 
+# Zed
 if ! defaults read dev.zed.Zed >/dev/null 2>&1; then
   /usr/libexec/PlistBuddy ~/Library/Preferences/dev.zed.Zed.plist -c "Delete :NSUserKeyEquivalents:Quit" || true
   /usr/libexec/PlistBuddy ~/Library/Preferences/dev.zed.Zed.plist -c "Add :NSUserKeyEquivalents:Quit string @~q"
+fi
+
+# 1Password
+if ! defaults read com.1password.1password >/dev/null 2>&1; then
+  /usr/libexec/PlistBuddy ~/Library/Preferences/com.1password.1password.plist -c "Delete NSUserKeyEquivalents:Quit\ 1Password" || true
+  /usr/libexec/PlistBuddy ~/Library/Preferences/com.1password.1password.plist -c "Add NSUserKeyEquivalents:Quit\ 1Password string @~q"
 fi
 
 # Set Finder defaults
