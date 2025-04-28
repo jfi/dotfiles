@@ -36,52 +36,52 @@
   editor = "zed --wait"
 [alias]
   # Spellings
-  ass = add
-  doff = diff
-  dff = diff
-  idff = diff
-  pl = pull
-  tpull = pull
   oull = pull
-  ps = push
-  pushy = push
-  tpush = push
   psuh = push
   pish = push
   satsh = stash
   mregetool = mergetool
+
   # Shortcuts
-  sst = status -sb
-  tst = status -sb
-  t = status -sb
-  ts = status -sb
   st = status -sb
-  s = status -sb
-  b = branch
-  ci = commit
   co = checkout
-  cob = checkout -b
   cp = cherry-pick
-  a = add
-  aa = add --all
-  aap = add --all -p
-  au = add -u
-  aua = add -u .
-  ap = add -p
-  pr = pull --rebase
-  pullr = pull --rebase
-  tpr = pull --rebase
-  tome = pull
-  toyou = push
-  pop = stash pop
-  cl = clone
   vi = commit -v
-  via = commit -va
-  viaa = commit -va --amend
-  sui = submodule update --init
-  pp = !sh -c 'git pull && git push'
-  mirror-branch = checkout -t
-  cot = checkout -t
+  rbi = rebase -i --autosquash --rebase-merges --autostash origin/HEAD
+
+  # C's old shortcuts, keeping incase they're useful
+  # sst = status -sb
+  # tst = status -sb
+  # t = status -sb
+  # ts = status -sb
+  # st = status -sb
+  # s = status -sb
+  # b = branch
+  # ci = commit
+  # co = checkout
+  # cob = checkout -b
+  # cp = cherry-pick
+  # a = add
+  # aa = add --all
+  # aap = add --all -p
+  # au = add -u
+  # aua = add -u .
+  # ap = add -p
+  # pr = pull --rebase
+  # pullr = pull --rebase
+  # tpr = pull --rebase
+  # tome = pull
+  # toyou = push
+  # pop = stash pop
+  # cl = clone
+  # vi = commit -v
+  # via = commit -va
+  # viaa = commit -va --amend
+  # sui = submodule update --init
+  # pp = !sh -c 'git pull && git push'
+  # mirror-branch = checkout -t
+  # cot = checkout -t
+
 [branch]
   autosetupmerge = true
 [branch "master"]
