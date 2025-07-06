@@ -1,138 +1,155 @@
-[user]
-  signingkey = {{ onepasswordRead "op://5gcms35dv6h466324l4mdcot54/2knakpkjgrjfym3mtbhxprt5ri/public key" "PYJNRHK6HBFPVCF56C5SSPHHJA" }}
-  name = James Inman
-  email = james@jamesinman.co.uk
-[gpg]
-  format = ssh
-[gpg "ssh"]
-  program = /Applications/1Password.app/Contents/MacOS/op-ssh-sign
-[commit]
-  gpgsign = true
+[advice]
+  pushNonFastForward = false
+  statusHints = true
+[alias]
+  # Spellings
+  mregetool = mergetool
+  oull = pull
+  pish = push
+  psuh = push
+  satsh = stash
+
+  # Shortcuts
+  co = checkout
+  cp = cherry-pick
+  rbi = rebase -i --autosquash --rebase-merges --autostash origin/HEAD
+  st = status -sb
+  vi = commit -v
+
+  # C's old shortcuts, keeping incase they're useful
+  # a = add
+  # aa = add --all
+  # aap = add --all -p
+  # ap = add -p
+  # au = add -u
+  # aua = add -u .
+  # b = branch
+  # ci = commit
+  # cl = clone
+  # co = checkout
+  # cob = checkout -b
+  # cot = checkout -t
+  # cp = cherry-pick
+  # mirror-branch = checkout -t
+  # pop = stash pop
+  # pp = !sh -c 'git pull && git push'
+  # pr = pull --rebase
+  # pullr = pull --rebase
+  # s = status -sb
+  # sst = status -sb
+  # st = status -sb
+  # sui = submodule update --init
+  # t = status -sb
+  # tome = pull
+  # toyou = push
+  # tpr = pull --rebase
+  # ts = status -sb
+  # tst = status -sb
+  # vi = commit -v
+  # via = commit -va
+  # viaa = commit -va --amend
+[branch]
+  autosetupmerge = true
+  sort = -committerdate
+[branch "main"]
+  merge = "main"
+  remote = "origin"
+[branch "master"]
+  merge = "master"
+  remote = "origin"
 [color]
   branch = auto
   diff = auto
   status = auto
+  ui = true
 [color "branch"]
   current = yellow reverse
   local = yellow
   remote = green
 [color "diff"]
-  meta = yellow bold
   frag = magenta bold
-  old = red bold
+  meta = yellow bold
   new = green bold
+  old = red bold
 [color "status"]
   added = yellow
   changed = green
   untracked = cyan
-[color]
-  ui = true
+[column]
+  ui = auto
+[commit]
+  gpgsign = true
+  verbose = true
 [core]
-  whitespace = fix,-indent-with-non-tab,trailing-space,cr-at-eol
-  excludesfile = ~/.gitignore
   autocrlf = input
-  safecrlf = false
-  quotepath = false
   editor = "zed --wait"
-[alias]
-  # Spellings
-  oull = pull
-  psuh = push
-  pish = push
-  satsh = stash
-  mregetool = mergetool
-
-  # Shortcuts
-  st = status -sb
-  co = checkout
-  cp = cherry-pick
-  vi = commit -v
-  rbi = rebase -i --autosquash --rebase-merges --autostash origin/HEAD
-
-  # C's old shortcuts, keeping incase they're useful
-  # sst = status -sb
-  # tst = status -sb
-  # t = status -sb
-  # ts = status -sb
-  # st = status -sb
-  # s = status -sb
-  # b = branch
-  # ci = commit
-  # co = checkout
-  # cob = checkout -b
-  # cp = cherry-pick
-  # a = add
-  # aa = add --all
-  # aap = add --all -p
-  # au = add -u
-  # aua = add -u .
-  # ap = add -p
-  # pr = pull --rebase
-  # pullr = pull --rebase
-  # tpr = pull --rebase
-  # tome = pull
-  # toyou = push
-  # pop = stash pop
-  # cl = clone
-  # vi = commit -v
-  # via = commit -va
-  # viaa = commit -va --amend
-  # sui = submodule update --init
-  # pp = !sh -c 'git pull && git push'
-  # mirror-branch = checkout -t
-  # cot = checkout -t
-
-[branch]
-  autosetupmerge = true
-[branch "master"]
-  remote = "origin"
-  merge = "master"
-[branch "main"]
-  remote = "origin"
-  merge = "main"
-[merge]
-  tool = opendiff
-  stat = true
-[help]
-  autocorrect = 0
-[diff "exif"]
-  textconv = exiftool
+  excludesfile = ~/.gitignore
+  fsmonitor = true
+  quotepath = false
+  safecrlf = false
+  untrackedCache = true
+  whitespace = fix,-indent-with-non-tab,trailing-space,cr-at-eol
+[diff]
+  algorithm = histogram
+  colorMoved = true
+  mnemonicprefix = true
+  renamelimit = 0
+  renames = true
 [diff "doc"]
   textconv = strings
-[diff]
-  renamelimit = 0
-  mnemonicprefix = true
-  renames = copies
+[diff "exif"]
+  textconv = exiftool
+[fetch]
+  all = true
+  prune = true
+  pruneTags = true
+[filter "lfs"]
+  clean = git-lfs clean -- %f
+  process = git-lfs filter-process
+  required = true
+  smudge = git-lfs smudge -- %f
+[gpg]
+  format = ssh
+[gpg "ssh"]
+  program = /Applications/1Password.app/Contents/MacOS/op-ssh-sign
+[help]
+  autocorrect = prompt
+[init]
+  defaultBranch = main
+[merge]
+  conflictstyle = zdiff3
+  stat = true
+  tool = opendiff
 [mergetool]
   keepBackup = false
-[status]
-  showUntrackedFiles = all
+[pull]
+  rebase = true
 [push]
-  default = current
+  default = simple
+  autoSetupRemote = true
+  followTags = true
+[rebase]
+  autoSquash = true
+  autoStash = true
+  updateRefs = true
 [rerere]
   enabled = true
-[advice]
-  statusHints = true
-  pushNonFastForward = false
-[url "git@github.com:"]
-  insteadOf = gh:
-  pushInsteadOf = github:
-  pushInsteadOf = git://github.com/
+  autoupdate = true
+[status]
+  showUntrackedFiles = all
+[url "git://gist.github.com/"]
+  insteadOf = gist:
 [url "git://github.com/"]
   insteadOf = github:
 [url "git@gist.github.com:"]
   insteadOf = gst:
   pushInsteadOf = gist:
   pushInsteadOf = git://gist.github.com/
-[url "git://gist.github.com/"]
-  insteadOf = gist:
-[filter "lfs"]
-  clean = git-lfs clean -- %f
-  smudge = git-lfs smudge -- %f
-  process = git-lfs filter-process
-  required = true
-[pull]
-  rebase = true
-[fetch]
-  prune = true
-  pruneTags = true
+[url "git@github.com:"]
+  insteadOf = gh:
+  pushInsteadOf = git://github.com/
+  pushInsteadOf = github:
+[user]
+  email = james@jamesinman.co.uk
+  name = James Inman
+  signingkey = {{ onepasswordRead "op://5gcms35dv6h466324l4mdcot54/2knakpkjgrjfym3mtbhxprt5ri/public key" "PYJNRHK6HBFPVCF56C5SSPHHJA" }}
