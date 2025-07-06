@@ -129,7 +129,6 @@ defaults write com.apple.dock show-process-indicators -bool true
 # the Dock to launch apps.
 defaults write com.apple.dock persistent-apps -array
 
-
 # Disable Dashboard
 defaults write com.apple.dashboard mcx-disabled -bool true
 
@@ -151,7 +150,7 @@ defaults write com.apple.dock autohide -bool true
 defaults write com.apple.dock showhidden -bool true
 
 # Disable the Launchpad gesture (pinch with thumb and three fingers)
-#defaults write com.apple.dock showLaunchpadGestureEnabled -int 0
+defaults write com.apple.dock showLaunchpadGestureEnabled -int 0
 
 ###############################################################################
 # Safari & WebKit                                                             #
@@ -209,10 +208,10 @@ defaults write com.apple.Safari WebKitJavaScriptCanOpenWindowsAutomatically -boo
 defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2JavaScriptCanOpenWindowsAutomatically -bool false
 
 # Disable auto-playing video
-#defaults write com.apple.Safari WebKitMediaPlaybackAllowsInline -bool false
-#defaults write com.apple.SafariTechnologyPreview WebKitMediaPlaybackAllowsInline -bool false
-#defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2AllowsInlineMediaPlayback -bool false
-#defaults write com.apple.SafariTechnologyPreview com.apple.Safari.ContentPageGroupIdentifier.WebKit2AllowsInlineMediaPlayback -bool false
+defaults write com.apple.Safari WebKitMediaPlaybackAllowsInline -bool false
+defaults write com.apple.SafariTechnologyPreview WebKitMediaPlaybackAllowsInline -bool false
+defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2AllowsInlineMediaPlayback -bool false
+defaults write com.apple.SafariTechnologyPreview com.apple.Safari.ContentPageGroupIdentifier.WebKit2AllowsInlineMediaPlayback -bool false
 
 # Enable “Do Not Track”
 defaults write com.apple.Safari SendDoNotTrackHTTPHeader -bool true
@@ -350,6 +349,15 @@ if ! defaults read com.1password.1password >/dev/null 2>&1; then
   /usr/libexec/PlistBuddy ~/Library/Preferences/com.1password.1password.plist -c "Delete NSUserKeyEquivalents:Quit\ 1Password" || true
   /usr/libexec/PlistBuddy ~/Library/Preferences/com.1password.1password.plist -c "Add NSUserKeyEquivalents:Quit\ 1Password string @~q"
 fi
+
+# Finder
+/usr/libexec/plistbuddy -c "Set :DesktopViewSettings:GroupBy Kind" ~/Library/preferences/com.apple.finder.plist
+/usr/libexec/plistbuddy -c "Set :DesktopViewSettings:IconViewSettings:arrangeBy kind" ~/Library/preferences/com.apple.finder.plist
+/usr/libexec/plistbuddy -c "Set :DesktopViewSettings:IconViewSettings:labelOnBottom true" ~/Library/preferences/com.apple.finder.plist
+/usr/libexec/plistbuddy -c "Set :DesktopViewSettings:IconViewSettings:showIconPreview true" ~/Library/preferences/com.apple.finder.plist
+/usr/libexec/plistbuddy -c "Set :DesktopViewSettings:IconViewSettings:textSize 13" ~/Library/preferences/com.apple.finder.plist
+/usr/libexec/plistbuddy -c "Set :DesktopViewSettings:IconViewSettings:iconSize 76" ~/Library/preferences/com.apple.finder.plist
+/usr/libexec/plistbuddy -c "Set :DesktopViewSettings:IconViewSettings:gridSpacing 80.0" ~/Library/preferences/com.apple.finder.plist
 
 killall Finder &>/dev/null
 
