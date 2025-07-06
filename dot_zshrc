@@ -13,4 +13,3 @@ setopt PROMPT_SUBST
 PROMPT='%F{green}%*%f %F{blue}%~%f %F{black}${vcs_info_msg_0_}%f$ '
 
 alias ls='ls -G'
-alias ngrok9292='ngrok http --url=fancy-broadly-clam.ngrok-free.app --log=stdout 9292 > /dev/null &'

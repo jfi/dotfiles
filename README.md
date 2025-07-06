@@ -27,3 +27,11 @@ To apply changes, run:
 ```
 chezmoi apply -v
 ```
+
+To apply the changes from the remote, run:
+
+```
+chezmoi update -v
+```
+
+See [chezmoi documentation](https://www.chezmoi.io/quick-start/#using-chezmoi-across-multiple-machines) for more information.
