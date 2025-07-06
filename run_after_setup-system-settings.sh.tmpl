@@ -351,15 +351,6 @@ if ! defaults read com.1password.1password >/dev/null 2>&1; then
   /usr/libexec/PlistBuddy ~/Library/Preferences/com.1password.1password.plist -c "Add NSUserKeyEquivalents:Quit\ 1Password string @~q"
 fi
 
-# Set Finder defaults
-/usr/libexec/plistbuddy ~/Library/preferences/com.apple.finder.plist -c "Set :DesktopViewSettings:GroupBy Kind"
-/usr/libexec/plistbuddy ~/Library/preferences/com.apple.finder.plist -c "Set :DesktopViewSettings:IconViewSettings:arrangeBy kind"
-/usr/libexec/plistbuddy ~/Library/preferences/com.apple.finder.plist -c "Set :DesktopViewSettings:IconViewSettings:labelOnBottom true"
-/usr/libexec/plistbuddy ~/Library/preferences/com.apple.finder.plist -c "Set :DesktopViewSettings:IconViewSettings:showIconPreview true"
-/usr/libexec/plistbuddy ~/Library/preferences/com.apple.finder.plist -c "Set :DesktopViewSettings:IconViewSettings:textSize 13"
-/usr/libexec/plistbuddy ~/Library/preferences/com.apple.finder.plist -c "Set :DesktopViewSettings:IconViewSettings:iconSize 76"
-/usr/libexec/plistbuddy ~/Library/preferences/com.apple.finder.plist -c "Set :DesktopViewSettings:IconViewSettings:gridSpacing 80.0"
-
 killall Finder &>/dev/null
 
 # Enable pam-watchid (sudo commands using the Apple Watch)
