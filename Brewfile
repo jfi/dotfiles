@@ -6,6 +6,7 @@ brew "atuin" # Shell history
 brew "chezmoi" # Chezmoi is a dotfile manager
 brew "duti" # Duti is a tool for setting default applications for file types
 brew "gmp" # GNU Multiple Precision Arithmetic Library
+brew "gh" # GitHub CLI
 brew "gnupg" # GnuPG is a complete and free implementation of the OpenPGP standard
 brew "libxml2" # XML parser library
 brew "libyaml" # YAML parser library
