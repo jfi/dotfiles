@@ -7,22 +7,17 @@
 // custom settings, run `zed: open default settings` from the
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
-  "assistant": {
+  "agent": {
+    "always_allow_tool_actions": true,
     "default_model": {
-      "model": "claude-3-7-sonnet-latest",
-      "provider": "zed"
-    },
-    "enable_experimental_live_diffs": true,
-    "version": "2"
+      "model": "claude-sonnet-4",
+      "provider": "zed.dev"
+    }
   },
   "auto_indent_on_paste": true,
+  "autosave": "on_window_change",
   "base_keymap": "VSCode",
   "auto_update": true,
-  "autosave": "on_focus_change",
-  "autosave_delay": 1500,
-  "autosave_on_focus_change": true,
-  "autosave_on_window_change": true,
-  "autosave_on_build": true,
   "buffer_font_family": "Zed Plex Mono",
   "buffer_font_size": 16,
   "edit_predictions": {
@@ -32,19 +27,16 @@
   "features": {
     "edit_prediction_provider": "zed"
   },
-  "file_finder": {
-    "mode": "eager",
-    "max_width": "xlarge"
-  },
   "format_on_save": "on",
   "formatter": "auto",
   "hover_popover_enabled": true,
-  "icon_theme": "Catppuccin Latte",
+  "icon_theme": "Catppuccin Mocha",
   "inlay_hints": {
     "enabled": true,
-    "typeHints": true,
-    "parameterHints": true,
-    "chainingHints": true
+    "show_type_hints": true,
+    "show_parameter_hints": true,
+    "show_other_hints": true,
+    "show_background": true
   },
   "indent_guides": {
     // Whether to show indent guides in the editor.
@@ -112,7 +104,7 @@
           "codeLens": true,
           "completion": true,
           "definition": true,
-          "diagnostics": false,
+          "diagnostics": true,
           "documentHighlights": true,
           "documentLink": true,
           "documentSymbols": true,
@@ -129,7 +121,7 @@
         }
       },
       "settings": {
-        "use_bundler": false
+        "use_bundler": true
       }
     },
     "tailwindcss-language-server": {
@@ -158,20 +150,26 @@
   "project_panel": {
     "auto_fold_dirs": false,
     "auto_reveal_entries": true,
-    "collapsed": false,
     "default_width": 300,
-    "enabled": true,
-    "indent_size": 20,
-    "width": 300
+    "indent_size": 20
   },
   "remove_trailing_whitespace_on_save": true,
   "restore_on_startup": "last_workspace",
   "show_whitespaces": "boundary",
+  "slash_commands": {
+    "docs": {
+      "enabled": true
+    }
+  },
   "soft_wrap": "bounded",
   "tab_size": 2,
   "tabs": {
+    "activate_on_close": "left_neighbour",
+    "close_position": "right",
+    "file_icons": true,
     "git_status": true,
-    "close_position": "right"
+    "show_close_button": "always",
+    "show_diagnostics": "errors"
   },
   "terminal": {
     "font_size": 15,
@@ -179,7 +177,7 @@
   },
   "theme": {
     "dark": "One Dark",
-    "light": "Github Light Tritanopia",
+    "light": "Catppuccin Latte",
     "mode": "system"
   },
   "toolbar": {

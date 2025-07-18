@@ -12,6 +12,7 @@ brew "libxml2" # XML parser library
 brew "libyaml" # YAML parser library
 brew "mas" # Mac App Store CLI
 brew "mise" # Version manager
+brew "obsidian" # Obsidian is a note-taking app
 brew "ollama", restart_service: :changed # Ollama is a tool for running large language models locally
 brew "openssl@3" # OpenSSL
 brew "readline" # Readline is a library for editing command lines as they are typed
@@ -37,6 +38,7 @@ cask "github" # GitHub UI client
 cask "ghostty" # Terminal
 cask "iina" # Media player for macOS
 cask "kap" # Screen recording tool
+cask "microsoft-teams" # Microsoft Teams is a collaboration tool
 cask "netnewswire" # NetNewsWire is a RSS reader
 cask "raspberry-pi-imager" # For flashing images to Raspberry Pi SD cards
 cask "raycast" # Launcher for macOS
@@ -46,15 +48,15 @@ cask "rectangle-pro" # Window management tool
 cask "setapp" # Setapp is a platform for other apps
 cask "syncalicious" # Syncalicious is a tool for syncing files between devices
 cask "tableplus" # TablePlus is a database management tool
+cask "tailscale" # Tailscale is a VPN for the internet
 cask "the-unarchiver" # Better file extraction tool
-cask "zed" # Zed is a text editor for the terminal
+cask "zed" # Zed is a text and code editor
 cask "zoom" # Zoom is a video conferencing tool
 
 mas "1Password for Safari", id: 1569813296 # 1Password for Safari
 mas "Anybox", id: 1593408455 # Bookmarks
 mas "Bear", id: 1091189122 # Notes
 mas "Canva", id: 897446215 # Design
-mas "Email", id: 1489591003 # Edison
 mas "Fantastical", id: 975937182 # Calendar
 mas "Home Assistant", id: 1099568401 # Smart Home
 mas "Ivory", id: 6444602274 # Mastodon
@@ -63,6 +65,7 @@ mas "Microsoft Excel", id: 462058435 # Spreadsheets
 mas "Microsoft Outlook", id: 985367838 # Microsoft 365 Email
 mas "Microsoft Word", id: 462054704 # Documents
 mas "Msg Viewer Pro", id: 1019539949 # Open .eml files
+mas "Notability: Smarter AI Notes", id: 360593530 # Notability is a note-taking app
 mas "Numbers", id: 409203825 # Spreadsheets
 mas "Pages", id: 409201541 # Documents
 mas "Prime Video", id: 545519333 # Video Streaming

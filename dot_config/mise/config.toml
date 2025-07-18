@@ -2,3 +2,6 @@
 node = "21.4.0"
 ruby = "3.4.1"
 yarn = "1.22.19"
+
+[settings]
+idiomatic_version_file_enable_tools = ["ruby"]

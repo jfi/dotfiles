@@ -12,42 +12,11 @@
   # Shortcuts
   co = checkout
   cp = cherry-pick
+  nb = checkout -b
   rbi = rebase -i --autosquash --rebase-merges --autostash origin/HEAD
   st = status -sb
   vi = commit -v
-
-  # C's old shortcuts, keeping incase they're useful
-  # a = add
-  # aa = add --all
-  # aap = add --all -p
-  # ap = add -p
-  # au = add -u
-  # aua = add -u .
-  # b = branch
-  # ci = commit
-  # cl = clone
-  # co = checkout
-  # cob = checkout -b
-  # cot = checkout -t
-  # cp = cherry-pick
-  # mirror-branch = checkout -t
-  # pop = stash pop
-  # pp = !sh -c 'git pull && git push'
-  # pr = pull --rebase
-  # pullr = pull --rebase
-  # s = status -sb
-  # sst = status -sb
-  # st = status -sb
-  # sui = submodule update --init
-  # t = status -sb
-  # tome = pull
-  # toyou = push
-  # tpr = pull --rebase
-  # ts = status -sb
-  # tst = status -sb
-  # vi = commit -v
-  # via = commit -va
-  # viaa = commit -va --amend
+  pfl = push --force-with-lease
 [branch]
   autosetupmerge = true
   sort = -committerdate
