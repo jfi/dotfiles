@@ -74,6 +74,8 @@
         "ruby-lsp",
         "!solargraph",
         "!rubocop",
+        "!steep",
+        "!sorbet",
         "..."
       ]
     },
