@@ -13,3 +13,4 @@ setopt PROMPT_SUBST
 PROMPT='%F{green}%*%f %F{blue}%~%f %F{black}${vcs_info_msg_0_}%f$ '
 
 alias ls='ls -G'
+eval "$(atuin init zsh)"

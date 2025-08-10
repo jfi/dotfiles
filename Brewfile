@@ -13,7 +13,6 @@ brew "libyaml" # YAML parser library
 brew "mas" # Mac App Store CLI
 brew "mise" # Version manager
 brew "obsidian" # Obsidian is a note-taking app
-brew "ollama", restart_service: :changed # Ollama is a tool for running large language models locally
 brew "openssl@3" # OpenSSL
 brew "readline" # Readline is a library for editing command lines as they are typed
 brew "redis", restart_service: :changed # Redis is an open-source, in-memory data structure store
@@ -40,15 +39,17 @@ cask "iina" # Media player for macOS
 cask "kap" # Screen recording tool
 cask "microsoft-teams" # Microsoft Teams is a collaboration tool
 cask "netnewswire" # NetNewsWire is a RSS reader
+cask "postgres-unofficial" # PostgreSQL installer/manager
 cask "raspberry-pi-imager" # For flashing images to Raspberry Pi SD cards
 cask "raycast" # Launcher for macOS
 cask "numi" # Calculator for macOS
 cask "orbstack" # Orbstack is a tool for managing Docker containers
+cask "postgres-unofficial" # PostgreSQL client and management
 cask "rectangle-pro" # Window management tool
 cask "setapp" # Setapp is a platform for other apps
 cask "syncalicious" # Syncalicious is a tool for syncing files between devices
 cask "tableplus" # TablePlus is a database management tool
-cask "tailscale" # Tailscale is a VPN for the internet
+cask "tailscale-app" # Tailscale is a VPN for the internet
 cask "the-unarchiver" # Better file extraction tool
 cask "zed" # Zed is a text and code editor
 cask "zoom" # Zoom is a video conferencing tool
