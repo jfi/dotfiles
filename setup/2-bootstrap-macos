@@ -16,6 +16,14 @@ fi
 green "Installing Homebrew packages..."
 brew bundle upgrade --file="${DOTFILES_DIR}/macos/Brewfile"
 
+# Enable Touch ID for sudo (if not already configured)
+if ! grep -q "pam_tid.so" /etc/pam.d/sudo 2>/dev/null; then
+  green "Enabling Touch ID for sudo..."
+  sudo sed -i '' '1a\
+auth       sufficient     pam_tid.so
+' /etc/pam.d/sudo
+fi
+
 # Verify mise installation
 green "Verifying mise installation..."
 mise doctor

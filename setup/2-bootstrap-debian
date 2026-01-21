@@ -32,7 +32,8 @@ sudo apt install -y \
   libyaml-dev \
   libssl-dev \
   libreadline-dev \
-  zlib1g-dev
+  zlib1g-dev \
+  libpam-ssh-agent-auth
 
 # Set default shell to zsh if not already
 if [ "$SHELL" != "$(command -v zsh)" ]; then
@@ -45,6 +46,27 @@ if ! grep -q "^UseDNS no" /etc/ssh/sshd_config 2>/dev/null; then
   green "Configuring SSH for reduced latency..."
   echo "UseDNS no" | sudo tee -a /etc/ssh/sshd_config
   sudo systemctl restart ssh
+fi
+
+# Configure Touch ID sudo via SSH agent forwarding
+# This allows using macOS Touch ID for sudo on remote servers
+if [ ! -f /etc/sudoers.d/ssh-agent-auth ]; then
+  green "Configuring SSH agent auth for sudo (Touch ID forwarding)..."
+
+  # Preserve SSH_AUTH_SOCK in sudo environment
+  echo 'Defaults env_keep += "SSH_AUTH_SOCK"' | sudo tee /etc/sudoers.d/ssh-agent-env >/dev/null
+  sudo chmod 440 /etc/sudoers.d/ssh-agent-env
+
+  # Add PAM config for SSH agent auth (must be before other auth methods)
+  echo "auth sufficient pam_ssh_agent_auth.so file=~/.ssh/authorized_keys" | sudo tee /etc/pam.d/sudo-ssh-agent >/dev/null
+
+  # Include the SSH agent auth in sudo PAM config if not already present
+  if ! grep -q "pam_ssh_agent_auth" /etc/pam.d/sudo 2>/dev/null; then
+    sudo sed -i '1a auth sufficient pam_ssh_agent_auth.so file=~/.ssh/authorized_keys' /etc/pam.d/sudo
+  fi
+
+  # Mark as configured
+  sudo touch /etc/sudoers.d/ssh-agent-auth
 fi
 
 # Install mise if not present

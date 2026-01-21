@@ -215,6 +215,25 @@ EOF
 
 chmod 600 "${HOME}/.gitconfig.local" || true
 
+# Write ~/.ssh/config with ForwardAgent (for Touch ID sudo forwarding)
+green "Writing ~/.ssh/config..."
+mkdir -p "${HOME}/.ssh"
+chmod 700 "${HOME}/.ssh"
+if [ ! -f "${HOME}/.ssh/config" ]; then
+  cat > "${HOME}/.ssh/config" <<'EOF'
+Host *
+  ForwardAgent yes
+EOF
+  chmod 600 "${HOME}/.ssh/config"
+elif ! grep -q "ForwardAgent yes" "${HOME}/.ssh/config"; then
+  # Add ForwardAgent to existing config if not present
+  cat >> "${HOME}/.ssh/config" <<'EOF'
+
+Host *
+  ForwardAgent yes
+EOF
+fi
+
 # macOS: create ~/.config/git/allowed_signers using 1Password (vault_id + item_id + field_id)
 if [ "${OS}" = "Darwin" ]; then
   if has_cmd op; then
