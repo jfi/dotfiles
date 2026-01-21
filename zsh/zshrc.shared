@@ -1,7 +1,10 @@
 # Shared zsh config (safe to commit)
 
 # PATH
-export PATH="$HOME/.dotfiles/bin:$HOME/bin:$PATH"
+export PATH="$HOME/.dotfiles/bin:$HOME/.local/bin:$HOME/bin:$PATH"
+
+# Activate mise (if present)
+command -v mise >/dev/null && eval "$(mise activate zsh)"
 
 # History (sane defaults)
 setopt hist_ignore_dups

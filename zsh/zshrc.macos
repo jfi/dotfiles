@@ -30,8 +30,7 @@ if [[ -n "$SSH_CONNECTION" ]]; then
   PROMPT='%F{red}[REMOTE]%f '"$PROMPT"
 fi
 
-# Tooling hooks
-eval "$(mise activate zsh)"
+# Tooling hooks (mise is activated in zshrc.shared)
 eval "$(direnv hook zsh)"
 
 # Build flags (libxml2)
