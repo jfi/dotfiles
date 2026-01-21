@@ -22,6 +22,8 @@
 [branch "master"]
   merge = "master"
   remote = "origin"
+[checkout]
+  defaultRemote = origin
 [color]
   branch = auto
   diff = auto
