@@ -18,6 +18,7 @@ echo "2-bootstrap-macos complete."
 echo
 
 # Pause for confirmation before proceeding
-if [ -t 0 ]; then
-  read -r -p "Press Enter to continue to the next step..."
+if [ -r /dev/tty ]; then
+  printf "Press Enter to continue to the next step..." >&2
+  read -r </dev/tty
 fi

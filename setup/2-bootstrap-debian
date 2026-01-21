@@ -44,6 +44,9 @@ if ! command -v mise >/dev/null 2>&1; then
   curl -fsSL https://mise.jdx.dev/install.sh | sh
 fi
 
+# Ensure mise is in PATH for this session
+export PATH="${HOME}/.local/bin:${PATH}"
+
 # Install mise dependencies
 mise install -y
 
@@ -52,6 +55,7 @@ echo "2-bootstrap-debian complete."
 echo
 
 # Pause for confirmation before proceeding
-if [ -t 0 ]; then
-  read -r -p "Press Enter to continue to the next step..."
+if [ -r /dev/tty ]; then
+  printf "Press Enter to continue to the next step..." >&2
+  read -r </dev/tty
 fi
