@@ -31,9 +31,11 @@ prompt_if_missing() {
     return 0
   fi
 
-  if [ -t 0 ]; then
+  # Check if we can read from TTY (works even when stdin is piped)
+  if [ -r /dev/tty ]; then
     local value=""
-    read -r -p "${prompt}: " value
+    printf "%s: " "${prompt}" >&2
+    read -r value </dev/tty
     if [ -z "${value}" ]; then
       echo "ERROR: ${var_name} cannot be empty" >&2
       exit 1
@@ -66,7 +68,8 @@ pick_one() {
 
   local choice=""
   while true; do
-    read -r -p "Select 1-${#options[@]}: " choice
+    printf "Select 1-${#options[@]}: " >&2
+    read -r choice </dev/tty
     if [[ "${choice}" =~ ^[0-9]+$ ]] && [ "${choice}" -ge 1 ] && [ "${choice}" -le "${#options[@]}" ]; then
       echo "${options[$((choice - 1))]}"
       return 0
@@ -86,8 +89,8 @@ pick_fuzzy_or_numbered() {
     exit 1
   fi
 
-  if [ -t 0 ] && has_cmd fzf; then
-    printf '%s\n' "${options[@]}" | fzf --prompt "${prompt} " --height 40% --reverse
+  if [ -r /dev/tty ] && has_cmd fzf; then
+    printf '%s\n' "${options[@]}" | fzf --prompt "${prompt} " --height 40% --reverse </dev/tty
     return 0
   fi
 
@@ -125,7 +128,7 @@ GIT_NAME="$(prompt_if_missing "DOTFILES_GIT_NAME" "Enter your Git name" "${DOTFI
 GIT_EMAIL="$(prompt_if_missing "DOTFILES_GIT_EMAIL" "Enter your Git email" "${DOTFILES_GIT_EMAIL:-}")"
 
 # Persist identity to .env if it wasn't already set
-if [ -t 0 ]; then
+if [ -r /dev/tty ]; then
   touch "${ENV_FILE}"
   grep -q '^DOTFILES_GIT_NAME=' "${ENV_FILE}" || echo "DOTFILES_GIT_NAME=\"${GIT_NAME}\"" >> "${ENV_FILE}"
   grep -q '^DOTFILES_GIT_EMAIL=' "${ENV_FILE}" || echo "DOTFILES_GIT_EMAIL=\"${GIT_EMAIL}\"" >> "${ENV_FILE}"
@@ -281,7 +284,7 @@ for f in item.get("fields", []):
       echo "  DOTFILES_OP_SIGNING_FIELD_ID=${OP_FIELD_ID}" >&2
 
       # Persist to ~/.dotfiles/.env (ignored by git)
-      if [ -t 0 ]; then
+      if [ -r /dev/tty ]; then
         touch "${ENV_FILE}"
         {
           echo ""
@@ -349,8 +352,9 @@ if has_cmd lefthook; then
   (cd "${DOTFILES_DIR}" && lefthook install)
 fi
 
-if [ -t 0 ] && [ -z "${ZSH_VERSION:-}" ]; then
-  read -r -p "Reload shell now? [Y/n] " ans
+if [ -r /dev/tty ] && [ -z "${ZSH_VERSION:-}" ]; then
+  printf "Reload shell now? [Y/n] " >&2
+  read -r ans </dev/tty
   case "${ans:-Y}" in
     Y|y) exec zsh ;;
   esac
@@ -361,6 +365,7 @@ echo "1-init complete."
 echo
 
 # Pause for confirmation before proceeding
-if [ -t 0 ]; then
-  read -r -p "Press Enter to continue to the next step..."
+if [ -r /dev/tty ]; then
+  printf "Press Enter to continue to the next step..." >&2
+  read -r </dev/tty
 fi
