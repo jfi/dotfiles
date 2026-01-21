@@ -1,4 +1,4 @@
-#!/usr/bin/env zsh
+#!/usr/bin/env bash
 set -euo pipefail
 
 # Colours
@@ -9,17 +9,17 @@ red() { printf "\033[31m%s\033[0m\n" "$*" >&2; }
 export PATH="${HOME}/.local/bin:${PATH}"
 
 # Activate mise for this session
-eval "$(mise activate zsh)"
+eval "$(mise activate bash)"
 
 # Install latest stable Ruby via mise
 green "Installing latest stable Ruby via mise..."
 LATEST_RUBY=$(mise ls-remote ruby | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | tail -1)
-mise use --global ruby@$LATEST_RUBY
-green "Installed Ruby $LATEST_RUBY"
+mise use --global "ruby@${LATEST_RUBY}"
+green "Installed Ruby ${LATEST_RUBY}"
 
 # Reshim to make ruby/gem available
-eval "$(mise activate zsh)"
-eval "$(mise hook-env -s zsh)"
+eval "$(mise activate bash)"
+eval "$(mise hook-env -s bash)"
 
 # Update RubyGems and install latest Bundler
 green "Updating RubyGems..."

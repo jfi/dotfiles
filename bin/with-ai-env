@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-export ANTHROPIC_API_KEY="$(op read 'op://AI/Anthropic/api_key')"
-export OPENAI_API_KEY="$(op read 'op://AI/OpenAI/api_key')"
+# Declare and assign separately to avoid masking return values (SC2155)
+ANTHROPIC_API_KEY="$(op read 'op://AI/Anthropic/api_key')"
+export ANTHROPIC_API_KEY
+OPENAI_API_KEY="$(op read 'op://AI/OpenAI/api_key')"
+export OPENAI_API_KEY
 
 exec "$@"

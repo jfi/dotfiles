@@ -19,34 +19,47 @@ check_server() {
   if is_linux && has timedatectl; then
     local tz
     tz="$(timedatectl show -p Timezone --value 2>/dev/null || true)"
-    [ -n "${tz}" ] && ok "Timezone: ${tz}" || warn "Timezone unknown"
+    if [ -n "${tz}" ]; then
+      ok "Timezone: ${tz}"
+    else
+      warn "Timezone unknown"
+    fi
   fi
 
   # SSH hardening (Linux servers)
   if is_linux && [ -f /etc/ssh/sshd_config ]; then
-    grep -Eq '^PermitRootLogin\s+no' /etc/ssh/sshd_config \
-      && ok "SSH root login disabled" \
-      || warn "SSH root login may be enabled"
+    if grep -Eq '^PermitRootLogin\s+no' /etc/ssh/sshd_config; then
+      ok "SSH root login disabled"
+    else
+      warn "SSH root login may be enabled"
+    fi
 
-    grep -Eq '^PasswordAuthentication\s+no' /etc/ssh/sshd_config \
-      && ok "SSH password auth disabled" \
-      || warn "SSH password authentication may be enabled"
+    if grep -Eq '^PasswordAuthentication\s+no' /etc/ssh/sshd_config; then
+      ok "SSH password auth disabled"
+    else
+      warn "SSH password authentication may be enabled"
+    fi
   fi
 
   # Firewall
   if is_linux && has ufw; then
-    ufw status | grep -q "Status: active" \
-      && ok "UFW firewall active" \
-      || { warn "UFW installed but not active"; fail; }
+    if ufw status | grep -q "Status: active"; then
+      ok "UFW firewall active"
+    else
+      warn "UFW installed but not active"
+      fail
+    fi
   else
     warn "UFW not installed"
   fi
 
   # Unattended upgrades
   if is_linux && has systemctl; then
-    systemctl is-enabled unattended-upgrades >/dev/null 2>&1 \
-      && ok "Unattended upgrades enabled" \
-      || warn "Unattended upgrades not enabled"
+    if systemctl is-enabled unattended-upgrades >/dev/null 2>&1; then
+      ok "Unattended upgrades enabled"
+    else
+      warn "Unattended upgrades not enabled"
+    fi
   fi
 
   # Swap (warn only)

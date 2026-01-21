@@ -6,13 +6,33 @@ check_workstation() {
   echo
 
   # Shell + tmux (common)
-  has zsh && ok "zsh installed" || { warn "zsh missing"; fail; }
-  has tmux && ok "tmux installed" || { warn "tmux missing"; fail; }
+  if has zsh; then
+    ok "zsh installed"
+  else
+    warn "zsh missing"
+    fail
+  fi
+
+  if has tmux; then
+    ok "tmux installed"
+  else
+    warn "tmux missing"
+    fail
+  fi
 
   # macOS-specific dev expectations
   if is_macos; then
-    has brew && ok "Homebrew installed" || warn "Homebrew not found"
-    has op && ok "1Password CLI (op) installed" || warn "1Password CLI (op) not found"
+    if has brew; then
+      ok "Homebrew installed"
+    else
+      warn "Homebrew not found"
+    fi
+
+    if has op; then
+      ok "1Password CLI (op) installed"
+    else
+      warn "1Password CLI (op) not found"
+    fi
 
     # Git signing config (report only)
     if has git; then
@@ -22,10 +42,29 @@ check_workstation() {
       key="$(git config --global --get user.signingkey || true)"
       allowed="$(git config --global --get gpg.ssh.allowedSignersFile || true)"
 
-      [ "${fmt}" = "ssh" ] && ok "git gpg.format=ssh" || warn "git gpg.format is not ssh"
-      [ -n "${prog}" ] && ok "git gpg.ssh.program set" || warn "git gpg.ssh.program not set"
-      [ -n "${key}" ] && ok "git user.signingkey set" || warn "git user.signingkey not set"
-      [ -n "${allowed}" ] && ok "git allowedSignersFile set" || warn "git allowedSignersFile not set"
+      if [ "${fmt}" = "ssh" ]; then
+        ok "git gpg.format=ssh"
+      else
+        warn "git gpg.format is not ssh"
+      fi
+
+      if [ -n "${prog}" ]; then
+        ok "git gpg.ssh.program set"
+      else
+        warn "git gpg.ssh.program not set"
+      fi
+
+      if [ -n "${key}" ]; then
+        ok "git user.signingkey set"
+      else
+        warn "git user.signingkey not set"
+      fi
+
+      if [ -n "${allowed}" ]; then
+        ok "git allowedSignersFile set"
+      else
+        warn "git allowedSignersFile not set"
+      fi
     else
       warn "git not found"
       fail
@@ -34,7 +73,17 @@ check_workstation() {
 
   # Linux workstation (if you ever do this)
   if is_linux; then
-    has git && ok "git installed" || { warn "git missing"; fail; }
-    has direnv && ok "direnv installed" || warn "direnv missing"
+    if has git; then
+      ok "git installed"
+    else
+      warn "git missing"
+      fail
+    fi
+
+    if has direnv; then
+      ok "direnv installed"
+    else
+      warn "direnv missing"
+    fi
   fi
 }
