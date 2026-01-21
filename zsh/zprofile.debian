@@ -1,1 +1,2 @@
-tmux new -As main
+# Manual tmux - use `tm` alias instead
+# tmux new -As main
