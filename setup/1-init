@@ -352,14 +352,6 @@ if has_cmd lefthook; then
   (cd "${DOTFILES_DIR}" && lefthook install)
 fi
 
-if [ -r /dev/tty ] && [ -z "${ZSH_VERSION:-}" ]; then
-  printf "Reload shell now? [Y/n] " >&2
-  read -r ans </dev/tty
-  case "${ans:-Y}" in
-    Y|y) exec zsh ;;
-  esac
-fi
-
 echo
 echo "1-init complete."
 echo
