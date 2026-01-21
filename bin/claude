@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Always run Claude Code with full permissions
+exec claude \
+  --dangerously-skip-permissions \
+  "$@"

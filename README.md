@@ -178,6 +178,7 @@ Scripts run in numbered order: `1-*` first, then `2-*` (OS-specific), then `3-*`
 │   ├── zprofile.macos
 │   └── zprofile.debian
 └── bin/
+    ├── claude                # Claude Code wrapper (full permissions)
     ├── proj                  # project launcher
     └── with-ai-env           # AI environment wrapper
 ```
