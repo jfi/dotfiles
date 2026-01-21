@@ -33,7 +33,8 @@ sudo apt install -y \
   libssl-dev \
   libreadline-dev \
   zlib1g-dev \
-  libpam-ssh-agent-auth
+  libpam-ssh-agent-auth \
+  gh
 
 # Set default shell to zsh if not already
 if [ "$SHELL" != "$(command -v zsh)" ]; then
