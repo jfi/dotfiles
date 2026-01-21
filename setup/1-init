@@ -147,6 +147,7 @@ case "${OS}" in
 esac
 
 # Write ~/.zshrc thin loader
+echo "Writing ~/.zshrc..."
 cat > "${HOME}/.zshrc" <<'EOF'
 DOTFILES="$HOME/.dotfiles"
 
@@ -165,6 +166,7 @@ esac
 EOF
 
 # Write ~/.zprofile thin loader
+echo "Writing ~/.zprofile..."
 cat > "${HOME}/.zprofile" <<'EOF'
 DOTFILES="$HOME/.dotfiles"
 
@@ -181,11 +183,13 @@ esac
 EOF
 
 # Write ~/.tmux.conf thin loader
+echo "Writing ~/.tmux.conf..."
 cat > "${HOME}/.tmux.conf" <<'EOF'
 source-file ~/.dotfiles/tmux/tmux.conf.shared
 EOF
 
 # Write ~/.gitconfig (shared + local)
+echo "Writing ~/.gitconfig..."
 cat > "${HOME}/.gitconfig" <<'EOF'
 [include]
   path = ~/.dotfiles/git/gitconfig.shared
@@ -195,6 +199,7 @@ cat > "${HOME}/.gitconfig" <<'EOF'
 EOF
 
 # Write ~/.gitconfig.local (machine-specific wiring)
+echo "Writing ~/.gitconfig.local -> ${GITCONFIG_OS_PATH}..."
 cat > "${HOME}/.gitconfig.local" <<EOF
 [include]
   path = ${GITCONFIG_OS_PATH}
@@ -338,12 +343,11 @@ fi
 git config --global user.name "${GIT_NAME}"
 git config --global user.email "${GIT_EMAIL}"
 
-echo "Wrote:"
-echo "  ~/.zshrc"
-echo "  ~/.zprofile"
-echo "  ~/.tmux.conf"
-echo "  ~/.gitconfig"
-echo "  ~/.gitconfig.local -> ${GITCONFIG_OS_PATH}"
+# Install lefthook git hooks if available
+if has_cmd lefthook; then
+  echo "Installing lefthook git hooks..."
+  (cd "${DOTFILES_DIR}" && lefthook install)
+fi
 
 if [ -t 0 ] && [ -z "${ZSH_VERSION:-}" ]; then
   read -r -p "Reload shell now? [Y/n] " ans

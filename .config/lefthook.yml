@@ -1,0 +1,19 @@
+---
+assert_lefthook_installed: true
+colors: true
+
+pre-commit:
+  parallel: true
+  jobs:
+    - name: Lint YAML files
+      run: yamllint {staged_files} --config-file .config/.yamllint.yml
+      glob: ['*.yml', '*.yaml']
+
+    - name: Lint Markdown files
+      run: markdownlint-cli2 --fix --config .config/.markdownlint.yml {staged_files}
+      glob: ['*.md', '*.markdown']
+      stage_fixed: true
+
+    - name: Lint shell scripts
+      run: shellcheck {staged_files}
+      glob: ['*.sh', 'setup/*', 'bin/*', 'install']
