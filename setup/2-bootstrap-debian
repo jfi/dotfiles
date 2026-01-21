@@ -53,6 +53,12 @@ if ! command -v mise >/dev/null 2>&1; then
   curl -fsSL https://mise.jdx.dev/install.sh | sh
 fi
 
+# Install Claude Code globally via npm
+if ! command -v claude >/dev/null 2>&1; then
+  green "Installing Claude Code..."
+  sudo npm install -g @anthropic-ai/claude-code
+fi
+
 # Ensure mise is in PATH for this session
 export PATH="${HOME}/.local/bin:${PATH}"
 
