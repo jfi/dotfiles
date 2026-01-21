@@ -47,6 +47,13 @@ fi
 # Ensure mise is in PATH for this session
 export PATH="${HOME}/.local/bin:${PATH}"
 
+# Activate mise for this session
+eval "$(mise activate bash)"
+
+# Verify mise installation
+echo "Verifying mise installation..."
+mise doctor
+
 # Install mise dependencies
 mise install -y
 
