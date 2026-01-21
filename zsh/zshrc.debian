@@ -1,10 +1,15 @@
-# Debian/server-only zsh config 
+# Debian/server-only zsh config
 
 export EDITOR=nano
 export VISUAL=nano
-alias ll='ls -lah'
 
-# Obvious remote prompt (server)
-PROMPT='%n@%m:%~ %# '
+# Enable colors
+autoload -U colors && colors
+alias ls='ls --color=auto'
+alias ll='ls -lah --color=auto'
+alias grep='grep --color=auto'
+
+# Coloured prompt (green user@host, blue path)
+PROMPT='%F{green}%n@%m%f:%F{blue}%~%f %# '
 
 # Manual tmux attachment - use `tm` alias to attach
