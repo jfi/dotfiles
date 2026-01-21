@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+warn()  { printf "⚠️  %s\n" "$*"; }
+ok()    { printf "✅ %s\n" "$*"; }
+info()  { printf "ℹ️  %s\n" "$*"; }
+
+failures=0
+
+fail() {
+  failures=$((failures + 1))
+}
+
+has() {
+  command -v "$1" >/dev/null 2>&1
+}
+
+os_name() {
+  uname -s
+}
+
+is_linux() { [ "$(os_name)" = "Linux" ]; }
+is_macos() { [ "$(os_name)" = "Darwin" ]; }
+
+report_header() {
+  info "Baseline health check"
+  echo
+}

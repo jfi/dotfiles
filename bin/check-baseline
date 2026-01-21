@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+DOTFILES_DIR="${HOME}/.dotfiles"
+# shellcheck disable=SC1090
+source "${DOTFILES_DIR}/bin/checks/shared"
+# shellcheck disable=SC1090
+source "${DOTFILES_DIR}/bin/checks/server"
+# shellcheck disable=SC1090
+source "${DOTFILES_DIR}/bin/checks/workstation"
+
+profile="auto"
+
+usage() {
+  echo "Usage: check-baseline [--profile server|workstation|auto]" >&2
+  exit 2
+}
+
+if [ "${1:-}" = "--profile" ]; then
+  [ -n "${2:-}" ] || usage
+  profile="$2"
+  shift 2
+fi
+
+report_header
+
+# Auto-pick: Linux + SSHD present => server; macOS => workstation
+if [ "${profile}" = "auto" ]; then
+  if is_macos; then
+    profile="workstation"
+  elif is_linux && [ -f /etc/ssh/sshd_config ]; then
+    profile="server"
+  else
+    profile="workstation"
+  fi
+fi
+
+case "${profile}" in
+  server)      check_server ;;
+  workstation) check_workstation ;;
+  auto)        usage ;;
+  *)           usage ;;
+esac
+
+echo
+if [ "${failures}" -eq 0 ]; then
+  ok "All checks passed"
+else
+  warn "Checks failed: ${failures}"
+fi
+
+exit "${failures}"

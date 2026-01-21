@@ -1,0 +1,88 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+check_server() {
+  info "Profile: server"
+  echo
+
+  # Time sync
+  if is_linux && has timedatectl; then
+    if timedatectl show -p NTPSynchronized --value 2>/dev/null | grep -q yes; then
+      ok "Time synchronized (NTP)"
+    else
+      warn "Time is NOT synchronized"
+      fail
+    fi
+  fi
+
+  # Timezone
+  if is_linux && has timedatectl; then
+    local tz
+    tz="$(timedatectl show -p Timezone --value 2>/dev/null || true)"
+    [ -n "${tz}" ] && ok "Timezone: ${tz}" || warn "Timezone unknown"
+  fi
+
+  # SSH hardening (Linux servers)
+  if is_linux && [ -f /etc/ssh/sshd_config ]; then
+    grep -Eq '^PermitRootLogin\s+no' /etc/ssh/sshd_config \
+      && ok "SSH root login disabled" \
+      || warn "SSH root login may be enabled"
+
+    grep -Eq '^PasswordAuthentication\s+no' /etc/ssh/sshd_config \
+      && ok "SSH password auth disabled" \
+      || warn "SSH password authentication may be enabled"
+  fi
+
+  # Firewall
+  if is_linux && has ufw; then
+    ufw status | grep -q "Status: active" \
+      && ok "UFW firewall active" \
+      || { warn "UFW installed but not active"; fail; }
+  else
+    warn "UFW not installed"
+  fi
+
+  # Unattended upgrades
+  if is_linux && has systemctl; then
+    systemctl is-enabled unattended-upgrades >/dev/null 2>&1 \
+      && ok "Unattended upgrades enabled" \
+      || warn "Unattended upgrades not enabled"
+  fi
+
+  # Swap (warn only)
+  if is_linux && has swapon; then
+    local total
+    total="$(swapon --show=SIZE --noheadings 2>/dev/null | awk '{s+=$1} END {print s}')"
+    if [ -z "${total}" ] || [ "${total}" = "0" ]; then
+      warn "No swap configured"
+    else
+      ok "Swap configured"
+    fi
+  fi
+
+  # Disk pressure
+  if is_linux && has df; then
+    local warn_pct=85
+    while read -r pct mount; do
+      local n="${pct%\%}"
+      if [ "${n}" -ge "${warn_pct}" ]; then
+        warn "Disk usage high on ${mount}: ${pct}"
+        fail
+      else
+        ok "Disk usage OK on ${mount}: ${pct}"
+      fi
+    done < <(df -hP | awk 'NR>1 {print $5, $6}')
+  fi
+
+  # Memory pressure
+  if is_linux && has free; then
+    local avail
+    avail="$(free -m | awk '/Mem:/ {print $7}')"
+    if [ "${avail}" -lt 200 ]; then
+      warn "Low available memory: ${avail}MB"
+      fail
+    else
+      ok "Memory OK: ${avail}MB available"
+    fi
+  fi
+}

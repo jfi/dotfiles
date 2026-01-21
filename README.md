@@ -252,6 +252,6 @@ It will:
 
 ---
 
-## Licence
+## Licence and contributing
 
-MIT — steal whatever is useful.
+MIT. Contributions appreciated.

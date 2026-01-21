@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+check_workstation() {
+  info "Profile: workstation"
+  echo
+
+  # Shell + tmux (common)
+  has zsh && ok "zsh installed" || { warn "zsh missing"; fail; }
+  has tmux && ok "tmux installed" || { warn "tmux missing"; fail; }
+
+  # macOS-specific dev expectations
+  if is_macos; then
+    has brew && ok "Homebrew installed" || warn "Homebrew not found"
+    has op && ok "1Password CLI (op) installed" || warn "1Password CLI (op) not found"
+
+    # Git signing config (report only)
+    if has git; then
+      local fmt prog key allowed
+      fmt="$(git config --global --get gpg.format || true)"
+      prog="$(git config --global --get gpg.ssh.program || true)"
+      key="$(git config --global --get user.signingkey || true)"
+      allowed="$(git config --global --get gpg.ssh.allowedSignersFile || true)"
+
+      [ "${fmt}" = "ssh" ] && ok "git gpg.format=ssh" || warn "git gpg.format is not ssh"
+      [ -n "${prog}" ] && ok "git gpg.ssh.program set" || warn "git gpg.ssh.program not set"
+      [ -n "${key}" ] && ok "git user.signingkey set" || warn "git user.signingkey not set"
+      [ -n "${allowed}" ] && ok "git allowedSignersFile set" || warn "git allowedSignersFile not set"
+    else
+      warn "git not found"
+      fail
+    fi
+  fi
+
+  # Linux workstation (if you ever do this)
+  if is_linux; then
+    has git && ok "git installed" || { warn "git missing"; fail; }
+    has direnv && ok "direnv installed" || warn "direnv missing"
+  fi
+}
