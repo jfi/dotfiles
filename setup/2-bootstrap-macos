@@ -1,20 +1,34 @@
-#!/bin/zsh
+#!/usr/bin/env zsh
 set -euo pipefail
+
+# Colours
+green() { printf "\033[32m%s\033[0m\n" "$*"; }
+red() { printf "\033[31m%s\033[0m\n" "$*" >&2; }
 
 DOTFILES_DIR="${HOME}/.dotfiles"
 
 if ! command -v brew >/dev/null 2>&1; then
-  echo "ERROR: Homebrew is not installed." >&2
+  red "ERROR: Homebrew is not installed."
   exit 1
 fi
 
 # Install Homebrew packages and everything else we need
+green "Installing Homebrew packages..."
 brew bundle upgrade --file="${DOTFILES_DIR}/macos/Brewfile"
+
+# Activate mise for this session
+eval "$(mise activate zsh)"
+
+# Verify mise installation
+green "Verifying mise installation..."
+mise doctor
+
 # Install mise dependencies
+green "Installing mise dependencies..."
 mise install -y
 
 echo
-echo "2-bootstrap-macos complete."
+green "2-bootstrap-macos complete."
 echo
 
 # Pause for confirmation before proceeding

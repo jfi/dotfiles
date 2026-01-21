@@ -16,4 +16,4 @@ pre-commit:
 
     - name: Lint shell scripts
       run: shellcheck {staged_files}
-      glob: ['*.sh', 'setup/*', 'bin/*', 'install']
+      glob: ['*.sh', 'setup/1-*', 'bin/*', 'install']

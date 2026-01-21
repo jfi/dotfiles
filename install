@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Colours
+green() { printf "\033[32m%s\033[0m\n" "$*"; }
+red() { printf "\033[31m%s\033[0m\n" "$*" >&2; }
+
 OS="$(uname -s)"
 DOTFILES_REPO="${DOTFILES_REPO:-}"
 DOTFILES_DIR="${HOME}/.dotfiles"
@@ -8,7 +12,7 @@ DOTFILES_DIR="${HOME}/.dotfiles"
 bootstrap_macos() {
   # Install XCode Command Line Tools if necessary
   if ! command -v xcode-select >/dev/null 2>&1 || ! xcode-select -p >/dev/null 2>&1; then
-    echo "Installing XCode Command Line Tools..." >&2
+    green "Installing XCode Command Line Tools..."
     xcode-select --install
     echo "Please complete the XCode installation in the dialog that appeared." >&2
     exit 0
@@ -16,15 +20,16 @@ bootstrap_macos() {
 
   # Install Homebrew if necessary
   if ! command -v brew >/dev/null 2>&1; then
-    echo "Installing Homebrew..." >&2
+    green "Installing Homebrew..."
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
     eval "$(/opt/homebrew/bin/brew shellenv)"
+    # shellcheck disable=SC2016
     echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> "${HOME}/.zprofile"
   fi
 
   # Install 1Password CLI if necessary
   if ! command -v op >/dev/null 2>&1; then
-    echo "Installing 1Password CLI..." >&2
+    green "Installing 1Password CLI..."
     brew install --cask 1password
     brew install 1password-cli
     read -r -p "Open 1Password, log in, go to Settings > Developer, enable CLI & SSH Agent. Press enter when done: " -t 300 || true
@@ -48,7 +53,7 @@ case "${OS}" in
     bootstrap_linux
     ;;
   *)
-    echo "ERROR: Unsupported OS: ${OS}" >&2
+    red "ERROR: Unsupported OS: ${OS}"
     exit 1
     ;;
 esac
@@ -56,16 +61,16 @@ esac
 # Clone repo if not present
 if [ ! -d "${DOTFILES_DIR}" ]; then
   if ! command -v git >/dev/null 2>&1; then
-    echo "ERROR: git is required but not installed" >&2
+    red "ERROR: git is required but not installed"
     exit 1
   fi
 
-  echo "Cloning dotfiles to ${DOTFILES_DIR}..." >&2
+  green "Cloning dotfiles to ${DOTFILES_DIR}..."
   git clone "${DOTFILES_REPO}" "${DOTFILES_DIR}"
 fi
 
 # Run setup scripts in order (with TTY for interactive prompts)
-echo "Running setup scripts..."
+green "Running setup scripts..."
 
 # 1-init: always runs first (shell config, git config, etc.)
 "${DOTFILES_DIR}/setup/1-init" </dev/tty
@@ -83,4 +88,4 @@ esac
 # 3-install-ruby: Ruby via mise (runs on all platforms)
 "${DOTFILES_DIR}/setup/3-install-ruby" </dev/tty
 
-echo "Setup complete!"
+green "Setup complete!"

@@ -1,11 +1,15 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 set -euo pipefail
 
+# Colours
+green() { printf "\033[32m%s\033[0m\n" "$*"; }
+red() { printf "\033[31m%s\033[0m\n" "$*" >&2; }
+
 # Bootstrap Debian 12 (bookworm)
-echo "Updating apt..."
+green "Updating apt..."
 sudo apt update
 
-echo "Installing packages..."
+green "Installing packages..."
 sudo apt install -y \
   ca-certificates \
   curl \
@@ -27,20 +31,20 @@ sudo apt install -y \
 
 # Set default shell to zsh if not already
 if [ "$SHELL" != "$(command -v zsh)" ]; then
-  echo "Setting default shell to zsh..."
+  green "Setting default shell to zsh..."
   chsh -s "$(command -v zsh)"
 fi
 
 # Reduce SSH latency (only if not already configured)
 if ! grep -q "^UseDNS no" /etc/ssh/sshd_config 2>/dev/null; then
-  echo "Configuring SSH for reduced latency..."
+  green "Configuring SSH for reduced latency..."
   echo "UseDNS no" | sudo tee -a /etc/ssh/sshd_config
   sudo systemctl restart ssh
 fi
 
 # Install mise if not present
 if ! command -v mise >/dev/null 2>&1; then
-  echo "Installing mise..."
+  green "Installing mise..."
   curl -fsSL https://mise.jdx.dev/install.sh | sh
 fi
 
@@ -48,17 +52,18 @@ fi
 export PATH="${HOME}/.local/bin:${PATH}"
 
 # Activate mise for this session
-eval "$(mise activate bash)"
+eval "$(mise activate zsh)"
 
 # Verify mise installation
-echo "Verifying mise installation..."
+green "Verifying mise installation..."
 mise doctor
 
 # Install mise dependencies
+green "Installing mise dependencies..."
 mise install -y
 
 echo
-echo "2-bootstrap-debian complete."
+green "2-bootstrap-debian complete."
 echo
 
 # Pause for confirmation before proceeding

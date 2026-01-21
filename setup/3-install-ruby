@@ -1,23 +1,30 @@
-#!/bin/zsh
+#!/usr/bin/env zsh
 set -euo pipefail
+
+# Colours
+green() { printf "\033[32m%s\033[0m\n" "$*"; }
+red() { printf "\033[31m%s\033[0m\n" "$*" >&2; }
 
 # Ensure mise is in PATH (may have just been installed)
 export PATH="${HOME}/.local/bin:${PATH}"
 
+# Activate mise for this session
+eval "$(mise activate zsh)"
+
 # Install latest stable Ruby via mise
-echo "Installing latest stable Ruby via mise..."
+green "Installing latest stable Ruby via mise..."
 LATEST_RUBY=$(mise ls-remote ruby | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | tail -1)
 mise use --global ruby@$LATEST_RUBY
-echo "Installed Ruby $LATEST_RUBY"
+green "Installed Ruby $LATEST_RUBY"
 
 # Update RubyGems and install latest Bundler
-echo "Updating RubyGems..."
+green "Updating RubyGems..."
 gem update --system --no-document
-echo "Installing latest Bundler..."
+green "Installing latest Bundler..."
 gem install bundler --no-document
 
 echo
-echo "3-install-ruby complete."
+green "3-install-ruby complete."
 echo
 echo "Ruby $(ruby --version)"
 echo "RubyGems $(gem --version)"
