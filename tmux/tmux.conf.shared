@@ -35,6 +35,12 @@ set -g visual-activity off
 set -g allow-rename off
 set -g automatic-rename off
 
+##### Help popup #####
+
+# Show a popup with the tmux cheat sheet
+# Use: prefix + ?
+bind ? display-popup -E -w 90% -h 90% "printf 'Host: %s  Session: %s  Env: %s\n\n' \"#H\" \"#S\" \"#{@env}\" && less -FRX ~/.dotfiles/tmux/help.txt"
+
 ##### Keybindings #####
 
 # Reload config
