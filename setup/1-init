@@ -370,6 +370,11 @@ fi
 git config --global user.name "${GIT_NAME}"
 git config --global user.email "${GIT_EMAIL}"
 
+# Symlink Claude global config
+green "Linking ~/.claude/CLAUDE.md..."
+mkdir -p "${HOME}/.claude"
+ln -sf "${DOTFILES_DIR}/claude/CLAUDE.md" "${HOME}/.claude/CLAUDE.md"
+
 # Install lefthook git hooks if available
 if has_cmd lefthook; then
   echo "Installing lefthook git hooks..."
