@@ -62,9 +62,6 @@ fi
 # Ensure mise is in PATH for this session
 export PATH="${HOME}/.local/bin:${PATH}"
 
-# Activate mise for this session
-eval "$(mise activate zsh)"
-
 # Verify mise installation
 green "Verifying mise installation..."
 mise doctor

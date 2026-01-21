@@ -16,9 +16,6 @@ fi
 green "Installing Homebrew packages..."
 brew bundle upgrade --file="${DOTFILES_DIR}/macos/Brewfile"
 
-# Activate mise for this session
-eval "$(mise activate zsh)"
-
 # Verify mise installation
 green "Verifying mise installation..."
 mise doctor
