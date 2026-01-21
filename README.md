@@ -62,7 +62,7 @@ You can re-run it safely at any time.
 - Automatic window renaming based on directory
 - Titles like:
 
-```
+```text
 hub • 🟥 prod • myapp • api
 ```
 

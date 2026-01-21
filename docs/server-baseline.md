@@ -160,7 +160,7 @@ final_message: |
 
 ---
 
-# Health check script (read-only)
+## Health check script (read-only)
 
 This script:
 
