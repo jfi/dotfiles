@@ -17,3 +17,11 @@ pre-commit:
     - name: Lint shell scripts
       run: shellcheck {staged_files}
       glob: ['*.sh', 'setup/1-*', 'bin/*', 'install']
+
+    - name: Check for conflict markers
+      run: |
+        if grep -rEn '^(<{7}|={7}|>{7}|\|{7})' {staged_files}; then
+          echo "Error: Git conflict markers found in staged files"
+          exit 1
+        fi
+      glob: ['*']
