@@ -1,0 +1,9 @@
+# Debian/server-specific git config
+# Overrides for settings that require macOS-specific tools
+
+[commit]
+  # Disable signing on servers (no 1Password/SSH agent available)
+  gpgsign = false
+
+[tag]
+  gpgsign = false
