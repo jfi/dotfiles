@@ -12,8 +12,8 @@ set -ga terminal-overrides ",*:Setulc=\E[58::2::%p1%{65536}%/%d::%p1%{256}%/%{25
 set -g base-index 1
 setw -g pane-base-index 1
 
-# Faster key response
-set -sg escape-time 10
+# Faster key response (single source of truth)
+set -s escape-time 0
 
 # Keep sessions alive
 set -g detach-on-destroy off
@@ -45,6 +45,24 @@ bind | split-window -h
 bind - split-window -v
 unbind '"'
 unbind %
+unbind '|'
+unbind '-'
+
+##### Environment badge #####
+
+# Expect @env to be one of: prod | staging | dev
+set -g @env_icon_dev "🟦"
+set -g @env_icon_staging "🟧"
+set -g @env_icon_prod "🟥"
+
+set -g @env_colour_dev "colour39"
+set -g @env_colour_staging "colour208"
+set -g @env_colour_prod "colour196"
+
+# Derived pieces (pure tmux formatting, no shell)
+set -g @env_icon "#{?#{==:#{@env},prod},#{@env_icon_prod},#{?#{==:#{@env},staging},#{@env_icon_staging},#{@env_icon_dev}}}"
+set -g @env_colour "#{?#{==:#{@env},prod},#{@env_colour_prod},#{?#{==:#{@env},staging},#{@env_colour_staging},#{@env_colour_dev}}}"
+set -g @env_label "#{?#{==:#{@env},prod},PROD,#{?#{==:#{@env},staging},STG,DEV}}"
 
 ##### Status line #####
 
@@ -57,20 +75,20 @@ set -g status-style fg=colour250,bg=colour235
 set -g status-left-length 80
 set -g status-right-length 120
 
-# Left: session/host (simple, no env badge for now)
-set -g status-left "#[fg=colour39]#S #[fg=colour245]• #[fg=colour250]#(whoami)@#H #[fg=colour245]| "
+# Left: session • user@host • env badge (no shell-outs; tmux 3.3a supports client_user)
+set -g status-left "#[fg=colour39]#S #[fg=colour245]• #[fg=colour250]#{client_user}@#H #[fg=colour245]• #[fg=#{@env_colour}]#{@env_icon} #{@env_label}#[fg=colour245] | "
 
 # Window list
 setw -g window-status-format " #I:#W "
 setw -g window-status-current-format "#[bold,fg=colour39] #I:#W "
 
-# Right: date/time + current dir leaf
-set -g status-right "#[fg=colour245]%Y-%m-%d #[fg=colour250]%H:%M #[fg=colour245]| #[fg=colour39]#(basename #{pane_current_path})"
+# Right: date/time + current dir leaf (no shell-outs; #{b:...} supported in tmux 3.3a)
+set -g status-right "#[fg=colour245]%Y-%m-%d #[fg=colour250]%H:%M #[fg=colour245]| #[fg=colour39]#{b:pane_current_path}"
 
 ##### Tab title ####
 
 # Allow tmux to control terminal/window titles
 set -g set-titles on
 
-# Title: host • session • window
-set -g set-titles-string "#H • #S • #W"
+# Title: host • env • session • window (+ copy indicator)
+set -g set-titles-string "#H • #{@env_icon} #{@env_label} • #{=20:#S} • #{=20:#W}#{?pane_in_mode, [copy],}"
