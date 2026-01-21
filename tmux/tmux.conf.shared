@@ -27,7 +27,7 @@ set -g status-interval 10
 set -g monitor-activity off
 set -g visual-activity off
 
-# Don’t rename windows automatically (we’ll control this)
+# Don't rename windows automatically (we'll control this)
 set -g allow-rename off
 set -g automatic-rename off
 
@@ -44,33 +44,21 @@ unbind %
 
 ##### Status line #####
 
-set -g status-position bottom
-set -g status-style fg=colour250,bg=colour235
-
-set -g status-left-length 50
-set -g status-left "#[fg=colour39]#S #[fg=colour245]| #[fg=colour250]#(whoami)@#H"
-
-set -g status-right-length 80
-set -g status-right "#[fg=colour245]%Y-%m-%d #[fg=colour250]%H:%M #[fg=colour39]#(tmux display-message -p '#{pane_current_path}' | sed 's|.*/||')"
-
-setw -g window-status-format " #I:#W "
-setw -g window-status-current-format "#[bold,fg=colour39] #I:#W "
-
-# Helper: env label + colour
-# Uses @env values: prod | staging | dev | test (set by zsh hook)
-set -g @env_badge "#{?#{==:#{session_option:@env},prod},#[fg=colour231,bg=colour160] PROD ,#{?#{==:#{session_option:@env},staging},#[fg=colour232,bg=colour214] STG ,#{?#{==:#{session_option:@env},test},#[fg=colour231,bg=colour27] TEST ,#[fg=colour235,bg=colour250] DEV }}}#[default]"
+# Set default env (can be overridden by zsh hook)
+set -g @env "dev"
 
 # Base status styling
 set -g status on
+set -g status-position bottom
 set -g status-interval 10
+set -g status-style fg=colour250,bg=colour235
+
 set -g status-left-length 80
 set -g status-right-length 120
 
-# Subtly tint the whole status bar by env (comment out if you don’t want it)
-set -g status-style "#{?#{==:#{session_option:@env},prod},bg=colour52,fg=colour250,#{?#{==:#{session_option:@env},staging},bg=colour94,fg=colour250,bg=colour235,fg=colour250}}"
-
 # Left: env badge + session/host
-set -g status-left "#{@env_badge} #[fg=colour39]#S #[fg=colour245]• #[fg=colour250]#(whoami)@#H #[fg=colour245]| "
+# Uses @env values: prod | staging | dev (set by zsh hook)
+set -g status-left "#{?#{==:#{@env},prod},#[fg=colour231,bg=colour160] PROD #[default],#{?#{==:#{@env},staging},#[fg=colour232,bg=colour214] STG #[default],#[fg=colour235,bg=colour250] DEV #[default]}} #[fg=colour39]#S #[fg=colour245]• #[fg=colour250]#(whoami)@#H #[fg=colour245]| "
 
 # Window list
 setw -g window-status-format " #I:#W "
@@ -85,5 +73,4 @@ set -g status-right "#[fg=colour245]%Y-%m-%d #[fg=colour250]%H:%M #[fg=colour245
 set -g set-titles on
 
 # Title: host • env • session • window (+ copy indicator)
-# We store env on the session as @env (set by proj or manually)
-set -g set-titles-string "#H • #{?#{==:#{session_option:@env},prod},🟥 prod,#{?#{==:#{session_option:@env},staging},🟧 staging,⬜ dev}} • #{=20:#S} • #{=20:#W}#{?pane_in_mode, [copy],}"
+set -g set-titles-string "#H • #{?#{==:#{@env},prod},PROD,#{?#{==:#{@env},staging},STG,DEV}} • #{=20:#S} • #{=20:#W}#{?pane_in_mode, [copy],}"
