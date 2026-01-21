@@ -21,7 +21,7 @@ This setup is designed to work equally well on:
 > ⚠️ This will overwrite `~/.zshrc`, `~/.tmux.conf`, and `~/.gitconfig`.
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/jfi/dotfiles/main/setup | bash
+curl -fsSL https://raw.githubusercontent.com/jfi/dotfiles/main/install | bash
 ```
 
 The installer is interactive on first run and will:

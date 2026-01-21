@@ -1,0 +1,68 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+OS="$(uname -s)"
+DOTFILES_REPO="${DOTFILES_REPO:-}"
+DOTFILES_DIR="${HOME}/.dotfiles"
+
+bootstrap_macos() {
+  # Install XCode Command Line Tools if necessary
+  if ! command -v xcode-select >/dev/null 2>&1 || ! xcode-select -p >/dev/null 2>&1; then
+    echo "Installing XCode Command Line Tools..." >&2
+    xcode-select --install
+    echo "Please complete the XCode installation in the dialog that appeared." >&2
+    exit 0
+  fi
+
+  # Install Homebrew if necessary
+  if ! command -v brew >/dev/null 2>&1; then
+    echo "Installing Homebrew..." >&2
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+    echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> "${HOME}/.zprofile"
+  fi
+
+  # Install 1Password CLI if necessary
+  if ! command -v op >/dev/null 2>&1; then
+    echo "Installing 1Password CLI..." >&2
+    brew install --cask 1password
+    brew install 1password-cli
+    read -r -p "Open 1Password, log in, go to Settings > Developer, enable CLI & SSH Agent. Press enter when done: " -t 300 || true
+  fi
+
+  # Set SSH clone URL for macOS (uses 1Password SSH agent)
+  DOTFILES_REPO="${DOTFILES_REPO:-git@github.com:jfi/dotfiles.git}"
+}
+
+bootstrap_linux() {
+  # Assume git already available on Linux distros
+  DOTFILES_REPO="${DOTFILES_REPO:-https://github.com/jfi/dotfiles.git}"
+}
+
+# Bootstrap OS-specific requirements
+case "${OS}" in
+  Darwin)
+    bootstrap_macos
+    ;;
+  Linux)
+    bootstrap_linux
+    ;;
+  *)
+    echo "ERROR: Unsupported OS: ${OS}" >&2
+    exit 1
+    ;;
+esac
+
+# Clone repo if not present
+if [ ! -d "${DOTFILES_DIR}" ]; then
+  if ! command -v git >/dev/null 2>&1; then
+    echo "ERROR: git is required but not installed" >&2
+    exit 1
+  fi
+
+  echo "Cloning dotfiles to ${DOTFILES_DIR}..." >&2
+  git clone "${DOTFILES_REPO}" "${DOTFILES_DIR}"
+fi
+
+# Run setup
+exec "${DOTFILES_DIR}/setup" "$@"
