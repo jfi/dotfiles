@@ -32,17 +32,13 @@ Before running `setup` on a VPS, you should have completed basic server hardenin
 This repository **does not automate hardening** by default — that is intentional.
 Hardening scripts are highly context-dependent and easy to get wrong.
 
-If you haven’t done this yet, see:
+If you haven't done this yet, see [docs/server-hardening.md](docs/server-hardening.md) for a safe, manual checklist.
 
-```
-docs/server-hardening.md
-```
-
-for a safe, manual checklist you can follow.
+---
 
 ## One-line install
 
-> ⚠️ This will overwrite `~/.zshrc`, `~/.tmux.conf`, and `~/.gitconfig`.
+> ⚠️ This will overwrite `~/.zshrc`, `~/.zprofile`, `~/.tmux.conf`, and `~/.gitconfig`.
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/jfi/dotfiles/main/install | bash
