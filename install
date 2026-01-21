@@ -85,23 +85,23 @@ if [ ! -d "${DOTFILES_DIR}" ]; then
   git clone "${DOTFILES_REPO}" "${DOTFILES_DIR}"
 fi
 
-# Run setup scripts in order
+# Run setup scripts in order (with TTY for interactive prompts)
 echo "Running setup scripts..."
 
 # 1-init: always runs first (shell config, git config, etc.)
-"${DOTFILES_DIR}/setup/1-init"
+"${DOTFILES_DIR}/setup/1-init" </dev/tty
 
 # 2-bootstrap: OS-specific package installation
 case "${OS}" in
   Darwin)
-    "${DOTFILES_DIR}/setup/2-bootstrap-macos"
+    "${DOTFILES_DIR}/setup/2-bootstrap-macos" </dev/tty
     ;;
   Linux)
-    "${DOTFILES_DIR}/setup/2-bootstrap-debian"
+    "${DOTFILES_DIR}/setup/2-bootstrap-debian" </dev/tty
     ;;
 esac
 
 # 3-install-ruby: Ruby via mise (runs on all platforms)
-"${DOTFILES_DIR}/setup/3-install-ruby"
+"${DOTFILES_DIR}/setup/3-install-ruby" </dev/tty
 
 echo "Setup complete!"
