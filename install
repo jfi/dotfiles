@@ -5,27 +5,6 @@ OS="$(uname -s)"
 DOTFILES_REPO="${DOTFILES_REPO:-}"
 DOTFILES_DIR="${HOME}/.dotfiles"
 
-# If piped (no TTY), clone repo then re-exec with TTY
-if [ ! -t 0 ]; then
-  echo "No TTY detected (running via curl | bash)..."
-
-  # Set repo URL based on OS before cloning
-  case "${OS}" in
-    Darwin) DOTFILES_REPO="${DOTFILES_REPO:-git@github.com:jfi/dotfiles.git}" ;;
-    Linux)  DOTFILES_REPO="${DOTFILES_REPO:-https://github.com/jfi/dotfiles.git}" ;;
-  esac
-
-  # Clone if needed
-  if [ ! -d "${DOTFILES_DIR}" ]; then
-    echo "Cloning dotfiles to ${DOTFILES_DIR}..."
-    git clone "${DOTFILES_REPO}" "${DOTFILES_DIR}"
-  fi
-
-  # Re-exec the local install script with TTY
-  echo "Re-running with TTY for interactive prompts..."
-  exec /usr/bin/env bash "${DOTFILES_DIR}/install" "$@" </dev/tty
-fi
-
 bootstrap_macos() {
   # Install XCode Command Line Tools if necessary
   if ! command -v xcode-select >/dev/null 2>&1 || ! xcode-select -p >/dev/null 2>&1; then
