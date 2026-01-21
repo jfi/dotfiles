@@ -16,6 +16,30 @@ This setup is designed to work equally well on:
 
 ---
 
+## Server hardening (recommended)
+
+This setup assumes you are running on a **reasonably hardened machine**, especially for remote Linux servers.
+
+Before running `setup` on a VPS, you should have completed basic server hardening, including:
+
+- SSH key-based authentication only
+- Password login disabled
+- Root login disabled
+- Firewall enabled (SSH only, plus any required services)
+- Regular security updates enabled
+- A non-root user with `sudo`
+
+This repository **does not automate hardening** by default — that is intentional.
+Hardening scripts are highly context-dependent and easy to get wrong.
+
+If you haven’t done this yet, see:
+
+```
+docs/server-hardening.md
+```
+
+for a safe, manual checklist you can follow.
+
 ## One-line install
 
 > ⚠️ This will overwrite `~/.zshrc`, `~/.tmux.conf`, and `~/.gitconfig`.
@@ -68,14 +92,58 @@ hub • 🟥 prod • myapp • api
 - Shared + OS-specific config files
 - Works cleanly across macOS and Linux
 
+### Setup scripts
+
+Scripts run in numbered order: `1-*` first, then `2-*` (OS-specific), then `3-*`.
+
+**`setup/1-init`**
+
+- runs first on all platforms
+- safe to run repeatedly
+- does not install packages
+- wires:
+  - `~/.zshrc` + `~/.zprofile` loaders
+  - `~/.tmux.conf` loader
+  - `~/.gitconfig` includes
+  - 1Password `allowed_signers` + `user.signingkey` on macOS
+
+**`setup/2-bootstrap-macos`** / **`setup/2-bootstrap-debian`**
+
+- OS-specific package installation
+- runs `brew bundle` or `apt install` respectively
+- installs mise and dependencies
+
+**`setup/3-install-ruby`**
+
+- runs on all platforms after OS bootstrap
+- installs latest stable Ruby via mise
+- updates RubyGems to latest version
+- installs latest Bundler
+
+### macOS extras
+
+**`macos/defaults`**
+
+- applies macOS system preferences tweaks
+- see `macos/defaults.md` for documentation
+
 ---
 
 ## Repo layout
 
 ```text
 .dotfiles/
-├── setup                     # bootstrap script (entry point)
+├── install                   # one-line installer (curl entry point)
 ├── .env                      # local-only config (gitignored)
+├── setup/
+│   ├── 1-init                # main bootstrap script (runs first)
+│   ├── 2-bootstrap-macos     # macOS package installation
+│   ├── 2-bootstrap-debian    # Debian package installation
+│   └── 3-install-ruby        # Ruby/mise setup (runs last)
+├── macos/
+│   ├── Brewfile              # Homebrew dependencies
+│   ├── defaults              # macOS system preferences
+│   └── defaults.md           # defaults documentation
 ├── git/
 │   ├── gitconfig.shared
 │   ├── gitconfig.macos
@@ -85,9 +153,13 @@ hub • 🟥 prod • myapp • api
 ├── zsh/
 │   ├── zshrc.shared
 │   ├── zshrc.macos
-│   └── zshrc.debian
+│   ├── zshrc.debian
+│   ├── zprofile.shared
+│   ├── zprofile.macos
+│   └── zprofile.debian
 └── bin/
-    └── proj                  # project launcher
+    ├── proj                  # project launcher
+    └── with-ai-env           # AI environment wrapper
 ```
 
 ---
@@ -163,7 +235,7 @@ No guessing from hostnames.
 You can safely re-run:
 
 ```bash
-~/.dotfiles/setup
+~/.dotfiles/setup/1-init
 ```
 
 It will:

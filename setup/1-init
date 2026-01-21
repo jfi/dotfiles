@@ -353,8 +353,10 @@ if [ -t 0 ] && [ -z "${ZSH_VERSION:-}" ]; then
 fi
 
 echo
-echo "Next:"
+echo "1-init complete."
+echo
 
-if [ "${OS}" = "Linux" ]; then
-  echo "  tmux new -As main"
+# Pause for confirmation before proceeding
+if [ -t 0 ]; then
+  read -r -p "Press Enter to continue to the next step..."
 fi
