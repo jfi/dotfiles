@@ -1,11 +1,10 @@
-# Debian/server-only zsh config
+# Debian/server-only zsh config 
 
-export EDITOR=nvim
-export VISUAL=nvim
+export EDITOR=nano
+export VISUAL=nano
 alias ll='ls -lah'
 
 # Obvious remote prompt (server)
 PROMPT='%n@%m:%~ %# '
 
 # Manual tmux attachment - use `tm` alias to attach
-# Auto-attach disabled to allow recovery when tmux has issues
