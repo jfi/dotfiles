@@ -7,13 +7,5 @@ alias ll='ls -lah'
 # Obvious remote prompt (server)
 PROMPT='%n@%m:%~ %# '
 
-# Auto-attach to tmux when SSHing in (interactive shells only)
-# Unset TMUX in case it was inherited from SSH client, then attach
-if [[ -n "$SSH_CONNECTION" ]]; then
-  case $- in
-    *i*)
-      unset TMUX
-      exec tmux new-session -As main
-      ;;
-  esac
-fi
+# Manual tmux attachment - use `tm` alias to attach
+# Auto-attach disabled to allow recovery when tmux has issues
