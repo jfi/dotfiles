@@ -44,9 +44,6 @@ unbind %
 
 ##### Status line #####
 
-# Set default env (can be overridden by zsh hook)
-set -g @env "dev"
-
 # Base status styling
 set -g status on
 set -g status-position bottom
@@ -56,21 +53,20 @@ set -g status-style fg=colour250,bg=colour235
 set -g status-left-length 80
 set -g status-right-length 120
 
-# Left: env badge + session/host
-# Uses @env values: prod | staging | dev (set by zsh hook)
-set -g status-left "#{?#{==:#{@env},prod},#[fg=colour231,bg=colour160] PROD #[default],#{?#{==:#{@env},staging},#[fg=colour232,bg=colour214] STG #[default],#[fg=colour235,bg=colour250] DEV #[default]}} #[fg=colour39]#S #[fg=colour245]• #[fg=colour250]#(whoami)@#H #[fg=colour245]| "
+# Left: session/host (simple, no env badge for now)
+set -g status-left "#[fg=colour39]#S #[fg=colour245]• #[fg=colour250]#(whoami)@#H #[fg=colour245]| "
 
 # Window list
 setw -g window-status-format " #I:#W "
 setw -g window-status-current-format "#[bold,fg=colour39] #I:#W "
 
-# Right: date/time + current dir leaf + copy-mode hint
-set -g status-right "#[fg=colour245]%Y-%m-%d #[fg=colour250]%H:%M #[fg=colour245]| #[fg=colour39]#(tmux display-message -p '#{pane_current_path}' | sed 's|.*/||')#{?pane_in_mode, #[fg=colour214][copy],}"
+# Right: date/time + current dir leaf
+set -g status-right "#[fg=colour245]%Y-%m-%d #[fg=colour250]%H:%M #[fg=colour245]| #[fg=colour39]#(basename #{pane_current_path})"
 
 ##### Tab title ####
 
 # Allow tmux to control terminal/window titles
 set -g set-titles on
 
-# Title: host • env • session • window (+ copy indicator)
-set -g set-titles-string "#H • #{?#{==:#{@env},prod},PROD,#{?#{==:#{@env},staging},STG,DEV}} • #{=20:#S} • #{=20:#W}#{?pane_in_mode, [copy],}"
+# Title: host • session • window
+set -g set-titles-string "#H • #S • #W"
