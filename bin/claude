@@ -2,6 +2,20 @@
 set -euo pipefail
 
 # Always run Claude Code with full permissions
-exec claude \
+# Find the real claude binary, excluding this wrapper
+real_claude=""
+for dir in /usr/local/bin /usr/bin "${HOME}/.local/bin"; do
+  if [[ -x "${dir}/claude" ]]; then
+    real_claude="${dir}/claude"
+    break
+  fi
+done
+
+if [[ -z "${real_claude}" ]]; then
+  echo "Error: Could not find claude binary" >&2
+  exit 1
+fi
+
+exec "${real_claude}" \
   --dangerously-skip-permissions \
   "$@"
