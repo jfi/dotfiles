@@ -8,7 +8,8 @@ alias ll='ls -lah'
 PROMPT='%n@%m:%~ %# '
 
 # Auto-attach to tmux when SSHing in (interactive shells only)
-if [[ -n "$SSH_CONNECTION" ]] && [[ -z "$TMUX" ]]; then
+# Check if tmux is running locally on this server (not inherited $TMUX from SSH client)
+if [[ -n "$SSH_CONNECTION" ]] && [[ ! -e "${TMUX%%,*}" ]]; then
   case $- in
     *i*) tmux new -As main ;;
   esac

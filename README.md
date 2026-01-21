@@ -82,6 +82,30 @@ hub • 🟥 prod • myapp • api
 - Shared git config + per-OS config
 - No private keys or secrets in the repo
 
+### Touch ID for sudo
+
+Use Touch ID for `sudo` on macOS, and forward it to remote servers via SSH agent.
+
+**macOS (local):**
+
+- Enables `pam_tid.so` in `/etc/pam.d/sudo`
+- Touch ID prompt appears instead of password
+
+**Debian (remote):**
+
+- Installs `libpam-ssh-agent-auth`
+- Configures PAM to accept SSH agent authentication
+- Preserves `SSH_AUTH_SOCK` through sudo
+
+**How it works:**
+
+1. SSH to remote server with agent forwarding (configured automatically)
+2. Run `sudo` — the server checks if you control a key in `~/.ssh/authorized_keys`
+3. 1Password prompts for Touch ID on your Mac
+4. sudo succeeds without typing a password
+
+This is secure because it requires possession of the private key (which never leaves 1Password).
+
 ### Shell
 
 - Thin `~/.zshrc` loader
