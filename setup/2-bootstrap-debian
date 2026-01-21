@@ -27,7 +27,12 @@ sudo apt install -y \
   python3-pip \
   direnv \
   nodejs \
-  npm
+  npm \
+  libffi-dev \
+  libyaml-dev \
+  libssl-dev \
+  libreadline-dev \
+  zlib1g-dev
 
 # Set default shell to zsh if not already
 if [ "$SHELL" != "$(command -v zsh)" ]; then
