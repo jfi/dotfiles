@@ -1,0 +1,89 @@
+##### Core behaviour #####
+
+# Use sane terminal defaults
+set -g default-terminal "screen-256color"
+set -ga terminal-overrides ",xterm-256color:Tc"
+
+# Start window numbering at 1
+set -g base-index 1
+setw -g pane-base-index 1
+
+# Faster key response
+set -sg escape-time 10
+
+# Keep sessions alive
+set -g detach-on-destroy off
+
+# Scrollback
+set -g history-limit 100000
+
+# Mouse support (copy, resize panes)
+set -g mouse on
+
+##### SSH resilience #####
+
+# Assume long-lived remote sessions
+set -g status-interval 10
+set -g monitor-activity off
+set -g visual-activity off
+
+# Don’t rename windows automatically (we’ll control this)
+set -g allow-rename off
+set -g automatic-rename off
+
+##### Keybindings #####
+
+# Reload config
+bind r source-file ~/.tmux.conf \; display-message "tmux config reloaded"
+
+# Better pane splitting
+bind | split-window -h
+bind - split-window -v
+unbind '"'
+unbind %
+
+##### Status line #####
+
+set -g status-position bottom
+set -g status-style fg=colour250,bg=colour235
+
+set -g status-left-length 50
+set -g status-left "#[fg=colour39]#S #[fg=colour245]| #[fg=colour250]#(whoami)@#H"
+
+set -g status-right-length 80
+set -g status-right "#[fg=colour245]%Y-%m-%d #[fg=colour250]%H:%M #[fg=colour39]#(tmux display-message -p '#{pane_current_path}' | sed 's|.*/||')"
+
+setw -g window-status-format " #I:#W "
+setw -g window-status-current-format "#[bold,fg=colour39] #I:#W "
+
+# Helper: env label + colour
+# Uses @env values: prod | staging | dev | test (set by zsh hook)
+set -g @env_badge "#{?#{==:#{session_option:@env},prod},#[fg=colour231,bg=colour160] PROD ,#{?#{==:#{session_option:@env},staging},#[fg=colour232,bg=colour214] STG ,#{?#{==:#{session_option:@env},test},#[fg=colour231,bg=colour27] TEST ,#[fg=colour235,bg=colour250] DEV }}}#[default]"
+
+# Base status styling
+set -g status on
+set -g status-interval 10
+set -g status-left-length 80
+set -g status-right-length 120
+
+# Subtly tint the whole status bar by env (comment out if you don’t want it)
+set -g status-style "#{?#{==:#{session_option:@env},prod},bg=colour52,fg=colour250,#{?#{==:#{session_option:@env},staging},bg=colour94,fg=colour250,bg=colour235,fg=colour250}}"
+
+# Left: env badge + session/host
+set -g status-left "#{@env_badge} #[fg=colour39]#S #[fg=colour245]• #[fg=colour250]#(whoami)@#H #[fg=colour245]| "
+
+# Window list
+setw -g window-status-format " #I:#W "
+setw -g window-status-current-format "#[bold,fg=colour39] #I:#W "
+
+# Right: date/time + current dir leaf + copy-mode hint
+set -g status-right "#[fg=colour245]%Y-%m-%d #[fg=colour250]%H:%M #[fg=colour245]| #[fg=colour39]#(tmux display-message -p '#{pane_current_path}' | sed 's|.*/||')#{?pane_in_mode, #[fg=colour214][copy],}"
+
+##### Tab title ####
+
+# Allow tmux to control terminal/window titles
+set -g set-titles on
+
+# Title: host • env • session • window (+ copy indicator)
+# We store env on the session as @env (set by proj or manually)
+set -g set-titles-string "#H • #{?#{==:#{session_option:@env},prod},🟥 prod,#{?#{==:#{session_option:@env},staging},🟧 staging,⬜ dev}} • #{=20:#S} • #{=20:#W}#{?pane_in_mode, [copy],}"

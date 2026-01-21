@@ -1,0 +1,134 @@
+tap "buo/cask-upgrade"
+tap "domt4/autoupdate"
+tap "homebrew/core"
+tap "oven-sh/bun"
+brew "act"
+brew "gmp"
+brew "shellcheck"
+brew "actionlint"
+brew "openssl@3"
+brew "libyaml"
+brew "readline"
+brew "tree"
+brew "ansible"
+brew "ansible-lint"
+brew "b2-tools"
+brew "bundler-completion"
+brew "chezmoi"
+brew "commitlint"
+brew "dash-shell"
+brew "direnv"
+brew "duti"
+brew "fzf"
+brew "gemini-cli"
+brew "gh"
+brew "git"
+brew "gnupg"
+brew "go"
+brew "hadolint"
+brew "jsonlint"
+brew "lefthook"
+brew "libb2"
+brew "libxml2"
+brew "markdownlint-cli2"
+brew "mas"
+brew "mise"
+brew "mosh"
+brew "nmap"
+brew "octodns"
+brew "ollama", restart_service: :changed
+brew "pandoc"
+brew "pinentry-mac"
+brew "pipx"
+brew "pstree"
+brew "redis", restart_service: :changed
+brew "terraform"
+brew "the_silver_searcher"
+brew "vips"
+brew "watchman"
+brew "wget"
+brew "yamllint"
+brew "zsh-autocomplete"
+brew "zsh-syntax-highlighting"
+brew "oven-sh/bun/bun"
+cask "1password"
+cask "1password-cli"
+cask "affinity-designer"
+cask "affinity-photo"
+cask "affinity-publisher"
+cask "applite"
+cask "balenaetcher"
+cask "block-goose"
+cask "bruno"
+cask "chromium"
+cask "codex"
+cask "copilot-cli@prerelease"
+cask "docker-desktop"
+cask "figma"
+cask "font-ia-writer-duo"
+cask "font-ia-writer-mono"
+cask "font-ia-writer-quattro"
+cask "font-iosevka"
+cask "github"
+cask "google-chrome"
+cask "iina"
+cask "kap"
+cask "macdown-3000"
+cask "macwhisper"
+cask "microsoft-auto-update"
+cask "microsoft-teams"
+cask "netnewswire"
+cask "numi"
+cask "polypane"
+cask "postgres-unofficial"
+cask "raspberry-pi-imager"
+cask "raycast"
+cask "rectangle-pro"
+cask "setapp"
+cask "syncalicious"
+cask "tabby"
+cask "tableplus"
+cask "tailscale-app"
+cask "the-unarchiver"
+cask "zed@preview"
+cask "zoom"
+
+mas "Anybox", id: 1593408455
+mas "Bear", id: 1091189122
+mas "Brother iPrint&Scan", id: 1193539993
+mas "Canva", id: 897446215
+mas "Cardhop", id: 1290358394
+mas "Essayist", id: 1537845384
+mas "Fantastical", id: 975937182
+mas "Goodnotes", id: 1444383602
+mas "Ivory", id: 6444602274
+mas "Keynote", id: 409183694
+mas "MarkChart", id: 6475648822
+mas "Mela", id: 1568924476
+mas "Microsoft Excel", id: 462058435
+mas "Microsoft Outlook", id: 985367838
+mas "Microsoft Word", id: 462054704
+mas "Msg Viewer Pro", id: 1019539949
+mas "NewsGuard", id: 1485417785
+mas "Numbers", id: 409203825
+mas "OmniGraffle", id: 1142578753
+mas "OmniOutliner", id: 1142578772
+mas "Pages", id: 409201541
+mas "Polypane-helper", id: 1541304901
+mas "Prime Video", id: 545519333
+mas "Remote Desktop Scanner", id: 1605485521
+mas "SiteSucker", id: 442168834
+mas "Slack", id: 803453959
+mas "SnippetsLab", id: 1006087419
+mas "Sofa", id: 1276554886
+mas "Structured", id: 1499198946
+mas "TestFlight", id: 899247664
+mas "Things", id: 904280696
+mas "Tuneful", id: 6739804295
+mas "UK Salary Calculator", id: 505795901
+mas "Ulysses", id: 1225570693
+mas "Under My Roof", id: 1524335878
+mas "WhatsApp", id: 310633997
+mas "Windows App", id: 1295203466
+mas "Wipr", id: 1662217862
+mas "Xcode", id: 497799835

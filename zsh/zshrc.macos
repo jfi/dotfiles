@@ -1,0 +1,52 @@
+# macOS-only zsh config
+
+# Plugins (Homebrew paths)
+source /opt/homebrew/share/zsh-autocomplete/zsh-autocomplete.plugin.zsh
+source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+# Local scripts
+export PATH="$HOME/Scripts:$PATH"
+
+# Editor
+export EDITOR="zed-preview --wait"
+export BETTER_ERRORS_EDITOR="zed-preview --wait"
+export BETTER_ERRORS_EDITOR_URL="zed-preview://file/%{file}:%{line}"
+
+# Prompt + git branch (use one vcs_info setup, not two)
+autoload -Uz colors && colors
+autoload -Uz vcs_info
+setopt prompt_subst
+zstyle ':vcs_info:*' enable git
+zstyle ':vcs_info:git:*' formats '(%b)'
+
+precmd() {
+  vcs_info
+}
+
+PROMPT='%F{cyan}%*%f  %F{green}%n@%m%f  %F{yellow}%~%f %F{magenta}${vcs_info_msg_0_}%f  %(?.%F{white}.%F{red})%#%f '
+
+# Remote indicator (optional)
+if [[ -n "$SSH_CONNECTION" ]]; then
+  PROMPT='%F{red}[REMOTE]%f '"$PROMPT"
+fi
+
+# Tooling hooks
+eval "$(mise activate zsh)"
+eval "$(direnv hook zsh)"
+
+# Build flags (libxml2)
+export LDFLAGS="-L/opt/homebrew/opt/libxml2/lib"
+export CPPFLAGS="-I/opt/homebrew/opt/libxml2/include"
+export PKG_CONFIG_PATH="/opt/homebrew/opt/libxml2/lib/pkgconfig"
+export PATH="/opt/homebrew/opt/libxml2/bin:$PATH"
+
+# pipx
+export PATH="$PATH:/Users/james/.local/bin"
+
+# Amp CLI
+export PATH="/Users/james/.amp/bin:$PATH"
+
+# Aliases
+alias ls='ls -G'
+alias zed='zed-preview'
+alias bu='bundle update --all'

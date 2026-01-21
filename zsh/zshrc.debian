@@ -1,0 +1,15 @@
+# Debian/server-only zsh config
+
+export EDITOR=nvim
+export VISUAL=nvim
+alias ll='ls -lah'
+
+# Obvious remote prompt (server)
+PROMPT='%n@%m:%~ %# '
+
+# Auto-attach to tmux when SSHing in (interactive shells only)
+if [[ -n "$SSH_CONNECTION" ]] && [[ -z "$TMUX" ]]; then
+  case $- in
+    *i*) tmux new -As main ;;
+  esac
+fi
