@@ -171,6 +171,9 @@ case "$(uname -s)" in
     [ -f "$DOTFILES/zsh/zshrc.debian" ] && source "$DOTFILES/zsh/zshrc.debian"
     ;;
 esac
+
+# Local overrides (not managed by dotfiles)
+[ -f ~/.zshrc.local ] && source ~/.zshrc.local
 EOF
 
 # Write ~/.zprofile thin loader

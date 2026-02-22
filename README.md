@@ -110,6 +110,7 @@ This is secure because it requires possession of the private key (which never le
 
 - Thin `~/.zshrc` loader
 - Shared + OS-specific config files
+- `~/.zshrc.local` for machine-specific additions (never overwritten by setup)
 - Works cleanly across macOS and Linux
 
 ### Setup scripts

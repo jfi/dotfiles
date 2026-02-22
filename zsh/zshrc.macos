@@ -1,7 +1,8 @@
 # macOS-only zsh config
 
 # Plugins (Homebrew paths)
-source /opt/homebrew/share/zsh-autocomplete/zsh-autocomplete.plugin.zsh
+# Standard tab completion (replaces zsh-autocomplete)
+autoload -Uz compinit && compinit
 source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 # Local scripts
@@ -49,3 +50,4 @@ export PATH="/Users/james/.amp/bin:$PATH"
 alias ls='ls -G'
 alias zed='zed-preview'
 alias bu='bundle update --all'
+alias bup='git pull && bundle update --all && git add Gemfile.lock && git commit -m "Update dependencies" && git push'
