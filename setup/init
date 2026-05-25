@@ -323,9 +323,10 @@ fi
 git config --global user.name "${GIT_NAME}"
 git config --global user.email "${GIT_EMAIL}"
 
-# Symlink Claude global config
-green "Linking ~/.claude/CLAUDE.md..."
+# Symlink Claude global config (and AGENTS.md mirror for non-Claude tools)
+green "Linking ~/.claude/{CLAUDE,AGENTS}.md..."
 mkdir -p "${HOME}/.claude"
+ln -sf "${DOTFILES_DIR}/claude/AGENTS.md" "${HOME}/.claude/AGENTS.md"
 ln -sf "${DOTFILES_DIR}/claude/CLAUDE.md" "${HOME}/.claude/CLAUDE.md"
 
 # Install hk git hooks if available
