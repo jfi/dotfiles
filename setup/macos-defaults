@@ -1,5 +1,8 @@
 #!/bin/bash
-set -ex
+# `defaults` writes are independent best-effort steps — if one fails (Safari
+# container needs Full Disk Access, systemsetup -settimezone gets a flaky -99
+# from Apple's services, etc.) we want the rest to keep going.
+set -ux
 
 # Load .env if present (for DOTFILES_COMPUTER_NAME, etc.)
 ENV_FILE="${HOME}/.dotfiles/.env"
@@ -477,7 +480,9 @@ Screen Recording:
 
 Full Disk Access:
   - Raycast              (some file-search extensions)
-  - Ghostty              (if you want the shell to read ~/Library etc.)
+  - Ghostty              (REQUIRED for `defaults` to write Safari's
+                          sandboxed prefs — re-run this script after
+                          granting, otherwise Safari section is skipped)
 
 Input Monitoring:
   - Raycast              (hotkey listener — overlaps Accessibility)
