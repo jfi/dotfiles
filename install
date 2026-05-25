@@ -70,6 +70,7 @@ fi
 green "Running setup scripts..."
 "${DOTFILES_DIR}/setup/init" </dev/tty
 "${DOTFILES_DIR}/setup/bootstrap" </dev/tty
+"${DOTFILES_DIR}/setup/macos-defaults" </dev/tty
 "${DOTFILES_DIR}/setup/install-ruby" </dev/tty
 
 green "Setup complete!"

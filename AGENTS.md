@@ -4,8 +4,8 @@ macOS dotfiles.
 
 ## Structure
 
-- `setup/` - Bootstrap scripts (run by `install` in order: `init`, `bootstrap`, `install-ruby`),
-  plus optional `macos-defaults`
+- `setup/` - Bootstrap scripts (run by `install` in order: `init`, `bootstrap`,
+  `macos-defaults`, `install-ruby`)
 - `bin/` - User commands (added to PATH)
 - `zsh/` - Shell configuration
 - `tmux/` - tmux configuration

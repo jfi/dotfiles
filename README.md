@@ -68,7 +68,7 @@ hub • 🟥 prod • myapp • api
 
 ### Setup scripts
 
-`install` runs the three in this order: `init`, `bootstrap`, `install-ruby`.
+`install` runs the four in this order: `init`, `bootstrap`, `macos-defaults`, `install-ruby`.
 
 **`setup/init`**
 
@@ -93,12 +93,13 @@ hub • 🟥 prod • myapp • api
 - updates RubyGems to latest version
 - installs latest Bundler
 
-### macOS extras
-
 **`setup/macos-defaults`**
 
-- applies macOS system preferences tweaks
-- not run automatically — execute manually after the main setup
+- applies macOS system preferences tweaks (Dock layout + pins,
+  Finder/Safari/Activity Monitor defaults, screen-lock-on-sleep,
+  Calendar notifications off, Spotlight Cmd-Space freed for Raycast,
+  Touch-ID-for-sudo, computer name)
+- prompts for the computer name on first run; persists to `.env`
 
 ---
 
@@ -113,8 +114,8 @@ hub • 🟥 prod • myapp • api
 ├── setup/
 │   ├── init                  # main bootstrap script (runs first)
 │   ├── bootstrap             # packages, Touch ID for sudo, firewall
-│   ├── install-ruby          # Ruby/mise setup
-│   └── macos-defaults        # macOS system preferences (run manually)
+│   ├── macos-defaults        # macOS system preferences + computer name
+│   └── install-ruby          # Ruby/mise setup
 ├── git/
 │   ├── gitconfig
 │   └── gitignore
