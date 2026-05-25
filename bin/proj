@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  echo "Usage: proj [--env prod|staging|dev] <project>" >&2
+  exit 1
+}
+
+ENV_NAME="dev"
+
+if [ "${1:-}" = "--env" ]; then
+  [ -n "${2:-}" ] || usage
+  ENV_NAME="$2"
+  shift 2
+fi
+
+PROJECT="${1:-}"
+[ -n "${PROJECT}" ] || usage
+
+PROJECTS_DIR="${HOME}/Projects"
+PROJECT_DIR="${PROJECTS_DIR}/${PROJECT}"
+
+if [ ! -d "${PROJECT_DIR}" ]; then
+  echo "Project not found: ${PROJECT_DIR}" >&2
+  exit 1
+fi
+
+# Create session if needed
+if ! tmux has-session -t "${PROJECT}" 2>/dev/null; then
+  tmux new-session -d -s "${PROJECT}" -c "${PROJECT_DIR}"
+fi
+
+# Set env flag on the session (used by set-titles-string)
+tmux set-option -t "${PROJECT}" -q @env "${ENV_NAME}"
+
+# Attach/switch
+if [ -z "${TMUX:-}" ]; then
+  exec tmux attach -t "${PROJECT}"
+fi
+
+tmux switch-client -t "${PROJECT}"

@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Colours
+green() { printf "\033[32m%s\033[0m\n" "$*"; }
+red() { printf "\033[31m%s\033[0m\n" "$*" >&2; }
+
+DOTFILES_REPO="${DOTFILES_REPO:-}"
+DOTFILES_DIR="${HOME}/.dotfiles"
+
+if [ "$(uname -s)" != "Darwin" ]; then
+  red "ERROR: This installer is macOS-only."
+  exit 1
+fi
+
+# Require FileVault (full-disk encryption) before continuing
+if ! fdesetup status 2>/dev/null | grep -q "FileVault is On"; then
+  red "ERROR: FileVault is not enabled."
+  echo "Enable it in System Settings > Privacy & Security > FileVault, then re-run." >&2
+  exit 1
+fi
+
+# Install XCode Command Line Tools if necessary
+if ! command -v xcode-select >/dev/null 2>&1 || ! xcode-select -p >/dev/null 2>&1; then
+  green "Installing XCode Command Line Tools..."
+  xcode-select --install
+  echo "Please complete the XCode installation in the dialog that appeared." >&2
+  exit 0
+fi
+
+# Install Homebrew if necessary
+if ! command -v brew >/dev/null 2>&1; then
+  green "Installing Homebrew..."
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+  # shellcheck disable=SC2016
+  echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> "${HOME}/.zprofile"
+fi
+
+# Install 1Password CLI if necessary
+if ! command -v op >/dev/null 2>&1; then
+  green "Installing 1Password CLI..."
+  brew install --cask 1password
+  brew install 1password-cli
+  read -r -p "Open 1Password, log in, go to Settings > Developer, enable CLI & SSH Agent. Press enter when done: " -t 300 || true
+fi
+
+DOTFILES_REPO="${DOTFILES_REPO:-git@github.com:jfi/dotfiles.git}"
+
+# Clone repo if not present
+if [ ! -d "${DOTFILES_DIR}" ]; then
+  if ! command -v git >/dev/null 2>&1; then
+    red "ERROR: git is required but not installed"
+    exit 1
+  fi
+
+  green "Cloning dotfiles to ${DOTFILES_DIR}..."
+  git clone "${DOTFILES_REPO}" "${DOTFILES_DIR}"
+fi
+
+# Run setup scripts in order (with TTY for interactive prompts)
+green "Running setup scripts..."
+"${DOTFILES_DIR}/setup/init" </dev/tty
+"${DOTFILES_DIR}/setup/bootstrap" </dev/tty
+"${DOTFILES_DIR}/setup/install-ruby" </dev/tty
+
+green "Setup complete!"

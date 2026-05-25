@@ -1,0 +1,31 @@
+tmux cheat sheet (your setup)
+
+Prefix: Ctrl + b
+
+LEAVE / RETURN
+  Detach (leave running):      Ctrl + b, d
+  Reattach (main):             tmux new -As main
+  Jump to project:             proj myapp
+
+WINDOWS
+  New window:                  Ctrl + b, c
+  Switch window:               Ctrl + b, 1 / 2 / 3...
+  Rename window:               Ctrl + b, ,
+
+PANES
+  Split horizontally:          Ctrl + b, |
+  Split vertically:            Ctrl + b, -
+  Move between panes:          Ctrl + b, Arrow keys
+  Resize panes:                Ctrl + b, hold Arrow keys
+
+SCROLLBACK / COPY MODE
+  Enter copy mode:             Ctrl + b, [
+  Search in copy mode:         /
+  Quit copy mode:              q
+
+CONFIG
+  Reload tmux config:          Ctrl + b, r
+
+CLAUDE / LONG-RUNNING
+  Run Claude in tmux:          proj neurobetter ; claude .
+  Leave Claude running:        Ctrl + b, d

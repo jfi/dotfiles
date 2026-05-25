@@ -1,0 +1,14 @@
+# Global gitignore — applies to every repo via core.excludesfile.
+
+# Claude / AI bits
+.superpowers/
+docs/superpowers
+
+# Editor
+.zed/
+
+# Test results
+test-results/.last-run.json
+
+# macOS
+.DS_Store

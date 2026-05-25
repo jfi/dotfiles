@@ -1,0 +1,19 @@
+# mise shims (if present)
+if [ -d "${HOME}/.local/share/mise/shims" ]; then
+  export PATH="${HOME}/.local/share/mise/shims:${PATH}"
+fi
+# Homebrew environment (only if brew exists)
+if [ -x /opt/homebrew/bin/brew ]; then
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
+
+# 1Password SSH agent (if its socket exists). Routes ssh + git signing
+# through 1Password instead of macOS' empty launchd-managed agent.
+if [ -S "${HOME}/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock" ]; then
+  export SSH_AUTH_SOCK="${HOME}/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
+fi
+
+# Postgres.app (if installed)
+if [ -d "/Applications/Postgres.app/Contents/Versions/latest/bin" ]; then
+  export PATH="/Applications/Postgres.app/Contents/Versions/latest/bin:${PATH}"
+fi

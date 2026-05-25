@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Colours
+green() { printf "\033[32m%s\033[0m\n" "$*"; }
+red() { printf "\033[31m%s\033[0m\n" "$*" >&2; }
+
+DOTFILES_DIR="${HOME}/.dotfiles"
+
+if ! command -v brew >/dev/null 2>&1; then
+  red "ERROR: Homebrew is not installed."
+  exit 1
+fi
+
+# Install Homebrew packages and everything else we need
+green "Installing Homebrew packages..."
+brew bundle upgrade --file="${DOTFILES_DIR}/Brewfile"
+
+# Enable Touch ID for sudo (if not already configured)
+if ! grep -q "pam_tid.so" /etc/pam.d/sudo 2>/dev/null; then
+  green "Enabling Touch ID for sudo..."
+  sudo sed -i '' '1a\
+auth       sufficient     pam_tid.so
+' /etc/pam.d/sudo
+fi
+
+# Enable the Application Firewall (idempotent)
+if [ "$(sudo /usr/libexec/ApplicationFirewall/socketfilterfw --getglobalstate 2>/dev/null)" != "Firewall is enabled. (State = 1)" ]; then
+  green "Enabling Application Firewall..."
+  sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate on >/dev/null
+fi
+
+# Verify mise installation
+green "Verifying mise installation..."
+mise doctor
+
+# Install mise dependencies
+green "Installing mise dependencies..."
+mise install -y
+
+echo
+green "bootstrap complete."
+echo
+
+# Pause for confirmation before proceeding
+if [ -r /dev/tty ]; then
+  printf "Press Enter to continue to the next step..." >&2
+  read -r </dev/tty
+fi

@@ -1,0 +1,126 @@
+#!/usr/bin/env bash
+# brewfile-sync — reconcile macos/Brewfile against the current install.
+#
+# Runs `brew bundle dump` against a temp file, then walks you through every
+# difference: each line installed locally but not in the Brewfile, and each
+# line in the Brewfile but not installed locally. You decide what to keep.
+#
+# Read-only until the final prompt; then writes macos/Brewfile if you confirm.
+
+set -euo pipefail
+
+DOTFILES_DIR="${HOME}/.dotfiles"
+BREWFILE="${DOTFILES_DIR}/Brewfile"
+TMPDUMP="$(mktemp -t brewfile-sync-dump.XXXXXX)"
+NEW_BREWFILE="$(mktemp -t brewfile-sync-new.XXXXXX)"
+trap 'rm -f "$TMPDUMP" "$NEW_BREWFILE" "$NEW_BREWFILE.tmp"' EXIT
+
+red()    { printf "\033[31m%s\033[0m\n" "$*"; }
+green()  { printf "\033[32m%s\033[0m\n" "$*"; }
+yellow() { printf "\033[33m%s\033[0m\n" "$*"; }
+bold()   { printf "\033[1m%s\033[0m\n" "$*"; }
+
+if [ ! -f "$BREWFILE" ]; then
+  red "ERROR: $BREWFILE not found."
+  exit 1
+fi
+
+if ! command -v brew >/dev/null 2>&1; then
+  red "ERROR: brew not in PATH."
+  exit 1
+fi
+
+bold "Dumping current install..."
+brew bundle dump --file="$TMPDUMP" --force --no-vscode
+
+extract() {
+  grep -E '^(tap|brew|cask|mas)[[:space:]]+"' "$1" | sort -u
+}
+
+ADDS="$(comm -23 <(extract "$TMPDUMP") <(extract "$BREWFILE") || true)"
+DROPS="$(comm -13 <(extract "$TMPDUMP") <(extract "$BREWFILE") || true)"
+
+if [ -z "$ADDS" ] && [ -z "$DROPS" ]; then
+  green "Brewfile is in sync with current install."
+  exit 0
+fi
+
+cp "$BREWFILE" "$NEW_BREWFILE"
+
+prompt() {
+  local label="$1"
+  local ans
+  while :; do
+    printf "  %s [y/n/q] " "$label" >&2
+    if ! read -r ans </dev/tty; then
+      return 1
+    fi
+    case "${ans:-}" in
+      y|Y) return 0 ;;
+      n|N) return 1 ;;
+      q|Q) exit 0 ;;
+      *)   echo "    Please answer y, n, or q." >&2 ;;
+    esac
+  done
+}
+
+added=0
+dropped=0
+
+if [ -n "$ADDS" ]; then
+  echo
+  bold "=== ADD candidates (installed, not in Brewfile) ==="
+  while IFS= read -r line; do
+    [ -z "$line" ] && continue
+    green "  + $line"
+    if prompt "Add to Brewfile?"; then
+      echo "$line" >> "$NEW_BREWFILE"
+      added=$((added + 1))
+    fi
+  done <<< "$ADDS"
+fi
+
+if [ -n "$DROPS" ]; then
+  echo
+  bold "=== DROP candidates (in Brewfile, not installed) ==="
+  while IFS= read -r line; do
+    [ -z "$line" ] && continue
+    yellow "  - $line"
+    if prompt "Remove from Brewfile?"; then
+      grep -vxF "$line" "$NEW_BREWFILE" > "${NEW_BREWFILE}.tmp" \
+        && mv "${NEW_BREWFILE}.tmp" "$NEW_BREWFILE"
+      dropped=$((dropped + 1))
+    fi
+  done <<< "$DROPS"
+fi
+
+if diff -q "$BREWFILE" "$NEW_BREWFILE" >/dev/null; then
+  echo
+  green "No changes selected — Brewfile untouched."
+  exit 0
+fi
+
+echo
+bold "=== Pending diff ==="
+diff -u "$BREWFILE" "$NEW_BREWFILE" || true
+echo
+
+if ! prompt "Apply these changes to $BREWFILE?"; then
+  yellow "No changes applied."
+  exit 0
+fi
+
+cp "$NEW_BREWFILE" "$BREWFILE"
+green "Wrote $BREWFILE."
+
+echo
+if prompt "Stage and commit Brewfile?"; then
+  msg="Sync Brewfile: +${added}, -${dropped}"
+  if (cd "$DOTFILES_DIR" && git add Brewfile && git commit -m "$msg"); then
+    green "Committed: $msg"
+  else
+    red "Commit failed — Brewfile is staged; finish manually."
+  fi
+else
+  echo "Next:  cd $DOTFILES_DIR && git diff Brewfile" >&2
+fi

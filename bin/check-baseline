@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+DOTFILES_DIR="${HOME}/.dotfiles"
+# shellcheck disable=SC1090
+source "${DOTFILES_DIR}/bin/checks/shared"
+# shellcheck disable=SC1090
+source "${DOTFILES_DIR}/bin/checks/workstation"
+
+report_header
+check_workstation
+
+echo
+if [ "${failures}" -eq 0 ]; then
+  ok "All checks passed"
+else
+  warn "Checks failed: ${failures}"
+fi
+
+exit "${failures}"

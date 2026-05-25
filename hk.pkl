@@ -1,0 +1,36 @@
+amends "package://github.com/jdx/hk/releases/download/v1.45.0/hk@1.45.0#/Config.pkl"
+
+local linters = new Mapping<String, Step> {
+    ["yamllint"] {
+        glob = List("*.yml", "*.yaml")
+        check = "yamllint --config-file .config/.yamllint.yml {{files}}"
+    }
+    ["markdownlint"] {
+        glob = List("*.md", "*.markdown")
+        check = "markdownlint-cli2 --config .config/.markdownlint.yml {{files}}"
+        fix = "markdownlint-cli2 --fix --config .config/.markdownlint.yml {{files}}"
+    }
+    ["shellcheck"] {
+        glob = List("*.sh", "setup/*", "bin/*", "install")
+        check = "shellcheck {{files}}"
+    }
+    ["conflict-markers"] {
+        glob = List("*")
+        check = "! grep -lEn '^(<{7}|={7}|>{7}|\\|{7})' {{files}}"
+    }
+}
+
+hooks {
+    ["pre-commit"] {
+        fix = true
+        stash = "git"
+        steps = linters
+    }
+    ["fix"] {
+        fix = true
+        steps = linters
+    }
+    ["check"] {
+        steps = linters
+    }
+}

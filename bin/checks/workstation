@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+check_workstation() {
+  info "Profile: workstation"
+  echo
+
+  # Shell + tmux (common)
+  if has zsh; then
+    ok "zsh installed"
+  else
+    warn "zsh missing"
+    fail
+  fi
+
+  if has tmux; then
+    ok "tmux installed"
+  else
+    warn "tmux missing"
+    fail
+  fi
+
+  if has brew; then
+    ok "Homebrew installed"
+  else
+    warn "Homebrew not found"
+  fi
+
+  if has op; then
+    ok "1Password CLI (op) installed"
+  else
+    warn "1Password CLI (op) not found"
+  fi
+
+  # Git signing config (report only)
+  if has git; then
+    local fmt prog key allowed
+    fmt="$(git config --global --get gpg.format || true)"
+    prog="$(git config --global --get gpg.ssh.program || true)"
+    key="$(git config --global --get user.signingkey || true)"
+    allowed="$(git config --global --get gpg.ssh.allowedSignersFile || true)"
+
+    if [ "${fmt}" = "ssh" ]; then
+      ok "git gpg.format=ssh"
+    else
+      warn "git gpg.format is not ssh"
+    fi
+
+    if [ -n "${prog}" ]; then
+      ok "git gpg.ssh.program set"
+    else
+      warn "git gpg.ssh.program not set"
+    fi
+
+    if [ -n "${key}" ]; then
+      ok "git user.signingkey set"
+    else
+      warn "git user.signingkey not set"
+    fi
+
+    if [ -n "${allowed}" ]; then
+      ok "git allowedSignersFile set"
+    else
+      warn "git allowedSignersFile not set"
+    fi
+  else
+    warn "git not found"
+    fail
+  fi
+}
