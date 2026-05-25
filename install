@@ -28,6 +28,10 @@ if ! command -v xcode-select >/dev/null 2>&1 || ! xcode-select -p >/dev/null 2>&
   exit 0
 fi
 
+# Accept the Xcode license — idempotent, and required for some brew formulas
+# and casks that invoke xcrun during install.
+sudo xcodebuild -license accept
+
 # Install Homebrew if necessary
 if ! command -v brew >/dev/null 2>&1; then
   green "Installing Homebrew..."
