@@ -11,6 +11,9 @@ export PATH="${HOME}/.local/bin:${PATH}"
 # Activate mise for this session
 eval "$(mise activate bash)"
 
+# Use prebuilt Ruby binaries instead of compiling from source
+mise settings ruby.compile=false
+
 # Install latest stable Ruby via mise
 green "Installing latest stable Ruby via mise..."
 LATEST_RUBY=$(mise ls-remote ruby | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | tail -1)

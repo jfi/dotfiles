@@ -17,69 +17,16 @@ HISTSIZE=100000
 SAVEHIST=100000
 HISTFILE=~/.zsh_history
 
-# Terminal title updates.
-# tmux will override titles when set-titles is on.
+# Terminal title (OSC 0; widely supported)
 set_term_title() {
   case "$TERM" in
-    screen*|tmux*) return ;;
+    screen*) return ;;
   esac
   print -Pn "\e]0;%n@%m:%~\a"
 }
 precmd_functions+=(set_term_title)
-
-# tmux helpers
-alias tm='tmux new -As main'
-alias newtm='tmux new -As'
-
-proj() {
-  local dir
-  dir="$(ls -1 ~/Projects | fzf)" || return
-  command proj "$dir"
-}
 
 command -v direnv >/dev/null && eval "$(direnv hook zsh)"
-
-# Rename tmux window to current directory (lightweight, predictable)
-tmux_rename_window() {
-  [ -n "${TMUX:-}" ] || return
-  tmux rename-window "$(basename "$PWD")" 2>/dev/null || true
-}
-
-autoload -Uz add-zsh-hook
-add-zsh-hook chpwd tmux_rename_window
-
-set_term_title() {
-  # If inside tmux, tmux handles titles
-  case "$TERM" in
-    screen*|tmux*) return ;;
-  esac
-
-  # OSC 0: set both icon + window title (widely supported)
-  print -Pn "\e]0;%n@%m:%~\a"
-}
-
-precmd_functions+=(set_term_title)
-
-_tmux_last_env=""
-
-tmux_set_env_from_rails() {
-  [ -n "${TMUX:-}" ] || return
-
-  local env="dev"
-  case "${RAILS_ENV:-}" in
-    production) env="prod" ;;
-    staging)    env="staging" ;;
-    *)          env="dev" ;;
-  esac
-
-  [ "${env}" = "${_tmux_last_env}" ] && return
-  _tmux_last_env="${env}"
-
-  tmux set-option -q @env "${env}"
-}
-
-add-zsh-hook precmd tmux_set_env_from_rails
-# macOS-only zsh config
 
 # Plugins (Homebrew paths)
 [ -f /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ] \

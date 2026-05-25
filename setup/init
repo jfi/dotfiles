@@ -154,12 +154,6 @@ DOTFILES="$HOME/.dotfiles"
 [ -f "$DOTFILES/zsh/zprofile" ] && source "$DOTFILES/zsh/zprofile"
 EOF
 
-# Write ~/.tmux.conf thin loader
-green "Writing ~/.tmux.conf..."
-cat > "${HOME}/.tmux.conf" <<'EOF'
-source-file ~/.dotfiles/tmux/tmux.conf
-EOF
-
 # Write ~/.gitconfig (shared dotfiles config + user's own ~/.gitconfig.local)
 green "Writing ~/.gitconfig..."
 cat > "${HOME}/.gitconfig" <<'EOF'

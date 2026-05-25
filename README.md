@@ -2,18 +2,16 @@
 
 Opinionated, minimal macOS dotfiles, with:
 
-- **tmux-first workflow** (sessions = projects)
-- **environment-aware titles** (terminal titles reflect host, project, env)
 - **Git SSH signing via 1Password**
+- **Brewfile-managed everything** (packages, casks, Mac App Store apps)
+- **Idempotent setup scripts**
 - **Zero secrets committed**
-
-Designed for long-running tmux sessions you attach/detach from frequently — locally and over SSH.
 
 ---
 
 ## One-line install
 
-> ⚠️ This will overwrite `~/.zshrc`, `~/.zprofile`, `~/.tmux.conf`, and `~/.gitconfig`.
+> ⚠️ This will overwrite `~/.zshrc`, `~/.zprofile`, and `~/.gitconfig`.
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/jfi/dotfiles/main/install | bash
@@ -23,6 +21,7 @@ The installer is interactive on first run and will:
 
 - prompt for your Git name & email
 - guide you through selecting your SSH signing key from 1Password
+- prompt for a computer name (used by `scutil`)
 - write only **machine-local** data to `~/.dotfiles/.env` (git-ignored)
 
 You can re-run it safely at any time.
@@ -30,25 +29,6 @@ You can re-run it safely at any time.
 ---
 
 ## What this gives you
-
-### tmux
-
-- One **session per project**
-- Automatic window renaming based on directory
-- Titles like:
-
-```text
-hub • 🟥 prod • myapp • api
-```
-
-- Status bar shows environment (`DEV / STG / PROD`)
-- Designed for long-lived SSH sessions
-
-### Terminal integration
-
-- tmux controls the terminal title
-- Terminal tabs update automatically
-- Clear visual distinction between environments
 
 ### Git
 
@@ -65,10 +45,11 @@ hub • 🟥 prod • myapp • api
 
 - Thin `~/.zshrc` loader sources `zsh/zshrc` from the repo
 - `~/.zshrc.local` for machine-specific additions (never overwritten by setup)
+- starship prompt, atuin history, zoxide cd, eza/bat aliases, zsh-syntax-highlighting + zsh-autosuggestions
 
 ### Setup scripts
 
-`install` runs the four in this order: `init`, `bootstrap`, `macos-defaults`, `install-ruby`.
+`install` runs the four in this order: `init`, `bootstrap`, `install-ruby`, `macos-defaults`.
 
 **`setup/init`**
 
@@ -76,9 +57,11 @@ hub • 🟥 prod • myapp • api
 - does not install packages
 - wires:
   - `~/.zshrc` + `~/.zprofile` loaders
-  - `~/.tmux.conf` loader
   - `~/.gitconfig` include
   - 1Password `allowed_signers` + `user.signingkey`
+  - `~/.claude/{CLAUDE,AGENTS}.md`, `~/.config/zed/{settings,keymap}.json`,
+    `~/.config/ghostty/config` symlinks
+  - hk git hooks
 
 **`setup/bootstrap`**
 
@@ -89,17 +72,18 @@ hub • 🟥 prod • myapp • api
 
 **`setup/install-ruby`**
 
+- sets `mise settings ruby.compile=false` so Ruby installs from prebuilt binaries
 - installs latest stable Ruby via mise
-- updates RubyGems to latest version
-- installs latest Bundler
+- updates RubyGems + installs latest Bundler
 
 **`setup/macos-defaults`**
 
-- applies macOS system preferences tweaks (Dock layout + pins,
-  Finder/Safari/Activity Monitor defaults, screen-lock-on-sleep,
-  Calendar notifications off, Spotlight Cmd-Space freed for Raycast,
-  Touch-ID-for-sudo, computer name)
+- applies macOS system preferences tweaks (Dock layout + pins, Finder/Safari/Activity
+  Monitor defaults, screen-lock-on-sleep, Calendar notifications off,
+  Spotlight Cmd-Space freed for Raycast, computer name)
 - prompts for the computer name on first run; persists to `.env`
+- ends with a checklist of TCC permissions (Screen Recording, Accessibility,
+  Full Disk Access, Input Monitoring) you need to grant manually in System Settings
 
 ---
 
@@ -114,59 +98,23 @@ hub • 🟥 prod • myapp • api
 ├── setup/
 │   ├── init                  # main bootstrap script (runs first)
 │   ├── bootstrap             # packages, Touch ID for sudo, firewall
-│   ├── macos-defaults        # macOS system preferences + computer name
-│   └── install-ruby          # Ruby/mise setup
+│   ├── install-ruby          # Ruby/mise setup
+│   └── macos-defaults        # macOS system preferences + computer name
 ├── git/
 │   ├── gitconfig
 │   └── gitignore
-├── tmux/
-│   └── tmux.conf
 ├── zsh/
 │   ├── zshrc
 │   └── zprofile
+├── claude/                   # global Claude / AGENTS instructions
+├── zed/                      # Zed settings + keymap
+├── ghostty/                  # Ghostty config
 └── bin/
     ├── brewfile-sync         # interactive Brewfile <-> install reconciler
-    ├── claude                # Claude Code wrapper (full permissions)
-    ├── proj                  # project launcher
-    └── with-ai-env           # AI environment wrapper
+    ├── check-baseline        # workstation health check
+    ├── claude                # Claude Code wrapper
+    └── with-ai-env           # 1Password-sourced AI env exec wrapper
 ```
-
----
-
-## Project workflow
-
-```bash
-proj myapp
-```
-
-- creates (or attaches to) a tmux session named `myapp`
-- starts in `~/Projects/myapp`
-- window names follow directories automatically
-
-With environment set:
-
-```bash
-RAILS_ENV=production proj myapp
-```
-
-→ tmux + terminal title clearly show **PROD**
-
----
-
-## Environment awareness
-
-Environment is inferred from shell state and mirrored into tmux:
-
-- `RAILS_ENV=production` → 🟥 PROD
-- `RAILS_ENV=staging` → 🟧 STG
-- unset / development → DEV
-
-This affects:
-
-- terminal title
-- tmux status bar
-
-No guessing from hostnames.
 
 ---
 
@@ -185,7 +133,6 @@ No guessing from hostnames.
 
 - macOS
 - zsh (default)
-- tmux
 - 1Password + `op` CLI
 - Python 3 (for setup wizard)
 
@@ -217,18 +164,9 @@ brewfile-sync
 ```
 
 It diffs the live install against `Brewfile`, walks every difference
-interactively (y/n/q per line for both adds and drops), and writes the
-result back. Commit, push, run `brew bundle` on the other Mac.
-
----
-
-## Philosophy
-
-- tmux is the source of truth
-- projects > machines
-- explicit environment signalling
-- boring, predictable shell config
-- no magic that breaks under SSH
+interactively (y/n/q per line for both adds and drops), writes the result
+back, and offers to stage + commit. `git push`, then `brew bundle` on the
+other Mac.
 
 ---
 
