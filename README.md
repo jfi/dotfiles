@@ -3,7 +3,7 @@
 Opinionated, minimal macOS dotfiles, with:
 
 - **tmux-first workflow** (sessions = projects)
-- **environment-aware titles** (Tabby / terminal titles reflect host, project, env)
+- **environment-aware titles** (terminal titles reflect host, project, env)
 - **Git SSH signing via 1Password**
 - **Zero secrets committed**
 
@@ -44,10 +44,10 @@ hub • 🟥 prod • myapp • api
 - Status bar shows environment (`DEV / STG / PROD`)
 - Designed for long-lived SSH sessions
 
-### Terminal / Tabby integration
+### Terminal integration
 
 - tmux controls the terminal title
-- Tabby tabs update automatically
+- Terminal tabs update automatically
 - Clear visual distinction between environments
 
 ### Git
@@ -149,7 +149,7 @@ With environment set:
 RAILS_ENV=production proj myapp
 ```
 
-→ tmux + Tabby clearly show **PROD**
+→ tmux + terminal title clearly show **PROD**
 
 ---
 
@@ -163,7 +163,7 @@ Environment is inferred from shell state and mirrored into tmux:
 
 This affects:
 
-- terminal / Tabby title
+- terminal title
 - tmux status bar
 
 No guessing from hostnames.

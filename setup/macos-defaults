@@ -477,7 +477,7 @@ Screen Recording:
 
 Full Disk Access:
   - Raycast              (some file-search extensions)
-  - Ghostty / Tabby      (if you want the shell to read ~/Library etc.)
+  - Ghostty              (if you want the shell to read ~/Library etc.)
 
 Input Monitoring:
   - Raycast              (hotkey listener — overlaps Accessibility)

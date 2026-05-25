@@ -17,7 +17,7 @@ HISTSIZE=100000
 SAVEHIST=100000
 HISTFILE=~/.zsh_history
 
-# Terminal title updates (Tabby respects this)
+# Terminal title updates.
 # tmux will override titles when set-titles is on.
 set_term_title() {
   case "$TERM" in
