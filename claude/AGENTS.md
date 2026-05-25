@@ -26,7 +26,8 @@ these commands, **always ask for confirmation**:
   bring in permissions to let you do this.
 - If you need to connect to Rubygems, wait for OTP input.
 - Don't push things to main branches - create PRs.
-- When opening a PR, do not include the "Generated with Claude Code" / "🤖 Generated with Claude Code" footer in the PR body.
+- When opening a PR, do not include the "Generated with Claude Code" /
+  "🤖 Generated with Claude Code" footer in the PR body.
 - If you're waiting for 1Password (e.g. unlocking the keychain), wait for me rather than drying to bypass
   or push unsigned commits.
 - Whenever we see "Ferrum::ProcessTimeoutError: Browser did not produce websocket
