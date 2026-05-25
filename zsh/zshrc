@@ -118,9 +118,10 @@ export PATH="$PATH:/Users/james/.local/bin"
 export PATH="/Users/james/.amp/bin:$PATH"
 
 # Aliases
-command -v eza    >/dev/null && alias ls='eza --icons --group-directories-first'
-command -v bat    >/dev/null && alias cat='bat'
-command -v zoxide >/dev/null && alias cd='z'
+command -v eza     >/dev/null && alias ls='eza --icons --group-directories-first'
+command -v bat     >/dev/null && alias cat='bat'
+command -v zoxide  >/dev/null && alias cd='z'
+command -v ghostty >/dev/null && alias ssh='ghostty +ssh --'
 alias zed='zed-preview'
 alias bu='bundle update --all'
 alias bup='git pull && bundle update --all && git add Gemfile.lock && git commit -m "Update dependencies" && git push'

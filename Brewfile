@@ -111,12 +111,8 @@ mas "GarageBand", id: 682658836
 mas "Goodnotes", id: 1444383602
 mas "iMovie", id: 408981434
 mas "InYourFace", id: 1476964367
-mas "Keynote", id: 409183694
 mas "Mela", id: 1568924476
 mas "Msg Viewer Pro", id: 1019539949
-mas "Numbers", id: 409203825
-mas "Pages", id: 361309726
-mas "Pages", id: 409201541
 mas "Prime Video", id: 545519333
 mas "SnippetsLab", id: 1006087419
 mas "Sofa", id: 1276554886
