@@ -154,6 +154,15 @@ It will:
 
 ---
 
+## Manual installs
+
+Things not in `Brewfile` because no Homebrew cask exists. Install once per
+machine from the upstream site:
+
+- [Horse browser](https://browser.horse/) — indie macOS browser
+
+---
+
 ## Syncing between machines
 
 Install something via `brew install` / `brew install --cask` / `mas install` on one

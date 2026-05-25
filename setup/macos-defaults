@@ -339,6 +339,10 @@ defaults write com.apple.finder AppleShowAllFiles YES
 # Makes new Finder windows open in the home directory
 defaults write com.apple.finder NewWindowTarget PfHm
 
+# Terminal-flavoured file types open in Ghostty rather than Terminal.app
+duti -s com.mitchellh.ghostty .command all
+duti -s com.mitchellh.ghostty .tool all
+
 # Open many types of files with Zed
 duti -s dev.zed.Zed-Preview public.json all
 duti -s dev.zed.Zed-Preview public.plain-text all
