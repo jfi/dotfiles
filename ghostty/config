@@ -1,0 +1,5 @@
+# Ghostty config — symlinked to ~/.config/ghostty/config by setup/init.
+# Reference: https://ghostty.org/docs/config
+
+font-family = Maple Mono NF
+font-size = 16

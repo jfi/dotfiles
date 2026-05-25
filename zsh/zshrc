@@ -92,6 +92,8 @@ export PATH="$HOME/Scripts:$PATH"
 
 # Editor
 export EDITOR="zed-preview --wait"
+export VISUAL="zed-preview --wait"
+export GIT_EDITOR="zed-preview --wait"
 export BETTER_ERRORS_EDITOR="zed-preview --wait"
 export BETTER_ERRORS_EDITOR_URL="zed-preview://file/%{file}:%{line}"
 

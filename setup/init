@@ -335,6 +335,11 @@ mkdir -p "${HOME}/.config/zed"
 ln -sf "${DOTFILES_DIR}/zed/settings.json" "${HOME}/.config/zed/settings.json"
 ln -sf "${DOTFILES_DIR}/zed/keymap.json" "${HOME}/.config/zed/keymap.json"
 
+# Symlink Ghostty config
+green "Linking ~/.config/ghostty/config..."
+mkdir -p "${HOME}/.config/ghostty"
+ln -sf "${DOTFILES_DIR}/ghostty/config" "${HOME}/.config/ghostty/config"
+
 # Install hk git hooks if available
 if has_cmd hk; then
   echo "Installing hk git hooks..."
