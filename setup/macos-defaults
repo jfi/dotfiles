@@ -176,6 +176,9 @@ defaults write com.apple.dock autohide -bool true
 # Make Dock icons of hidden applications translucent
 defaults write com.apple.dock showhidden -bool true
 
+# Don't show the "Recent applications" section in the Dock
+defaults write com.apple.dock show-recents -bool false
+
 # Disable the Launchpad gesture (pinch with thumb and three fingers)
 defaults write com.apple.dock showLaunchpadGestureEnabled -int 0
 
@@ -441,8 +444,48 @@ if command -v dockutil >/dev/null 2>&1; then
       dockutil --no-restart --add "$app" >/dev/null 2>&1 || true
     fi
   done
+  # Right-side folder pins
+  dockutil --no-restart --add "${HOME}/Downloads" \
+    --view list --display folder --sort dateadded --section others >/dev/null 2>&1 || true
+  dockutil --no-restart --add "/Applications" \
+    --view fan --display folder --section others >/dev/null 2>&1 || true
   killall Dock 2>/dev/null || true
 fi
 
 # Enable pam-watchid (sudo commands using the Apple Watch)
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/logicer16/pam-watchid/HEAD/install.sh)" -- enable
+
+# Manual permissions checklist. macOS' TCC database is SIP-protected
+# and can't be scripted without disabling SIP or shipping an MDM
+# profile, so the rest is on you. (set +x to keep this readable.)
+set +x
+cat <<'CHECKLIST'
+
+------------------------------------------------------------
+Manual permission grants needed
+(System Settings -> Privacy & Security)
+
+Accessibility:
+  - Raycast              (global hotkey, window mgmt, paste history)
+  - Rectangle Pro        (window resizing / snapping)
+  - 1Password            (browser/app autofill)
+
+Screen Recording:
+  - Raycast              (screen-capture / window screenshots)
+  - Slack                (screen-share in calls)
+  - Kap                  (screen recording)
+
+Full Disk Access:
+  - Raycast              (some file-search extensions)
+  - Ghostty / Tabby      (if you want the shell to read ~/Library etc.)
+
+Input Monitoring:
+  - Raycast              (hotkey listener — overlaps Accessibility)
+  - Rectangle Pro
+
+macOS won't let scripts grant these for security reasons. Open
+System Settings -> Privacy & Security, find each section, and add
+the apps with the toggle. You may need to drag the .app in or click
+the + button.
+------------------------------------------------------------
+CHECKLIST
