@@ -85,6 +85,11 @@ defaults -currentHost write NSGLobalDomain com.apple.trackpad.scaling -float 3.0
 defaults write NSGlobalDomain KeyRepeat -int 1
 defaults write NSGlobalDomain InitialKeyRepeat -int 10
 
+# Disable Spotlight's Cmd-Space shortcut so Raycast can claim it.
+# Symbolic hotkey 64 = "Show Spotlight search".
+defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 64 \
+  '<dict><key>enabled</key><false/><key>value</key><dict><key>parameters</key><array><integer>32</integer><integer>49</integer><integer>1048576</integer></array><key>type</key><string>standard</string></dict></dict>'
+
 # Set language and text formats
 defaults write NSGlobalDomain AppleLanguages -array "en" "nl"
 defaults write NSGlobalDomain AppleLocale -string "en_GB@currency=GBP"
