@@ -458,6 +458,11 @@ fi
 # Enable pam-watchid (sudo commands using the Apple Watch)
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/logicer16/pam-watchid/HEAD/install.sh)" -- enable
 
+# Flush the preferences daemon + menu-bar processes so changes are picked up
+# without a full logout. (cfprefsd respawns automatically.)
+killall cfprefsd 2>/dev/null || true
+killall SystemUIServer 2>/dev/null || true
+
 # Manual permissions checklist. macOS' TCC database is SIP-protected
 # and can't be scripted without disabling SIP or shipping an MDM
 # profile, so the rest is on you. (set +x to keep this readable.)
@@ -492,5 +497,11 @@ macOS won't let scripts grant these for security reasons. Open
 System Settings -> Privacy & Security, find each section, and add
 the apps with the toggle. You may need to drag the .app in or click
 the + button.
+
+Heads-up: already-running apps cached the old settings at launch.
+Keyboard repeat, language, locale, etc. won't reflect their new
+values until you log out and back in (or quit + relaunch the app).
+The script just killall'd cfprefsd + SystemUIServer to flush as much
+as possible, but app caches persist for the app's lifetime.
 ------------------------------------------------------------
 CHECKLIST
