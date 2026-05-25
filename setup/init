@@ -329,6 +329,12 @@ mkdir -p "${HOME}/.claude"
 ln -sf "${DOTFILES_DIR}/claude/AGENTS.md" "${HOME}/.claude/AGENTS.md"
 ln -sf "${DOTFILES_DIR}/claude/CLAUDE.md" "${HOME}/.claude/CLAUDE.md"
 
+# Symlink Zed config
+green "Linking ~/.config/zed/{settings,keymap}.json..."
+mkdir -p "${HOME}/.config/zed"
+ln -sf "${DOTFILES_DIR}/zed/settings.json" "${HOME}/.config/zed/settings.json"
+ln -sf "${DOTFILES_DIR}/zed/keymap.json" "${HOME}/.config/zed/keymap.json"
+
 # Install hk git hooks if available
 if has_cmd hk; then
   echo "Installing hk git hooks..."

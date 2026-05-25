@@ -1,0 +1,273 @@
+{
+  "cli_default_open_behavior": "existing_window",
+  "edit_predictions": {
+    "provider": "copilot"
+  },
+  "session": {
+    "trust_all_worktrees": true
+  },
+  "agent_servers": {
+    "claude-acp": {
+      "type": "registry"
+    }
+  },
+  "outline_panel": {
+    "dock": "left"
+  },
+  "collaboration_panel": {
+    "dock": "left"
+  },
+  "agent": {
+    "default_model": {
+      "provider": "copilot_chat",
+      "model": "gpt-5-mini",
+      "enable_thinking": true,
+      "effort": "high"
+    },
+    "message_editor_min_lines": 6,
+    "dock": "right",
+    "favorite_models": [],
+    "model_parameters": []
+  },
+  "git_panel": {
+    "dock": "left"
+  },
+  "ui_font_family": ".ZedSans",
+  "buffer_font_family": "Maple Mono",
+  "minimap": {
+    "display_in": "all_editors",
+    "show": "never",
+  },
+  "gutter": {
+    "min_line_number_digits": 3,
+  },
+  "drag_and_drop_selection": {
+    "delay": 200,
+  },
+  "hover_popover_delay": 200,
+  "show_signature_help_after_edits": true,
+  "auto_signature_help": true,
+  "excerpt_context_lines": 4,
+  "expand_excerpt_lines": 6,
+  "agent_ui_font_size": 18,
+  "colorize_brackets": true,
+  "auto_indent_on_paste": true,
+  "autosave": "on_focus_change",
+  "auto_update": true,
+  "buffer_font_size": 16,
+  "buffer_line_height": {
+    "custom": 1.7,
+  },
+  "ensure_final_newline_on_save": true,
+  "format_on_save": "on",
+  "formatter": "auto",
+  "icon_theme": {
+    "mode": "system",
+    "light": "Catppuccin Latte",
+    "dark": "Catppuccin Latte"
+  },
+  "theme": {
+    "mode": "system",
+    "light": "Catppuccin Latte",
+    "dark": "One Dark",
+  },
+  "inlay_hints": {
+    "enabled": true,
+    "show_type_hints": true,
+    "show_parameter_hints": true,
+    "show_other_hints": true,
+    "show_background": true,
+  },
+  "indent_guides": {
+    "enabled": true,
+    "line_width": 1,
+    "active_line_width": 1,
+    "coloring": "indent_aware",
+    "background_coloring": "indent_aware",
+  },
+  "file_types": {
+    "Ansible": [
+      "**.ansible.yml",
+      "**.ansible.yaml",
+      "**/defaults/*.yml",
+      "**/defaults/*.yaml",
+      "**/meta/*.yml",
+      "**/meta/*.yaml",
+      "**/tasks/*.yml",
+      "**/tasks/*.yaml",
+      "**/handlers/*.yml",
+      "**/handlers/*.yaml",
+      "**/group_vars/*.yml",
+      "**/group_vars/*.yaml",
+      "**/playbooks/*.yaml",
+      "**/playbooks/*.yml",
+      "**playbook*.yaml",
+      "**playbook*.yml",
+    ],
+  },
+  "languages": {
+    "Ansible": {},
+    "Markdown": {
+      "auto_indent": "syntax_aware",
+      "soft_wrap": "preferred_line_length",
+      "preferred_line_length": 80,
+      "format_on_save": "on",
+      "auto_indent_on_paste": true,
+      "show_wrap_guides": true,
+      "wrap_guides": [
+        80,
+        120
+      ],
+      "prettier": {
+        "allowed": true,
+      },
+    },
+    "CSS": {
+      "prettier": {
+        "allowed": true,
+      },
+    },
+    "HTML": {
+      "prettier": {
+        "allowed": true,
+      },
+    },
+    "HTML+ERB": {
+      "language_servers": [
+        "herb",
+        "ruby-lsp",
+        "..."
+      ],
+      "prettier": {
+        "allowed": false,
+      },
+    },
+    "JavaScript": {
+      "prettier": {
+        "allowed": true,
+      },
+    },
+    "JSON": {
+      "prettier": {
+        "allowed": true,
+        "plugins": [
+          "prettier-plugin-sort-json"
+        ],
+      },
+    },
+    "Ruby": {
+      "language_servers": [
+        "ruby-lsp",
+        "!solargraph",
+        "!rubocop",
+        "!steep",
+        "!sorbet",
+        "!kanayago",
+        "...",
+      ],
+    },
+    "SCSS": {
+      "prettier": {
+        "allowed": true,
+      },
+    },
+    "SQL": {
+      "prettier": {
+        "allowed": true,
+        "plugins": [
+          "prettier-plugin-sql"
+        ],
+      },
+    },
+    "YAML": {
+      "inlay_hints": {
+        "enabled": true,
+      },
+      "show_whitespaces": "trailing",
+      "indent_guides": {
+        "background_coloring": "indent_aware",
+        "coloring": "indent_aware",
+      },
+      "prettier": {
+        "allowed": true,
+      },
+    },
+  },
+  "lsp": {
+    "markdownlint": {
+      "settings": {},
+    },
+    "ruby-lsp": {
+      "initialization_options": {
+        "enabledFeatures": {},
+        "safeAutocorrect": false,
+        "formatter": "standard",
+        "linters": [
+          "standard"
+        ],
+      },
+      "settings": {
+        "use_bundler": true,
+      },
+    },
+    "tailwindcss-language-server": {
+      "settings": {
+        "includeLanguages": {
+          "erb": "html",
+          "ruby": "html",
+        },
+        "experimental": {
+          "classRegex": [
+            "\\bclass:\\s*['\"]([^'\"]*)['\"]"
+          ],
+        },
+      },
+    },
+  },
+  "preferred_line_length": 120,
+  "prettier": {
+    "allowed": false,
+    "plugins": [],
+    "trailingComma": "es5",
+    "tabWidth": 2,
+    "semi": false,
+    "singleQuote": true,
+  },
+  "project_panel": {
+    "dock": "left",
+    "auto_fold_dirs": false,
+    "auto_reveal_entries": true,
+    "default_width": 300,
+    "indent_size": 20,
+    "entry_spacing": "comfortable",
+  },
+  "remove_trailing_whitespace_on_save": true,
+  "restore_on_startup": "last_session",
+  "show_whitespaces": "boundary",
+  "soft_wrap": "bounded",
+  "tab_size": 2,
+  "tabs": {
+    "activate_on_close": "left_neighbour",
+    "close_position": "right",
+    "file_icons": true,
+    "git_status": true,
+    "show_close_button": "always",
+    "show_diagnostics": "errors",
+  },
+  "terminal": {
+    "font_family": "Maple Mono NF",
+    "font_size": 16.0,
+    "line_height": {
+      "custom": 1.7,
+    },
+  },
+  "toolbar": {
+    "code_actions": true,
+    "breadcrumbs": true,
+    "quick_actions": true,
+    "selections_menu": true,
+  },
+  "ui_font_size": 18.0,
+  "use_on_type_format": true,
+  "use_autoclose": true,
+}
