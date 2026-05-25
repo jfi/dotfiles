@@ -1,6 +1,13 @@
 #!/bin/bash
 set -ex
 
+# Load .env if present (for DOTFILES_COMPUTER_NAME, etc.)
+ENV_FILE="${HOME}/.dotfiles/.env"
+if [ -f "${ENV_FILE}" ]; then
+  # shellcheck disable=SC1090
+  source "${ENV_FILE}"
+fi
+
 # Close open System Settings windows so they're not overwritten
 osascript <<EOF
 set isRunning to false
@@ -21,11 +28,22 @@ EOF
 # Ask for the administrator password upfront
 sudo -v
 
-# Set the computer name
-sudo scutil --set ComputerName "{{ .computerName }}"
-sudo scutil --set HostName "{{ .computerName }}"
-sudo scutil --set LocalHostName "{{ .computerName }}"
-sudo defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server NetBIOSName -string "{{ .computerName }}"
+# Set the computer name. Reads DOTFILES_COMPUTER_NAME from .env, or prompts
+# interactively, or skips silently if neither is available.
+COMPUTER_NAME="${DOTFILES_COMPUTER_NAME:-}"
+if [ -z "$COMPUTER_NAME" ] && [ -r /dev/tty ]; then
+  printf "Computer name (leave blank to skip): " >&2
+  read -r COMPUTER_NAME </dev/tty
+fi
+if [ -n "$COMPUTER_NAME" ]; then
+  sudo scutil --set ComputerName "$COMPUTER_NAME"
+  sudo scutil --set HostName "$COMPUTER_NAME"
+  sudo scutil --set LocalHostName "$COMPUTER_NAME"
+  sudo defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server NetBIOSName -string "$COMPUTER_NAME"
+  if [ -f "${ENV_FILE}" ] && ! grep -q '^DOTFILES_COMPUTER_NAME=' "${ENV_FILE}"; then
+    echo "DOTFILES_COMPUTER_NAME=\"${COMPUTER_NAME}\"" >> "${ENV_FILE}"
+  fi
+fi
 
 # Disable the sound effects on boot
 sudo nvram SystemAudioVolume=" "
