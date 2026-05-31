@@ -100,9 +100,10 @@ defaults -currentHost write NSGlobalDomain com.apple.trackpad.trackpadCornerClic
 defaults -currentHost write NSGlobalDomain com.apple.trackpad.enableSecondaryClick -bool true
 
 # Trackpad: Increase tracking speed
-defaults -currentHost write NSGLobalDomain com.apple.trackpad.scaling -float 3.0
+defaults -currentHost write NSGlobalDomain com.apple.trackpad.scaling -float 3.0
 
 # Set a blazingly fast keyboard repeat rate
+defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
 defaults write NSGlobalDomain KeyRepeat -int 1
 defaults write NSGlobalDomain InitialKeyRepeat -int 10
 
@@ -202,6 +203,21 @@ defaults write com.apple.dock launchanim -bool false
 # Safari & WebKit                                                             #
 ###############################################################################
 
+# Ensure Safari preference containers exist (defaults fails without them).
+SAFARI_PREFS_DIR="${HOME}/Library/Containers/com.apple.Safari/Data/Library/Preferences"
+if [ ! -d "${SAFARI_PREFS_DIR}" ]; then
+  mkdir -p "${SAFARI_PREFS_DIR}"
+fi
+
+HAS_SAFARI_TP=false
+if [ -d "/Applications/Safari Technology Preview.app" ]; then
+  HAS_SAFARI_TP=true
+  SAFARI_TP_PREFS_DIR="${HOME}/Library/Containers/com.apple.SafariTechnologyPreview/Data/Library/Preferences"
+  if [ ! -d "${SAFARI_TP_PREFS_DIR}" ]; then
+    mkdir -p "${SAFARI_TP_PREFS_DIR}"
+  fi
+fi
+
 # Privacy: don’t send search queries to Apple
 defaults write com.apple.Safari UniversalSearchEnabled -bool false
 defaults write com.apple.Safari SuppressSearchSuggestions -bool true
@@ -255,9 +271,11 @@ defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebK
 
 # Disable auto-playing video
 defaults write com.apple.Safari WebKitMediaPlaybackAllowsInline -bool false
-defaults write com.apple.SafariTechnologyPreview WebKitMediaPlaybackAllowsInline -bool false
 defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2AllowsInlineMediaPlayback -bool false
-defaults write com.apple.SafariTechnologyPreview com.apple.Safari.ContentPageGroupIdentifier.WebKit2AllowsInlineMediaPlayback -bool false
+if [ "${HAS_SAFARI_TP}" = true ]; then
+  defaults write com.apple.SafariTechnologyPreview WebKitMediaPlaybackAllowsInline -bool false
+  defaults write com.apple.SafariTechnologyPreview com.apple.Safari.ContentPageGroupIdentifier.WebKit2AllowsInlineMediaPlayback -bool false
+fi
 
 # Enable “Do Not Track”
 defaults write com.apple.Safari SendDoNotTrackHTTPHeader -bool true
@@ -458,6 +476,9 @@ if command -v dockutil >/dev/null 2>&1; then
     --view fan --display folder --section others >/dev/null 2>&1 || true
   killall Dock 2>/dev/null || true
 fi
+
+killall SystemUIServer 2>/dev/null || true
+killall cfprefsd 2>/dev/null || true
 
 # Enable pam-watchid (sudo commands using the Apple Watch)
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/logicer16/pam-watchid/HEAD/install.sh)" -- enable
