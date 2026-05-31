@@ -6,11 +6,6 @@
   "session": {
     "trust_all_worktrees": true
   },
-  "agent_servers": {
-    "claude-acp": {
-      "type": "registry"
-    }
-  },
   "outline_panel": {
     "dock": "left"
   },
