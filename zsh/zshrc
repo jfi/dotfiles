@@ -46,7 +46,6 @@ export BETTER_ERRORS_EDITOR_URL="zed-preview://file/%{file}:%{line}"
 
 # Prompt + history + dir jumping
 command -v starship >/dev/null && eval "$(starship init zsh)"
-command -v zoxide   >/dev/null && eval "$(zoxide init zsh)"
 if command -v atuin >/dev/null; then
   eval "$(atuin init zsh)"
   bindkey '^[[A' atuin-up-search
@@ -71,3 +70,5 @@ command -v zoxide >/dev/null && alias cd='z'
 alias zed='zed-preview'
 alias bu='bundle update --all'
 alias bup='git pull && bundle update --all && git add Gemfile.lock && git commit -m "Update dependencies" && git push'
+
+command -v zoxide >/dev/null && eval "$(zoxide init zsh)"
