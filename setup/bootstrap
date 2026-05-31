@@ -34,6 +34,10 @@ fi
 green "Verifying mise installation..."
 mise doctor
 
+# Configure mise defaults
+green "Configuring mise defaults..."
+mise settings ruby.compile=false
+
 # Install mise dependencies
 green "Installing mise dependencies..."
 mise install -y
