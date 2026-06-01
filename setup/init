@@ -317,11 +317,15 @@ fi
 git config --global user.name "${GIT_NAME}"
 git config --global user.email "${GIT_EMAIL}"
 
-# Symlink Claude global config (and AGENTS.md mirror for non-Claude tools)
-green "Linking ~/.claude/{CLAUDE,AGENTS}.md..."
+# Symlink Claude global config (and AGENTS.md mirror for non-Claude tools).
+# Only portable, secret-free config is linked here — credentials, history,
+# projects/, sessions/, and other machine-local state stay out of the repo.
+green "Linking ~/.claude/{CLAUDE,AGENTS}.md, keybindings.json, settings.json..."
 mkdir -p "${HOME}/.claude"
 ln -sf "${DOTFILES_DIR}/claude/AGENTS.md" "${HOME}/.claude/AGENTS.md"
 ln -sf "${DOTFILES_DIR}/claude/CLAUDE.md" "${HOME}/.claude/CLAUDE.md"
+ln -sf "${DOTFILES_DIR}/claude/keybindings.json" "${HOME}/.claude/keybindings.json"
+ln -sf "${DOTFILES_DIR}/claude/settings.json" "${HOME}/.claude/settings.json"
 
 # Symlink Zed config
 green "Linking ~/.config/zed/{settings,keymap}.json..."

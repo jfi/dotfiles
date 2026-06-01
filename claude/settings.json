@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "defaultMode": "auto"
+  },
+  "enabledPlugins": {
+    "superpowers-ruby@superpowers-ruby": true,
+    "ruby-lsp@claude-plugins-official": true
+  },
+  "extraKnownMarketplaces": {
+    "superpowers-ruby": {
+      "source": {
+        "source": "github",
+        "repo": "lucianghinda/superpowers-ruby"
+      }
+    }
+  },
+  "skipDangerousModePermissionPrompt": true,
+  "skipAutoPermissionPrompt": true
+}

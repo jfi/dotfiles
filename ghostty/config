@@ -3,3 +3,9 @@
 
 font-family = Maple Mono NF
 font-size = 16
+
+# Cmd+Enter: don't toggle fullscreen — send Alt/Meta+Enter (ESC + CR) so
+# TUIs like Claude Code can bind it as `meta+enter` to submit.
+keybind = cmd+enter=text:\x1b\r
+# Fullscreen moves to Cmd+Shift+Enter (was Cmd+Enter by default).
+keybind = cmd+shift+enter=toggle_fullscreen
