@@ -14,6 +14,9 @@ these commands, **always ask for confirmation**:
 
 ## General Rules
 
+- When executing an implementation plan, always use subagent-driven-development
+  (dispatch a fresh subagent per task with spec-compliance + code-quality review
+  between each) unless I say otherwise. This is my default execution model.
 - Never push to GitHub with `Gemfile`s which reference a path.
 - When we update `version.rb` in any project, we need to also run a `bundle update --all`.
 - Add to memory that when a new command or agent is created, it should be
@@ -33,3 +36,22 @@ these commands, **always ask for confirmation**:
 - Whenever we see "Ferrum::ProcessTimeoutError: Browser did not produce websocket
   url within 10 seconds" these are normally JavaScript failures or asset issues
   in GitHub CI.
+
+## Compact Instructions
+
+When compacting the conversation, **always preserve**:
+
+- The files currently being edited (paths and the in-progress changes to them).
+- Any unresolved errors, failing tests, or open blockers.
+- Architectural decisions made during this session, including the reasoning and
+  any alternatives that were rejected.
+- Any constraints, requirements, or preferences I stated at the start of the
+  session.
+
+**Compress aggressively**:
+
+- File listings, directory dumps, and `ls`/`find`/`grep` output.
+- Intermediate exploration (files read but not edited, dead-end investigations,
+  superseded approaches).
+- Errors that have already been resolved — keep only the final fix if it's
+  load-bearing, drop the debugging trail.
