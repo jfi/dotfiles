@@ -7,13 +7,20 @@
     "ruby-lsp@claude-plugins-official": true,
     "figma@claude-plugins-official": true,
     "pr-review-toolkit@claude-plugins-official": true,
-    "code-simplifier@claude-plugins-official": true
+    "code-simplifier@claude-plugins-official": true,
+    "plannotator@plannotator": true
   },
   "extraKnownMarketplaces": {
     "superpowers-ruby": {
       "source": {
         "source": "github",
         "repo": "lucianghinda/superpowers-ruby"
+      }
+    },
+    "plannotator": {
+      "source": {
+        "source": "github",
+        "repo": "backnotprop/plannotator"
       }
     }
   },
