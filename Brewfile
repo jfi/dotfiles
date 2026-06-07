@@ -17,7 +17,6 @@ brew "common-fate/granted/granted"
 brew "dash-shell"
 brew "direnv"
 brew "dockutil"
-brew "docker"
 brew "docker-compose"
 brew "docker-credential-helper"
 brew "eza"
@@ -46,8 +45,6 @@ brew "opentofu"
 brew "overmind"
 brew "pipx"
 brew "playwright-cli"
-brew "postgresql@16"
-brew "postgresql@17"
 brew "powershell"
 brew "redis"
 brew "ripgrep"
@@ -122,7 +119,53 @@ mas "Xcode", id: 497799835
 cask "sorkila/lockpaw/lockpaw"
 mas "Cardhop", id: 1290358394
 mas "Fantastical", id: 975937182
-mas "Microsoft Excel", id: 462058435
-mas "Microsoft Outlook", id: 985367838
-mas "Microsoft PowerPoint", id: 462062816
-mas "Microsoft Word", id: 462054704
+brew "atuin", restart_service: :changed
+brew "cmake"
+brew "coreutils"
+brew "curl"
+brew "displayplacer"
+brew "fx"
+brew "gemini-cli"
+brew "hub"
+brew "jq"
+brew "nano"
+brew "pandoc"
+brew "ssh-copy-id"
+brew "tailscale"
+brew "thefuck"
+brew "tmux"
+brew "yarn"
+brew "youtubedr"
+brew "yt-dlp"
+brew "zsh-completions"
+cask "beardedspice"
+cask "claude-code"
+cask "cleanshot"
+cask "codex"
+cask "copilot-cli"
+cask "db-browser-for-sqlite"
+cask "git-credential-manager"
+cask "github"
+cask "google-chrome"
+cask "jordanbaird-ice"
+cask "m13v/tap/claude-meter", trusted: true
+cask "microsoft-teams"
+cask "mole-app"
+cask "pgadmin4"
+cask "pieces-os"
+cask "pieces"
+cask "proton-mail-bridge"
+cask "protonvpn"
+cask "raycast"
+cask "tailscale-app"
+cask "taphouse"
+cask "zoom"
+mas "Canary Mail", id: 1236045954
+mas "Expenses", id: 1492055171
+mas "Keynote", id: 361285480
+mas "NotePlan", id: 1505432629
+mas "Numbers", id: 361304891
+mas "Pages", id: 361309726
+tap "homebrew/cask"
+tap "m13v/tap"
+tap "sorkila/lockpaw"
