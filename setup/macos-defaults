@@ -57,6 +57,12 @@ defaults -currentHost write -g AppleFontSmoothing -int 0
 # Increase window resize speed for Cocoa applications
 defaults write NSGlobalDomain NSWindowResizeTime -float 0.001
 
+# Disable action images (icons) in menu items
+defaults write NSGlobalDomain NSMenuEnableActionImages -bool false
+
+# Disable Solarium-style window tabs
+defaults write -g NSSolariumWindowTabs -bool NO
+
 # Expand save panel by default
 defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode -bool true
 defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode2 -bool true

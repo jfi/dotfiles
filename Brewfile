@@ -68,7 +68,6 @@ brew "zsh-syntax-highlighting"
 
 cask "1password"
 cask "1password-cli"
-cask "applite"
 cask "bruno"
 cask "canva"
 cask "cardhop"
