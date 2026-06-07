@@ -1,0 +1,100 @@
+#!/usr/bin/env bash
+# app-audit — find installed apps that Brewfile/README don't know about.
+#
+# Cross-references every top-level .app in /Applications, plus every
+# installed Mac App Store app, against:
+#   - `app` artifacts declared by installed Homebrew casks (exact match)
+#   - installed cask tokens (fuzzy normalized-name match — catches
+#     pkg-installed casks like Microsoft Office/Zoom/Tailscale, whose
+#     casks don't declare a clean `app` artifact)
+#   - the _MASReceipt marker (reliably identifies MAS-installed apps)
+#   - Brewfile's `mas` block, matched by App Store ID
+#   - the README's "Manual installs" list
+#
+# Anything left over either needs adding to Brewfile/README, or is stale
+# cruft (installer leftovers, abandoned downloads) worth trashing.
+#
+# Read-only — just reports. Pair with `brewfile-sync` to add cask/mas
+# entries to the Brewfile once you've decided what to keep.
+
+set -euo pipefail
+
+DOTFILES_DIR="${HOME}/.dotfiles"
+BREWFILE="${DOTFILES_DIR}/Brewfile"
+README="${DOTFILES_DIR}/README.md"
+
+red()    { printf "\033[31m%s\033[0m\n" "$*"; }
+green()  { printf "\033[32m%s\033[0m\n" "$*"; }
+yellow() { printf "\033[33m%s\033[0m\n" "$*"; }
+bold()   { printf "\033[1m%s\033[0m\n" "$*"; }
+
+for cmd in brew mas jq; do
+  command -v "$cmd" >/dev/null 2>&1 || { red "ERROR: $cmd not in PATH."; exit 1; }
+done
+
+# Lowercase, alphanumeric-only — lets "Microsoft Excel.app" line up with
+# the "microsoft-excel" cask, "zoom.us.app" with "zoom", etc.
+norm() { tr '[:upper:]' '[:lower:]' <<< "$1" | tr -dc 'a-z0-9'; }
+
+mapfile -t installed_apps < <(find /Applications -maxdepth 1 -name '*.app' -type d -exec basename {} \; | sort)
+mapfile -t installed_casks < <(brew list --cask 2>/dev/null)
+mapfile -t cask_apps < <(brew info --cask --json=v2 "${installed_casks[@]}" 2>/dev/null \
+  | jq -r '.casks[].artifacts[]? | select(has("app")) | .app[]')
+mapfile -t cask_names < <(printf '%s\n' "${installed_casks[@]}" | sed -E 's#.*/##')
+mapfile -t readme_apps < <(awk '/^## Manual installs/{found=1; next} /^---/{found=0} found' "$README" \
+  | grep -oE '\*\*[^*]+\*\*|\[[^]]+\]' | tr -d '*[]')
+mapfile -t mas_brewfile_ids < <(grep -oE 'mas "[^"]+", id: [0-9]+' "$BREWFILE" | grep -oE '[0-9]+$')
+
+in_array() {
+  local needle="$1"; shift
+  printf '%s\n' "$@" | grep -qxF "$needle"
+}
+
+bold "App audit — installed vs. tracked in Brewfile/README"
+echo
+
+echo "--- MAS apps installed but missing from Brewfile's mas block ---"
+mas_missing=0
+while IFS= read -r line; do
+  [ -z "$line" ] && continue
+  id="$(awk '{print $1}' <<< "$line")"
+  in_array "$id" "${mas_brewfile_ids[@]}" && continue
+  yellow "  + $line"
+  mas_missing=$((mas_missing + 1))
+done < <(mas list 2>/dev/null)
+[ "$mas_missing" -eq 0 ] && green "  none — every installed MAS app is tracked"
+
+echo
+echo "--- /Applications apps not traced to a cask, MAS, or README ---"
+orphans=0
+for app in "${installed_apps[@]}"; do
+  name="${app%.app}"
+  nname="$(norm "$name")"
+
+  in_array "$app" "${cask_apps[@]}" && continue
+  [ -e "/Applications/${app}/Contents/_MASReceipt/receipt" ] && continue
+
+  matched=no
+  for candidate in "${cask_names[@]}" "${readme_apps[@]}"; do
+    ncandidate="$(norm "$candidate")"
+    [ -n "$ncandidate" ] || continue
+    case "$nname" in *"$ncandidate"*) matched=yes; break ;; esac
+    case "$ncandidate" in *"$nname"*) matched=yes; break ;; esac
+  done
+  [ "$matched" = yes ] && continue
+
+  yellow "  + $app"
+  orphans=$((orphans + 1))
+done
+[ "$orphans" -eq 0 ] && green "  none — every app traces back to a cask, MAS, or the README"
+
+echo
+if [ "$mas_missing" -eq 0 ] && [ "$orphans" -eq 0 ]; then
+  green "Everything is accounted for."
+else
+  bold "Next steps:"
+  echo "  - MAS apps -> add to Brewfile's mas block (or run brewfile-sync)"
+  echo "  - orphans  -> add to README's 'Manual installs' section, or trash if cruft"
+fi
+echo
+yellow "Note: matching is name-based and heuristic — sanity-check before acting on it."

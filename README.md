@@ -110,6 +110,7 @@ You can re-run it safely at any time.
 ├── zed/                      # Zed settings + keymap
 ├── ghostty/                  # Ghostty config
 └── bin/
+    ├── app-audit             # finds installed apps missing from Brewfile/README
     ├── brewfile-sync         # interactive Brewfile <-> install reconciler
     ├── check-baseline        # workstation health check
     ├── claude                # Claude Code wrapper
@@ -159,7 +160,10 @@ It will:
 Things not in `Brewfile` because no Homebrew cask exists. Install once per
 machine from the upstream site:
 
-- [Horse browser](https://browser.horse/) — indie macOS browser
+- **Sonos** — download from sonos.com. A `cask "sonos"` does exist
+  (`brew install --cask sonos`), but it's Intel-only and requires Rosetta 2
+  ("very difficult to remove once installed", per the cask's own caveat), so
+  it's kept manual to avoid that dependency.
 
 ---
 
@@ -176,6 +180,18 @@ It diffs the live install against `Brewfile`, walks every difference
 interactively (y/n/q per line for both adds and drops), writes the result
 back, and offers to stage + commit. `git push`, then `brew bundle` on the
 other Mac.
+
+`brewfile-sync` only knows about `brew`/`cask`/`mas` entries though — it can't
+see apps that were dragged into `/Applications` by hand or left behind by an
+installer. For that, run:
+
+```bash
+app-audit
+```
+
+It cross-references every installed app (and MAS app) against the Brewfile
+and the "Manual installs" list above, and reports anything untracked —
+either add it to `Brewfile`/README, or trash it if it's cruft.
 
 ---
 
