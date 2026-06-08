@@ -10,7 +10,7 @@ font-size = 16
 shell-integration-features = ssh-env,ssh-terminfo
 cursor-color = #eff1f5
 cursor-text = #eff1f5
-cursor-style = bar
+cursor-style = block
 
 # Cmd+Enter: don't toggle fullscreen — send Alt/Meta+Enter (ESC + CR) so
 # TUIs like Claude Code can bind it as `meta+enter` to submit.
