@@ -90,6 +90,7 @@ cask "slack"
 cask "the-unarchiver"
 cask "whatsapp"
 cask "zed@preview"
+cask "zen@twilight"
 
 mas "1Password for Safari", id: 1569813296
 mas "Anybox", id: 1593408455
@@ -133,7 +134,6 @@ brew "youtubedr"
 brew "yt-dlp"
 brew "zsh-completions"
 cask "beardedspice"
-cask "claude-code"
 cask "cleanshot"
 cask "codex"
 cask "copilot-cli"

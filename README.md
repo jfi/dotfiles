@@ -164,6 +164,8 @@ machine from the upstream site:
   (`brew install --cask sonos`), but it's Intel-only and requires Rosetta 2
   ("very difficult to remove once installed", per the cask's own caveat), so
   it's kept manual to avoid that dependency.
+- **UniFi** — download from ui.com. No Homebrew cask exists for the UniFi
+  Network application (only the self-hosted controller, which is separate).
 
 ---
 
