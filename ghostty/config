@@ -8,7 +8,6 @@ font-family-italic = Maple Mono NF Italic
 font-family-bold-italic = Maple Mono NF Bold Italic
 font-size = 16
 shell-integration-features = ssh-env,ssh-terminfo
-macos-icon-predictive-text = false
 
 # Cmd+Enter: don't toggle fullscreen — send Alt/Meta+Enter (ESC + CR) so
 # TUIs like Claude Code can bind it as `meta+enter` to submit.
