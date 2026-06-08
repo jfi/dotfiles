@@ -75,6 +75,7 @@ cask "font-maple-mono-nf"
 cask "font-zed-mono-nerd-font"
 cask "ghostty"
 cask "kap"
+cask "linear-linear"
 cask "microsoft-excel"
 cask "microsoft-outlook"
 cask "microsoft-powerpoint"
@@ -84,6 +85,7 @@ cask "omnigraffle"
 cask "omnioutliner"
 cask "orbstack"
 cask "postgres-app"
+cask "raycast"
 cask "rectangle-pro"
 cask "setapp"
 cask "slack"
@@ -97,9 +99,7 @@ mas "Anybox", id: 1593408455
 mas "Bear", id: 1091189122
 mas "Drafts", id: 1435957248
 mas "FireShot - Full web page screenshots", id: 1541862561
-mas "GarageBand", id: 682658836
 mas "Goodnotes", id: 1444383602
-mas "iMovie", id: 408981434
 mas "InYourFace", id: 1476964367
 mas "Mela", id: 1568924476
 mas "Msg Viewer Pro", id: 1019539949
