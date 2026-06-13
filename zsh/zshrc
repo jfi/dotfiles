@@ -51,6 +51,31 @@ if command -v atuin >/dev/null; then
   bindkey '^[[A' atuin-up-search
 fi
 
+# tinyprompt - shrink the prompt to a bare "> " for the current session, handy
+# for copy/pasting clean command+output. starship paints the prompt via its
+# precmd hook, so we drop that hook and set a static PROMPT; run it again to
+# restore. A fresh shell (or `exec zsh`) always comes back to normal.
+#
+# Usage:  tinyprompt        # toggle between "> " and your normal prompt
+tinyprompt() {
+  emulate -L zsh
+  autoload -Uz add-zsh-hook
+
+  if [[ -z $_TINYPROMPT_ON ]]; then
+    _TINYPROMPT_SAVED_PS1=$PROMPT
+    _TINYPROMPT_SAVED_RPS1=$RPROMPT
+    add-zsh-hook -d precmd prompt_starship_precmd
+    PROMPT='> '
+    RPROMPT=''
+    _TINYPROMPT_ON=1
+  else
+    add-zsh-hook precmd prompt_starship_precmd
+    PROMPT=$_TINYPROMPT_SAVED_PS1
+    RPROMPT=$_TINYPROMPT_SAVED_RPS1
+    unset _TINYPROMPT_ON _TINYPROMPT_SAVED_PS1 _TINYPROMPT_SAVED_RPS1
+  fi
+}
+
 # Build flags (libxml2)
 export LDFLAGS="-L/opt/homebrew/opt/libxml2/lib"
 export CPPFLAGS="-I/opt/homebrew/opt/libxml2/include"
