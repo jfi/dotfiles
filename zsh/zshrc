@@ -101,4 +101,8 @@ mkcd() {
   mkdir -p "$1" && cd "$1"
 }
 
+# zoxide is initialised last (its hook must register after direnv/mise). The
+# doctor check false-positives in non-interactive harness shells that reset
+# chpwd_functions, so disable the nag — the init below is already correctly ordered.
+export _ZO_DOCTOR=0
 command -v zoxide >/dev/null && eval "$(zoxide init zsh)"
