@@ -1,0 +1,233 @@
+#!/bin/bash
+# Revert macOS preferences to defaults (for testing standard macOS)
+# Inverse of macos-defaults script - resets everything to Apple's defaults
+#
+# Most `defaults` writes are independent - we want the script to keep going
+# even if individual steps fail.
+set -ux
+
+# Close open System Settings windows first
+osascript <<EOF
+set isRunning to false
+
+tell application "System Events"
+    if exists (processes where name is "System Settings") then
+        set isRunning to true
+    end if
+end tell
+
+if isRunning then
+    tell application "System Settings" to quit
+end if
+EOF
+
+# Ask for the administrator password upfront
+sudo -v
+
+# Revert nvram settings
+sudo nvram SystemAudioVolume=""
+
+# NSGlobalDomain - revert to defaults
+defaults delete NSGlobalDomain NSWindowResizeTime
+defaults delete NSGlobalDomain NSMenuEnableActionImages
+defaults delete NSGlobalDomain NSSolariumWindowTabs
+defaults delete NSGlobalDomain NSNavPanelExpandedStateForSaveMode
+defaults delete NSGlobalDomain NSNavPanelExpandedStateForSaveMode2
+defaults delete NSGlobalDomain PMPrintingExpandedStateForPrint
+defaults delete NSGlobalDomain PMPrintingExpandedStateForPrint2
+defaults delete NSGlobalDomain NSDocumentSaveNewDocumentsToCloud
+defaults delete NSGlobalDomain NSAutomaticCapitalizationEnabled
+defaults delete NSGlobalDomain NSAutomaticDashSubstitutionEnabled
+defaults delete NSGlobalDomain NSAutomaticPeriodSubstitutionEnabled
+defaults delete NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled
+defaults delete NSGlobalDomain ApplePressAndHoldEnabled
+defaults delete NSGlobalDomain KeyRepeat
+defaults delete NSGlobalDomain InitialKeyRepeat
+defaults delete NSGlobalDomain AppleLanguages
+defaults delete NSGlobalDomain AppleLocale
+defaults delete NSGlobalDomain AppleMeasurementUnits
+defaults delete NSGlobalDomain AppleMetricUnits
+defaults delete NSGlobalDomain com.apple.trackpad.trackpadCornerClickBehavior
+defaults delete NSGlobalDomain com.apple.trackpad.enableSecondaryClick
+defaults delete NSGlobalDomain com.apple.trackpad.scaling
+defaults delete NSGlobalDomain WebKitDeveloperExtras
+
+# Font smoothing (Apple's default is actually 2)
+defaults write -g AppleFontSmoothing -int 2
+
+# Symbolic hotkeys - re-enable Spotlight
+defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 64 \
+  '<dict><key>enabled</key><true/><key>value</key><dict><key>parameters</key><array><integer>0</integer></array><key>type</key><string>standard</string></dict></dict>'
+
+# com.apple.print.PrintingPrefs
+defaults delete com.apple.print.PrintingPrefs "Quit When Finished"
+
+# com.apple.LaunchServices
+defaults write com.apple.LaunchServices LSQuarantine -bool true
+
+# com.apple.screensaver
+defaults write com.apple.screensaver askForPassword -int 1
+defaults write com.apple.screensaver askForPasswordDelay -int 60
+
+# Trackpad settings - revert to defaults
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadCornerSecondaryClick -int 0
+defaults delete com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadRightClick
+
+# Login window - revert AdminHostInfo
+sudo defaults delete /Library/Preferences/com.apple.loginwindow AdminHostInfo
+
+# Finder settings
+defaults delete com.apple.finder DisableAllAnimations
+defaults delete com.apple.finder ShowStatusBar
+defaults delete com.apple.finder ShowPathbar
+defaults delete com.apple.finder FXPreferredViewStyle
+defaults delete com.apple.finder WarnOnEmptyTrash
+defaults delete com.apple.finder _FXSortFoldersFirst
+defaults delete com.apple.finder FXInfoPanesExpanded
+defaults delete com.apple.finder AppleShowAllFiles
+defaults delete com.apple.finder NewWindowTarget
+
+# Dock settings - revert to defaults
+defaults delete com.apple.dock tilesize
+defaults delete com.apple.dock show-process-indicators
+defaults delete com.apple.dock persistent-apps
+defaults write com.apple.dock persistent-others -array
+defaults delete com.apple.dock dashboard-in-overlay
+defaults delete com.apple.dock mru-spaces
+defaults delete com.apple.dock autohide-delay
+defaults delete com.apple.dock autohide-time-modifier
+defaults delete com.apple.dock autohide
+defaults delete com.apple.dock showhidden
+defaults delete com.apple.dock show-recents
+defaults delete com.apple.dock showLaunchpadGestureEnabled
+defaults delete com.apple.dock orientation
+defaults delete com.apple.dock magnification
+defaults delete com.apple.dock largesize
+defaults delete com.apple.dock minimize-to-application
+defaults delete com.apple.dock launchanim
+
+# Dashboard
+defaults delete com.apple.dashboard mcx-disabled
+
+# Safari settings
+defaults delete com.apple.Safari UniversalSearchEnabled
+defaults delete com.apple.Safari SuppressSearchSuggestions
+defaults delete com.apple.Safari ShowFullURLInSmartSearchField
+defaults delete com.apple.Safari HomePage
+defaults delete com.apple.Safari ShowFavoritesBar
+defaults delete com.apple.Safari ProxiesInBookmarksBar
+defaults delete com.apple.Safari IncludeDevelopMenu
+defaults delete com.apple.Safari WebKitDeveloperExtrasEnabledPreferenceKey
+defaults delete com.apple.Safari WebContinuousSpellCheckingEnabled
+defaults delete com.apple.Safari WebAutomaticSpellingCorrectionEnabled
+defaults delete com.apple.Safari AutoFillFromAddressBook
+defaults delete com.apple.Safari AutoFillPasswords
+defaults delete com.apple.Safari AutoFillCreditCardData
+defaults delete com.apple.Safari AutoFillMiscellaneousForms
+defaults delete com.apple.Safari WarnAboutFraudulentWebsites
+defaults delete com.apple.Safari WebKitPluginsEnabled
+defaults delete com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2PluginsEnabled
+defaults delete com.apple.Safari WebKitJavaEnabled
+defaults delete com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2JavaEnabled
+defaults delete com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2JavaEnabledForLocalFiles
+defaults delete com.apple.Safari WebKitJavaScriptCanOpenWindowsAutomatically
+defaults delete com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2JavaScriptCanOpenWindowsAutomatically
+defaults delete com.apple.Safari WebKitMediaPlaybackAllowsInline
+defaults delete com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2AllowsInlineMediaPlayback
+defaults delete com.apple.Safari SendDoNotTrackHTTPHeader
+defaults delete com.apple.Safari InstallExtensionUpdatesAutomatically
+
+# Safari Technology Preview (if installed)
+if [ -d "/Applications/Safari Technology Preview.app" ]; then
+  defaults delete com.apple.SafariTechnologyPreview WebKitMediaPlaybackAllowsInline
+  defaults delete com.apple.SafariTechnologyPreview com.apple.Safari.ContentPageGroupIdentifier.WebKit2AllowsInlineMediaPlayback
+fi
+
+# Activity Monitor
+defaults delete com.apple.ActivityMonitor OpenMainWindow
+defaults delete com.apple.ActivityMonitor IconType
+defaults delete com.apple.ActivityMonitor ShowCategory
+defaults delete com.apple.ActivityMonitor SortColumn
+defaults delete com.apple.ActivityMonitor SortDirection
+
+# Software Update / App Store
+defaults delete com.apple.SoftwareUpdate AutomaticCheckEnabled
+defaults delete com.apple.SoftwareUpdate ScheduleFrequency
+defaults delete com.apple.SoftwareUpdate AutomaticDownload
+defaults delete com.apple.SoftwareUpdate CriticalUpdateInstall
+defaults delete com.apple.SoftwareUpdate ConfigDataInstall
+defaults delete com.apple.commerce AutoUpdate
+defaults delete com.apple.commerce AutoUpdateRestartRequired
+
+# Chrome
+defaults delete com.google.Chrome AppleEnableSwipeNavigateWithScrolls
+defaults delete com.google.Chrome.canary AppleEnableSwipeNavigateWithScrolls
+defaults delete com.google.Chrome AppleEnableMouseSwipeNavigateWithScrolls
+defaults delete com.google.Chrome.canary AppleEnableMouseSwipeNavigateWithScrolls
+defaults delete com.google.Chrome DisablePrintPreview
+defaults delete com.google.Chrome.canary DisablePrintPreview
+defaults delete com.google.Chrome PMPrintingExpandedStateForPrint2
+defaults delete com.google.Chrome.canary PMPrintingExpandedStateForPrint2
+
+# Power settings - revert
+sudo pmset -a autorestart 0
+sudo systemsetup -setrestartfreeze off
+
+# Timezone - revert to automatic detection
+sudo systemsetup -settimezone "UTC" > /dev/null
+
+# Kill affected processes to apply changes
+killall Finder 2>/dev/null || true
+killall Dock 2>/dev/null || true
+killall SystemUIServer 2>/dev/null || true
+killall cfprefsd 2>/dev/null || true
+killall NotificationCenter 2>/dev/null || true
+
+# Reset Safari keyboard shortcuts (remove custom bindings)
+SAFARI_PLIST="${HOME}/Library/Containers/com.apple.Safari/Data/Library/Preferences/com.apple.Safari.plist"
+if [ -f "$SAFARI_PLIST" ]; then
+  /usr/libexec/PlistBuddy "$SAFARI_PLIST" -c "Delete NSUserKeyEquivalents" 2>/dev/null || true
+fi
+
+# Reset Zed keyboard shortcuts
+ZED_PLIST="${HOME}/Library/Preferences/dev.zed.Zed-Preview.plist"
+if [ -f "$ZED_PLIST" ]; then
+  /usr/libexec/PlistBuddy "$ZED_PLIST" -c "Delete :NSUserKeyEquivalents" 2>/dev/null || true
+fi
+
+# Reset 1Password keyboard shortcuts
+OP_PLIST="${HOME}/Library/Preferences/com.1password.1password.plist"
+if [ -f "$OP_PLIST" ]; then
+  /usr/libexec/PlistBuddy "$OP_PLIST" -c "Delete NSUserKeyEquivalents" 2>/dev/null || true
+fi
+
+# Reset Calendar notification preferences
+python3 <<'PYEOF' || true
+import plistlib, pathlib
+p = pathlib.Path.home() / 'Library' / 'Preferences' / 'com.apple.ncprefs.plist'
+try:
+    with p.open('rb') as f:
+        data = plistlib.load(f)
+except FileNotFoundError:
+    raise SystemExit(0)
+for app in data.get('apps', []):
+    if app.get('bundle-id') == 'com.apple.iCal':
+        # Reset to default flags (notifications enabled)
+        app['flags'] = 1
+        break
+with p.open('wb') as f:
+    plistlib.dump(data, f)
+PYEOF
+
+# Revert Finder Desktop settings
+/usr/libexec/plistbuddy -c "Delete :DesktopViewSettings" "${HOME}/Library/Preferences/com.apple.finder.plist" 2>/dev/null || true
+
+echo ""
+echo "macOS preferences have been reset to defaults."
+echo ""
+echo "For a complete reset, you may want to:"
+echo "  1. Log out and back in (or restart)"
+echo "  2. Reset dockutil pins if you want default dock"
+echo "  3. Manually review System Settings for any remaining customizations"
+echo ""
+echo "To restore your custom settings, run: ./setup/macos-defaults"
