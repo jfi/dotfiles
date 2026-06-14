@@ -335,9 +335,9 @@ ln -sf "${DOTFILES_DIR}/zed/keymap.json" "${HOME}/.config/zed/keymap.json"
 
 # Symlink Ghostty config and remove the macOS Application Support config so
 # it doesn't shadow the dotfiles version.
-green "Linking ~/.config/ghostty/config..."
+green "Linking ~/.config/ghostty/config.ghostty..."
 mkdir -p "${HOME}/.config/ghostty"
-ln -sf "${DOTFILES_DIR}/ghostty/config" "${HOME}/.config/ghostty/config"
+ln -sf "${DOTFILES_DIR}/ghostty/config.ghostty" "${HOME}/.config/ghostty/config.ghostty"
 rm -f "${HOME}/Library/Application Support/com.mitchellh.ghostty/config.ghostty"
 rm -f "${HOME}/Library/Application Support/com.mitchellh.ghostty/config"
 
