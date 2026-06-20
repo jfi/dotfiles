@@ -151,10 +151,10 @@ cask "pieces"
 cask "proton-mail-bridge"
 cask "protonvpn"
 cask "raycast"
+cask "readdle-spark"
 cask "tailscale-app"
 cask "taphouse"
 cask "zoom"
-mas "Canary Mail", id: 1236045954
 mas "Expenses", id: 1492055171
 mas "Keynote", id: 361285480
 mas "NotePlan", id: 1505432629

@@ -16,6 +16,11 @@ fi
 green "Installing Homebrew packages..."
 brew bundle upgrade --file="${DOTFILES_DIR}/Brewfile"
 
+# Spark Desktop CLI symlink
+green "Setting up Spark symlink..."
+sudo mkdir -p /usr/local/bin
+sudo ln -sf '/Applications/Spark Desktop.app/Contents/MacOS/SparklyRemote' '/usr/local/bin/spark'
+
 # Enable Touch ID for sudo (if not already configured)
 if ! grep -q "pam_tid.so" /etc/pam.d/sudo 2>/dev/null; then
   green "Enabling Touch ID for sudo..."
