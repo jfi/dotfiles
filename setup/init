@@ -341,6 +341,11 @@ ln -sf "${DOTFILES_DIR}/ghostty/config.ghostty" "${HOME}/.config/ghostty/config.
 rm -f "${HOME}/Library/Application Support/com.mitchellh.ghostty/config.ghostty"
 rm -f "${HOME}/Library/Application Support/com.mitchellh.ghostty/config"
 
+# Symlink k9s plugins (macOS k9s config dir, per `k9s info`)
+green "Linking ~/Library/Application Support/k9s/plugins.yaml..."
+mkdir -p "${HOME}/Library/Application Support/k9s"
+ln -sf "${DOTFILES_DIR}/k9s/plugins.yaml" "${HOME}/Library/Application Support/k9s/plugins.yaml"
+
 # Install hk git hooks if available
 if has_cmd hk; then
   echo "Installing hk git hooks..."
