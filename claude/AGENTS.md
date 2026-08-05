@@ -22,6 +22,10 @@ these commands, **always ask for confirmation**:
 - Add to memory that when a new command or agent is created, it should be
   committed and pushed inside `~/.claude`.
 - Remove `spring` from all Gemfiles of Rails 7+ projects I work on
+- Every git worktree gets its own `DB_SUFFIX` in its `.env`. Without one they all
+  share `<app>_development` and `<app>_test`, so a `db:reset`, `db:test:prepare`
+  or schema load in one worktree silently wipes the database another is mid-run
+  against. Set it when creating the worktree, not after something breaks.
 - For all gems I create unless I say otherwise: author to "Otaina Limited",
   "James Inman" and the email to "<james@otaina.co.uk>".
 - Monitor PRs once you've pushed them for failures.
