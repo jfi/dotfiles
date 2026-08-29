@@ -1,6 +1,4 @@
-# Global Claude Instructions
-
-@AGENTS.md
+# Global Agent Instructions
 
 ## Safety Rules
 
@@ -74,9 +72,9 @@ these commands, **always ask for confirmation**:
   regenerates profiles without `region`, which breaks region-dependent calls in
   any shell that hasn't been through `assume`.
 
-## Compact Instructions
+## Context Compaction
 
-When compacting the conversation, **always preserve**:
+When compacting or summarizing conversation context, **always preserve**:
 
 - The files currently being edited (paths and the in-progress changes to them).
 - Any unresolved errors, failing tests, or open blockers.
