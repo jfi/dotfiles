@@ -27,6 +27,17 @@ these commands, **always ask for confirmation**:
 - For all gems I create unless I say otherwise: author to
   "James Inman" and the email to "<james@jamesinman.co.uk>".
 - Monitor PRs once you've pushed them for failures.
+- Give a subagent work that ends in a push, not a report, and never make it
+  depend on an async signal to finish. A subagent once did a 44-file rename
+  correctly and verified it thoroughly, then backgrounded a test run and
+  waited to be notified; the notifier didn't survive a session restart, so it
+  sat blocked for 204k tokens and 149 tool calls with the work still
+  uncommitted.
+  - Treat the deliverable as a pushed commit, not a status update - if it
+    ends by telling you something, the work can be stranded.
+  - Tell it to read its own logs directly rather than wait to be told; an
+    agent that polls always makes progress, one waiting on a callback can
+    wait forever.
 - You can browse the web as much as you need to. Let me know if you need me to
   bring in permissions to let you do this.
 - If you need to connect to Rubygems, wait for OTP input.
