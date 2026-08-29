@@ -126,6 +126,7 @@ cask "postgres-app"
 cask "proton-mail"
 cask "protonvpn"
 cask "raycast"
+cask "readdle-spark"
 cask "rectangle-pro"
 cask "setapp"
 cask "slack"
@@ -142,7 +143,6 @@ cask "zoom"
 mas "1Password for Safari", id: 1569813296
 mas "Anybox", id: 1593408455
 mas "Bear", id: 1091189122
-mas "Canary Mail", id: 1236045954
 mas "Drafts", id: 1435957248
 mas "Expenses", id: 1492055171
 mas "FireShot - Full web page screenshots", id: 1541862561
