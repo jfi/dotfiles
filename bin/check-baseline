@@ -2,15 +2,16 @@
 set -euo pipefail
 
 DOTFILES_DIR="${HOME}/.dotfiles"
-# shellcheck disable=SC1090
+# shellcheck disable=SC1090,SC1091
 source "${DOTFILES_DIR}/bin/checks/shared"
-# shellcheck disable=SC1090
+# shellcheck disable=SC1090,SC1091
 source "${DOTFILES_DIR}/bin/checks/workstation"
 
 report_header
 check_workstation
 
 echo
+# shellcheck disable=SC2154 # failures is maintained by bin/checks/shared
 if [ "${failures}" -eq 0 ]; then
   ok "All checks passed"
 else

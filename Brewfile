@@ -1,14 +1,14 @@
 # Taps
-tap "common-fate/granted"
-tap "depot/tap"
-tap "hashicorp/tap"
-tap "homeport/tap"
-tap "m13v/tap"
-tap "microsoft/mssql-release", "https://github.com/Microsoft/homebrew-mssql-release"
-tap "sorkila/lockpaw"
-tap "stripe/stripe-cli"
-tap "withgraphite/tap"
-tap "xo/xo"
+tap "common-fate/granted", trusted: true
+tap "depot/tap", trusted: true
+tap "hashicorp/tap", trusted: true
+tap "homeport/tap", trusted: true
+tap "m13v/tap", trusted: true
+tap "microsoft/mssql-release", "https://github.com/Microsoft/homebrew-mssql-release", trusted: true
+tap "sorkila/lockpaw", trusted: true
+tap "stripe/stripe-cli", trusted: true
+tap "withgraphite/tap", trusted: true
+tap "xo/xo", trusted: true
 
 # Formulae
 brew "actionlint"

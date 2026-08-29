@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# brewfile-sync — reconcile macos/Brewfile against the current install.
+# brewfile-sync — reconcile the Brewfile against the current install.
 #
 # Runs `brew bundle dump` against a temp file, then walks you through every
 # difference: each line installed locally but not in the Brewfile, and each
 # line in the Brewfile but not installed locally. You decide what to keep.
 #
-# Read-only until the final prompt; then writes macos/Brewfile if you confirm.
+# Read-only until the final prompt; then writes the Brewfile if you confirm.
 
 set -euo pipefail
 
