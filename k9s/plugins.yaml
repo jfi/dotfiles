@@ -1,0 +1,35 @@
+---
+# k9s plugins — https://k9scli.io/topics/plugins/
+#
+# NOTE: This is a *plugin*, not a hotKey. k9s hotKeys only switch views; a
+# plugin binds a shortCut to an external command (kubectl exec) on the
+# selected resource. The shortCut below ("r") is the hotkey you press.
+plugins:
+  rails-console:
+    # Press "r" on a selected pod in the pods view to open a Rails console.
+    shortCut: r
+    description: Rails console
+    # Plugins scope by resource *kind*, not by name — so "r" appears on ALL
+    # pods, not only clinic / clinic-worker. It only does something useful on
+    # a Rails pod (runs bin/rails console inside it); elsewhere it just errors
+    # out harmlessly.
+    scopes:
+      - pods
+    command: kubectl
+    # Interactive: k9s hands the terminal to the console until you exit.
+    background: false
+    confirm: false
+    # No `-c <container>`: clinic app pods list `app` first (nginx is the
+    # sidecar), and worker pods are single-container, so the default container
+    # is correct for both clinic and clinic-worker.
+    args:
+      - exec
+      - -it
+      - $NAME
+      - --namespace
+      - $NAMESPACE
+      - --context
+      - $CONTEXT
+      - --
+      - bin/rails
+      - console

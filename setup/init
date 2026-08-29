@@ -335,11 +335,17 @@ ln -sf "${DOTFILES_DIR}/zed/keymap.json" "${HOME}/.config/zed/keymap.json"
 
 # Symlink Ghostty config and remove the macOS Application Support config so
 # it doesn't shadow the dotfiles version.
-green "Linking ~/.config/ghostty/config.ghostty..."
+green "Linking ~/.config/ghostty/config..."
 mkdir -p "${HOME}/.config/ghostty"
-ln -sf "${DOTFILES_DIR}/ghostty/config.ghostty" "${HOME}/.config/ghostty/config.ghostty"
+ln -sf "${DOTFILES_DIR}/ghostty/config" "${HOME}/.config/ghostty/config"
+rm -f "${HOME}/.config/ghostty/config.ghostty"
 rm -f "${HOME}/Library/Application Support/com.mitchellh.ghostty/config.ghostty"
 rm -f "${HOME}/Library/Application Support/com.mitchellh.ghostty/config"
+
+# Symlink k9s plugins (macOS k9s config dir, per `k9s info`)
+green "Linking ~/Library/Application Support/k9s/plugins.yaml..."
+mkdir -p "${HOME}/Library/Application Support/k9s"
+ln -sf "${DOTFILES_DIR}/k9s/plugins.yaml" "${HOME}/Library/Application Support/k9s/plugins.yaml"
 
 # Install hk git hooks if available
 if has_cmd hk; then
