@@ -44,6 +44,10 @@ export GIT_EDITOR="zed-preview --wait"
 export BETTER_ERRORS_EDITOR="zed-preview --wait"
 export BETTER_ERRORS_EDITOR_URL="zed-preview://file/%{file}:%{line}"
 
+# Claude Code: park the terminal's own cursor on the input caret instead of
+# painting a private one, so Ghostty's cursor-style and colour apply there too.
+export CLAUDE_CODE_NATIVE_CURSOR=1
+
 # Prompt + history + dir jumping
 command -v starship >/dev/null && eval "$(starship init zsh)"
 if command -v atuin >/dev/null; then
