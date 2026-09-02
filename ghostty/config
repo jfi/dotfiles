@@ -2,15 +2,13 @@
 # Reference: https://ghostty.org/docs/config
 
 theme = dark:Catppuccin Frappe,light:Catppuccin Latte
-font-family = Maple Mono NF Regular
-font-family-bold = Maple Mono NF Bold
-font-family-italic = Maple Mono NF Italic
-font-family-bold-italic = Maple Mono NF Bold Italic
+font-family = Maple Mono NF
 font-size = 16
 shell-integration-features = ssh-env,ssh-terminfo
-cursor-color = #eff1f5
-cursor-text = #eff1f5
 cursor-style = block
+# Shell integration puts a bar cursor at the prompt whatever cursor-style says;
+# a 1px bar vanishes at 16pt, so thicken it (pixels, or a percentage).
+adjust-cursor-thickness = 5
 
 # Cmd+Enter: don't toggle fullscreen — send Alt/Meta+Enter (ESC + CR) so
 # TUIs like Claude Code can bind it as `meta+enter` to submit.
