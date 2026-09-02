@@ -2,10 +2,7 @@
 # Reference: https://ghostty.org/docs/config
 
 theme = dark:Catppuccin Frappe,light:Catppuccin Latte
-font-family = Maple Mono NF Regular
-font-family-bold = Maple Mono NF Bold
-font-family-italic = Maple Mono NF Italic
-font-family-bold-italic = Maple Mono NF Bold Italic
+font-family = Maple Mono NF
 font-size = 16
 shell-integration-features = ssh-env,ssh-terminfo
 cursor-color = #eff1f5
