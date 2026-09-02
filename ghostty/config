@@ -8,7 +8,7 @@ shell-integration-features = ssh-env,ssh-terminfo
 cursor-style = block
 # Shell integration puts a bar cursor at the prompt whatever cursor-style says;
 # a 1px bar vanishes at 16pt, so thicken it (pixels, or a percentage).
-adjust-cursor-thickness = 3
+adjust-cursor-thickness = 5
 
 # Cmd+Enter: don't toggle fullscreen — send Alt/Meta+Enter (ESC + CR) so
 # TUIs like Claude Code can bind it as `meta+enter` to submit.
