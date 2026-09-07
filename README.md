@@ -50,14 +50,19 @@ You can re-run it safely at any time.
 ### Agent instructions
 
 `claude/AGENTS.md` is the single global instruction file for coding agents.
-`setup/init` symlinks it to `~/.claude/{CLAUDE,AGENTS}.md` (Claude Code) and
-`~/.codex/AGENTS.md` (Codex). Cursor has no global instruction file: paste the
-contents into Cursor Settings > Rules > User Rules, and re-paste after editing.
-Cursor Cloud agents only read a repo's own `AGENTS.md`, never this one.
+`setup/init` symlinks it to `~/.claude/AGENTS.md` and `~/.codex/AGENTS.md`
+(Codex), and installs a plain copy at `~/.claude/CLAUDE.md` for Claude Code and
+Cowork, because Cowork ignores a symlinked user-level `CLAUDE.md`. The hk
+pre-commit hook re-copies it whenever `claude/AGENTS.md` is committed; run
+`claude-md-sync` by hand after pulling, and `check-baseline` reports drift.
+
+Cursor has no global instruction file: paste the contents into Cursor Settings >
+Rules > User Rules, and re-paste after editing. Cursor Cloud agents only read a
+repo's own `AGENTS.md`, never this one.
 
 Claude Code's `permissions.ask` rules in `claude/settings.json` are the
-enforced counterpart of the Safety Rules section; the prose is the fallback for
-tools that don't read that file.
+enforced counterpart of the Safety Rules section. Cowork, Codex and Cursor don't
+read that file, so the prose list is the fallback there.
 
 ### Setup scripts
 
@@ -71,8 +76,9 @@ tools that don't read that file.
   - `~/.zshrc` + `~/.zprofile` loaders
   - `~/.gitconfig` include
   - 1Password `allowed_signers` + `user.signingkey`
-  - `~/.claude/{CLAUDE,AGENTS}.md`, `~/.codex/AGENTS.md`,
+  - `~/.claude/AGENTS.md`, `~/.codex/AGENTS.md`,
     `~/.config/zed/{settings,keymap}.json`, `~/.config/ghostty/config` symlinks
+  - `~/.claude/CLAUDE.md` as a copy (via `bin/claude-md-sync`)
   - hk git hooks
 
 **`setup/bootstrap`**
@@ -126,6 +132,7 @@ tools that don't read that file.
     ├── brewfile-sync         # interactive Brewfile <-> install reconciler
     ├── check-baseline        # workstation health check
     ├── claude                # Claude Code wrapper
+    ├── claude-md-sync        # copies claude/AGENTS.md to ~/.claude/CLAUDE.md
     └── with-ai-env           # 1Password-sourced AI env exec wrapper
 ```
 

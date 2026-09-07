@@ -32,6 +32,13 @@ check_workstation() {
     warn "1Password CLI (op) not found"
   fi
 
+  if has claude-md-sync && claude-md-sync --check 2>/dev/null; then
+    ok "${HOME}/.claude/CLAUDE.md matches dotfiles"
+  else
+    warn "${HOME}/.claude/CLAUDE.md is a symlink or out of date (run claude-md-sync)"
+    fail
+  fi
+
   # Git signing config (report only)
   if has git; then
     local fmt prog key allowed

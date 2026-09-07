@@ -13,8 +13,8 @@ permission prompts are switched off:
 - Any command with `--force` or `-f` that could lose data
 
 Claude Code also enforces these as `permissions.ask` rules in
-`~/.dotfiles/claude/settings.json`; this list is the fallback for tools that
-do not read that file.
+`~/.dotfiles/claude/settings.json`. Cowork, Codex and Cursor do not read that
+file, so this list is the fallback there.
 
 ## Writing
 
@@ -46,7 +46,9 @@ do not read that file.
 - Global agent config lives in `~/.dotfiles/claude/` (this file, Claude Code
   `settings.json`, `keybindings.json`), not in `~/.claude`. Put any new global
   command, agent or setting there and commit it in `~/.dotfiles` on a branch
-  with a PR. Skills are installed by dotagents into `~/.agents/skills`.
+  with a PR. `~/.claude/CLAUDE.md` is a copy that `claude-md-sync` refreshes on
+  commit (Cowork ignores symlinks); never edit the copy. Skills are installed
+  by dotagents into `~/.agents/skills`.
 - When we update `version.rb` in any project, we need to also run a `bundle update --all`.
 - Remove `spring` from all Gemfiles of Rails 7+ projects I work on
 - For all gems I create unless I say otherwise: author to
@@ -64,6 +66,13 @@ do not read that file.
 
 ## Git and Pull Requests
 
+- Every new agent session works in its own git worktree. Before the first
+  edit, if you are on a repo's primary checkout, create a worktree on a fresh
+  branch and do all the work there: in Claude Code use `EnterWorktree`,
+  otherwise `git worktree add <path> -b <branch>`, following the repo's own
+  convention for where worktrees live if it has one. If the session already
+  started inside a worktree or an isolated VM (Conductor, Cursor Cloud), stay
+  there.
 - Before the first edit, check what is already in flight with
   `gh pr list --search "<area>"` and `git branch -r`. I often open a PR and then
   ask about the same problem later; add to the existing branch rather than

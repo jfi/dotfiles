@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# Install claude/AGENTS.md as a regular file at ~/.claude/CLAUDE.md.
+# Cowork skips a symlinked ~/.claude/CLAUDE.md, so this one has to be a copy.
+# Pass --check to report drift without writing.
+set -euo pipefail
+
+src="${HOME}/.dotfiles/claude/AGENTS.md"
+dest="${HOME}/.claude/CLAUDE.md"
+
+if [ "${1:-}" = "--check" ]; then
+  if [ ! -L "${dest}" ] && cmp -s "${src}" "${dest}"; then
+    exit 0
+  fi
+  echo "${dest} is a symlink or out of date; run claude-md-sync" >&2
+  exit 1
+fi
+
+mkdir -p "${HOME}/.claude"
+tmp="$(mktemp "${HOME}/.claude/.CLAUDE.md.XXXXXX")"
+cp "${src}" "${tmp}"
+chmod 0644 "${tmp}"
+mv "${tmp}" "${dest}"
+echo "Synced ${dest}"
