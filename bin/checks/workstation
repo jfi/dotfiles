@@ -32,6 +32,13 @@ check_workstation() {
     warn "1Password CLI (op) not found"
   fi
 
+  if has agents-sync && agents-sync --check 2>/dev/null; then
+    ok "AGENTS.md copies (${HOME}/.claude/CLAUDE.md, cursor/user-rules.md) in sync"
+  else
+    warn "AGENTS.md copies out of date or symlinked (run agents-sync)"
+    fail
+  fi
+
   # Git signing config (report only)
   if has git; then
     local fmt prog key allowed

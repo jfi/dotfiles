@@ -14,6 +14,11 @@ local linters = new Mapping<String, Step> {
         glob = List("*.sh", "setup/*", "bin/*", "install")
         check = "shellcheck {{files}}"
     }
+    ["agents-sync"] {
+        glob = List("claude/AGENTS.md")
+        check = "bin/agents-sync --check"
+        fix = "bin/agents-sync && git add cursor/user-rules.md"
+    }
     ["conflict-markers"] {
         glob = List("*")
         check = "! grep -lEn '^(<{7}|={7}|>{7}|\\|{7})' {{files}}"

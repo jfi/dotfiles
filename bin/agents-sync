@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# Sync the derived copies of claude/AGENTS.md:
+#   ~/.claude/CLAUDE.md   - a plain file, because Cowork skips a symlinked one
+#   cursor/user-rules.md  - to paste into Cursor Settings > Rules > User Rules
+# Pass --check to report drift without writing.
+set -euo pipefail
+
+DOTFILES_DIR="${HOME}/.dotfiles"
+src="${DOTFILES_DIR}/claude/AGENTS.md"
+targets=("${HOME}/.claude/CLAUDE.md" "${DOTFILES_DIR}/cursor/user-rules.md")
+
+if [ "${1:-}" = "--check" ]; then
+  status=0
+  for dest in "${targets[@]}"; do
+    if [ -L "${dest}" ] || ! cmp -s "${src}" "${dest}"; then
+      echo "${dest} is a symlink or out of date; run agents-sync" >&2
+      status=1
+    fi
+  done
+  exit "${status}"
+fi
+
+for dest in "${targets[@]}"; do
+  mkdir -p "$(dirname "${dest}")"
+  tmp="$(mktemp "$(dirname "${dest}")/.agents-sync.XXXXXX")"
+  cp "${src}" "${tmp}"
+  chmod 0644 "${tmp}"
+  mv "${tmp}" "${dest}"
+  echo "Synced ${dest}"
+done
