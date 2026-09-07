@@ -47,6 +47,18 @@ You can re-run it safely at any time.
 - `~/.zshrc.local` for machine-specific additions (never overwritten by setup)
 - starship prompt, atuin history, zoxide cd, eza/bat aliases, zsh-syntax-highlighting + zsh-autosuggestions
 
+### Agent instructions
+
+`claude/AGENTS.md` is the single global instruction file for coding agents.
+`setup/init` symlinks it to `~/.claude/{CLAUDE,AGENTS}.md` (Claude Code) and
+`~/.codex/AGENTS.md` (Codex). Cursor has no global instruction file: paste the
+contents into Cursor Settings > Rules > User Rules, and re-paste after editing.
+Cursor Cloud agents only read a repo's own `AGENTS.md`, never this one.
+
+Claude Code's `permissions.ask` rules in `claude/settings.json` are the
+enforced counterpart of the Safety Rules section; the prose is the fallback for
+tools that don't read that file.
+
 ### Setup scripts
 
 `install` runs the four in this order: `init`, `bootstrap`, `install-ruby`, `macos-defaults`.
@@ -59,8 +71,8 @@ You can re-run it safely at any time.
   - `~/.zshrc` + `~/.zprofile` loaders
   - `~/.gitconfig` include
   - 1Password `allowed_signers` + `user.signingkey`
-  - `~/.claude/{CLAUDE,AGENTS}.md`, `~/.config/zed/{settings,keymap}.json`,
-    `~/.config/ghostty/config` symlinks
+  - `~/.claude/{CLAUDE,AGENTS}.md`, `~/.codex/AGENTS.md`,
+    `~/.config/zed/{settings,keymap}.json`, `~/.config/ghostty/config` symlinks
   - hk git hooks
 
 **`setup/bootstrap`**
@@ -106,7 +118,7 @@ You can re-run it safely at any time.
 ├── zsh/
 │   ├── zshrc
 │   └── zprofile
-├── claude/                   # global Claude / AGENTS instructions
+├── claude/                   # global agent instructions + Claude Code settings
 ├── zed/                      # Zed settings + keymap
 ├── ghostty/                  # Ghostty config
 └── bin/

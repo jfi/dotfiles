@@ -327,6 +327,12 @@ ln -sf "${DOTFILES_DIR}/claude/CLAUDE.md" "${HOME}/.claude/CLAUDE.md"
 ln -sf "${DOTFILES_DIR}/claude/keybindings.json" "${HOME}/.claude/keybindings.json"
 ln -sf "${DOTFILES_DIR}/claude/settings.json" "${HOME}/.claude/settings.json"
 
+# Codex reads its global instructions from ~/.codex/AGENTS.md; Cursor has no
+# global file (paste claude/AGENTS.md into Cursor Settings > Rules > User Rules).
+green "Linking ~/.codex/AGENTS.md..."
+mkdir -p "${HOME}/.codex"
+ln -sf "${DOTFILES_DIR}/claude/AGENTS.md" "${HOME}/.codex/AGENTS.md"
+
 # Symlink Zed config
 green "Linking ~/.config/zed/{settings,keymap}.json..."
 mkdir -p "${HOME}/.config/zed"
