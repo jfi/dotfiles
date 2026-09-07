@@ -321,14 +321,14 @@ git config --global user.email "${GIT_EMAIL}"
 # Only portable, secret-free config is linked here — credentials, history,
 # projects/, sessions/, and other machine-local state stay out of the repo.
 # ~/.claude/CLAUDE.md is a copy rather than a symlink because Cowork skips
-# symlinked user-level CLAUDE.md files; bin/claude-md-sync keeps it current.
+# symlinked user-level CLAUDE.md files; bin/agents-sync keeps it current.
 green "Linking ~/.claude/AGENTS.md, keybindings.json, settings.json..."
 mkdir -p "${HOME}/.claude"
 ln -sf "${DOTFILES_DIR}/claude/AGENTS.md" "${HOME}/.claude/AGENTS.md"
 ln -sf "${DOTFILES_DIR}/claude/keybindings.json" "${HOME}/.claude/keybindings.json"
 ln -sf "${DOTFILES_DIR}/claude/settings.json" "${HOME}/.claude/settings.json"
 green "Copying ~/.claude/CLAUDE.md (Cowork ignores symlinks)..."
-"${DOTFILES_DIR}/bin/claude-md-sync"
+"${DOTFILES_DIR}/bin/agents-sync"
 
 # Codex reads its global instructions from ~/.codex/AGENTS.md; Cursor has no
 # global file (paste claude/AGENTS.md into Cursor Settings > Rules > User Rules).

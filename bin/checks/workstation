@@ -32,10 +32,10 @@ check_workstation() {
     warn "1Password CLI (op) not found"
   fi
 
-  if has claude-md-sync && claude-md-sync --check 2>/dev/null; then
-    ok "${HOME}/.claude/CLAUDE.md matches dotfiles"
+  if has agents-sync && agents-sync --check 2>/dev/null; then
+    ok "AGENTS.md copies (${HOME}/.claude/CLAUDE.md, cursor/user-rules.md) in sync"
   else
-    warn "${HOME}/.claude/CLAUDE.md is a symlink or out of date (run claude-md-sync)"
+    warn "AGENTS.md copies out of date or symlinked (run agents-sync)"
     fail
   fi
 

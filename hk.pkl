@@ -14,10 +14,10 @@ local linters = new Mapping<String, Step> {
         glob = List("*.sh", "setup/*", "bin/*", "install")
         check = "shellcheck {{files}}"
     }
-    ["claude-md-sync"] {
+    ["agents-sync"] {
         glob = List("claude/AGENTS.md")
-        check = "bin/claude-md-sync --check"
-        fix = "bin/claude-md-sync"
+        check = "bin/agents-sync --check"
+        fix = "bin/agents-sync && git add cursor/user-rules.md"
     }
     ["conflict-markers"] {
         glob = List("*")

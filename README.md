@@ -51,14 +51,18 @@ You can re-run it safely at any time.
 
 `claude/AGENTS.md` is the single global instruction file for coding agents.
 `setup/init` symlinks it to `~/.claude/AGENTS.md` and `~/.codex/AGENTS.md`
-(Codex), and installs a plain copy at `~/.claude/CLAUDE.md` for Claude Code and
-Cowork, because Cowork ignores a symlinked user-level `CLAUDE.md`. The hk
-pre-commit hook re-copies it whenever `claude/AGENTS.md` is committed; run
-`claude-md-sync` by hand after pulling, and `check-baseline` reports drift.
+(Codex), and `bin/agents-sync` writes two plain copies of it:
 
-Cursor has no global instruction file: paste the contents into Cursor Settings >
-Rules > User Rules, and re-paste after editing. Cursor Cloud agents only read a
-repo's own `AGENTS.md`, never this one.
+- `~/.claude/CLAUDE.md` for Claude Code and Cowork, because Cowork ignores a
+  symlinked user-level `CLAUDE.md`
+- `cursor/user-rules.md` for Cursor, which has no global instruction file;
+  `pbcopy < cursor/user-rules.md` and paste into Cursor Settings > Rules > User
+  Rules, then re-paste whenever it changes. Cursor Cloud agents only read a
+  repo's own `AGENTS.md`, never this one.
+
+The hk pre-commit hook regenerates both copies whenever `claude/AGENTS.md` is
+committed; run `agents-sync` by hand after pulling, and `check-baseline` reports
+drift. Edit `claude/AGENTS.md` only, never a copy.
 
 Claude Code's `permissions.ask` rules in `claude/settings.json` are the
 enforced counterpart of the Safety Rules section. Cowork, Codex and Cursor don't
@@ -78,7 +82,7 @@ read that file, so the prose list is the fallback there.
   - 1Password `allowed_signers` + `user.signingkey`
   - `~/.claude/AGENTS.md`, `~/.codex/AGENTS.md`,
     `~/.config/zed/{settings,keymap}.json`, `~/.config/ghostty/config` symlinks
-  - `~/.claude/CLAUDE.md` as a copy (via `bin/claude-md-sync`)
+  - `~/.claude/CLAUDE.md` as a copy (via `bin/agents-sync`)
   - hk git hooks
 
 **`setup/bootstrap`**
@@ -125,6 +129,7 @@ read that file, so the prose list is the fallback there.
 │   ├── zshrc
 │   └── zprofile
 ├── claude/                   # global agent instructions + Claude Code settings
+├── cursor/                   # generated copy of AGENTS.md for Cursor User Rules
 ├── zed/                      # Zed settings + keymap
 ├── ghostty/                  # Ghostty config
 └── bin/
@@ -132,7 +137,7 @@ read that file, so the prose list is the fallback there.
     ├── brewfile-sync         # interactive Brewfile <-> install reconciler
     ├── check-baseline        # workstation health check
     ├── claude                # Claude Code wrapper
-    ├── claude-md-sync        # copies claude/AGENTS.md to ~/.claude/CLAUDE.md
+    ├── agents-sync           # regenerates the AGENTS.md copies (Claude, Cursor)
     └── with-ai-env           # 1Password-sourced AI env exec wrapper
 ```
 
