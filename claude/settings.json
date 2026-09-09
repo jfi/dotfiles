@@ -1,7 +1,4 @@
 {
-  "env": {
-    "ANTHROPIC_DEFAULT_OPUS_MODEL": "eu.anthropic.claude-opus-5"
-  },
   "permissions": {
     "defaultMode": "auto",
     "ask": [
