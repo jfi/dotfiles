@@ -30,7 +30,8 @@
     "model_parameters": []
   },
   "git_panel": {
-    "dock": "left"
+    "dock": "left",
+    "merge_editor": true
   },
   "ui_font_family": ".ZedSans",
   "buffer_font_family": "Maple Mono",

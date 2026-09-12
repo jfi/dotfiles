@@ -55,7 +55,7 @@ sudo nvram SystemAudioVolume=" "
 defaults -currentHost write -g AppleFontSmoothing -int 0
 
 # Increase window resize speed for Cocoa applications
-defaults write NSGlobalDomain NSWindowResizeTime -float 0.001
+# defaults write NSGlobalDomain NSWindowResizeTime -float 0.001
 
 # Disable action images (icons) in menu items
 defaults write NSGlobalDomain NSMenuEnableActionImages -bool false
@@ -156,7 +156,7 @@ defaults write com.apple.finder FXInfoPanesExpanded -dict \
 # Dock
 
 # Set the icon size of Dock items to 40 pixels
-defaults write com.apple.dock tilesize -int 40
+defaults write com.apple.dock tilesize -int 48
 
 # Show indicator lights for open applications in the Dock
 defaults write com.apple.dock show-process-indicators -bool true
@@ -275,12 +275,11 @@ defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebK
 defaults write com.apple.Safari WebKitJavaScriptCanOpenWindowsAutomatically -bool false
 defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2JavaScriptCanOpenWindowsAutomatically -bool false
 
-# Disable auto-playing video
-defaults write com.apple.Safari WebKitMediaPlaybackAllowsInline -bool false
-defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2AllowsInlineMediaPlayback -bool false
+defaults write com.apple.Safari WebKitMediaPlaybackAllowsInline -bool true
+defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2AllowsInlineMediaPlayback -bool true
 if [ "${HAS_SAFARI_TP}" = true ]; then
-  defaults write com.apple.SafariTechnologyPreview WebKitMediaPlaybackAllowsInline -bool false
-  defaults write com.apple.SafariTechnologyPreview com.apple.Safari.ContentPageGroupIdentifier.WebKit2AllowsInlineMediaPlayback -bool false
+  defaults write com.apple.SafariTechnologyPreview WebKitMediaPlaybackAllowsInline -bool true
+  defaults write com.apple.SafariTechnologyPreview com.apple.Safari.ContentPageGroupIdentifier.WebKit2AllowsInlineMediaPlayback -bool true
 fi
 
 # Enable “Do Not Track”
@@ -365,6 +364,7 @@ defaults write com.apple.finder NewWindowTarget PfHm
 
 # Terminal-flavoured file types open in Ghostty rather than Terminal.app
 duti -s com.mitchellh.ghostty .command all
+duti -s com.mitchellh.ghostty .ghostty all
 duti -s com.mitchellh.ghostty .tool all
 
 # Open many types of files with Zed
