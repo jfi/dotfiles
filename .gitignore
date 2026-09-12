@@ -1,3 +1,4 @@
 secrets/
 .env
 .gitconfig.local
+__pycache__/

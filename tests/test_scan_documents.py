@@ -21,9 +21,9 @@ sys.modules[SPEC.name] = scan
 SPEC.loader.exec_module(scan)
 
 
-def jpeg():
+def jpeg(dpi=None):
     stream = io.BytesIO()
-    Image.new("RGB", (248, 351), "white").save(stream, "JPEG")
+    Image.new("RGB", (248, 351), "white").save(stream, "JPEG", **({"dpi": dpi} if dpi else {}))
     return stream.getvalue()
 
 
@@ -70,6 +70,26 @@ class RecoveryTests(unittest.TestCase):
                 self.assertEqual(len(document), 2)
                 self.assertAlmostEqual(document[0].rect.width, 248 * 72 / 600, places=4)
 
+    def test_raw_recovery_prefers_embedded_resolution(self):
+        with tempfile.TemporaryDirectory() as directory:
+            run = Path(directory)
+            raw = run / "raw"
+            raw.mkdir()
+            (raw / "page-0001.jpg").write_bytes(jpeg((200, 100)))
+            (run / "scan-job.json").write_text(json.dumps({"dpi": 300}))
+            destination = run / "recovered.pdf"
+            scan.import_original(raw, destination)
+            with pymupdf.open(destination) as document:
+                self.assertAlmostEqual(document[0].rect.width, 248 * 72 / 200, places=4)
+                self.assertAlmostEqual(document[0].rect.height, 351 * 72 / 100, places=4)
+
+    def test_invalid_embedded_resolution_falls_back(self):
+        image = Image.new("RGB", (1, 1))
+        for value in (None, (0, 300), (-1, 300), (float("nan"), 300),
+                      (float("inf"), 300), ("300", 300), (True, 300), (300,)):
+            image.info["dpi"] = value
+            self.assertIsNone(scan.embedded_dpi(image))
+
     def test_raw_recovery_rejects_gaps_and_incomplete_downloads(self):
         for extra, message in [("page-0003.jpg", "consecutive"),
                                ("page-0002.jpg.partial", "incomplete")]:
@@ -94,6 +114,8 @@ class CaptureTests(unittest.TestCase):
         def handle(request):
             if request.method == "POST":
                 self.posts += 1
+                self.assertEqual(request.headers["Content-Type"], "text/xml; charset=utf-8")
+                self.assertEqual(request.content, scan.scan_settings("a4", 300))
                 settings = scan.parse_xml(request.content)
                 self.assertEqual(settings.findtext("scan:Duplex", namespaces=scan.NS), "true")
                 self.assertEqual(settings.findtext("pwg:InputSource", namespaces=scan.NS), "Feeder")
@@ -140,6 +162,20 @@ class CaptureTests(unittest.TestCase):
                 self.run_capture(run, [200, BrokenBody()])
             self.assertEqual((run / "raw/page-0001.jpg").read_bytes(), jpeg())
             self.assertEqual((run / "raw/page-0002.jpg.partial").read_bytes(), jpeg()[:500])
+            self.assertFalse((run / "raw/page-0002.jpg").exists())
+            self.assertEqual(len(self.deleted), 1)
+
+    def test_ignored_resolution_retains_partial_and_stops(self):
+        class WrongResolution(httpx.SyncByteStream):
+            def __iter__(self):
+                yield jpeg((200, 200))
+
+        with tempfile.TemporaryDirectory() as directory:
+            run = Path(directory)
+            with self.assertRaisesRegex(scan.ScanError, "ignored the duplex settings"):
+                self.run_capture(run, [200, WrongResolution()])
+            self.assertTrue((run / "raw/page-0001.jpg").exists())
+            self.assertEqual((run / "raw/page-0002.jpg.partial").read_bytes(), jpeg((200, 200)))
             self.assertFalse((run / "raw/page-0002.jpg").exists())
             self.assertEqual(len(self.deleted), 1)
 
@@ -201,6 +237,21 @@ class CaptureTests(unittest.TestCase):
         for location in ["http://evil/eSCL/ScanJobs/x", "//evil/job", "/admin", ""]:
             with self.subTest(location=location), self.assertRaises(scan.ScanError):
                 scan.job_url("http://scanner/eSCL", location)
+
+    def test_settings_match_tested_brother_request(self):
+        fixture = Path(__file__).parent / "fixtures" / "brother-scan-settings.xml"
+        self.assertEqual(scan.scan_settings("a4", 300), fixture.read_bytes())
+
+    def test_settings_retain_paper_sizes_and_reject_unvalidated_values(self):
+        for size, (width, height) in scan.SIZES.items():
+            root = scan.parse_xml(scan.scan_settings(size, 200))
+            region = root.find("pwg:ScanRegions/pwg:ScanRegion", scan.NS)
+            self.assertEqual(region.findtext("pwg:Width", namespaces=scan.NS), str(width))
+            self.assertEqual(region.findtext("pwg:Height", namespaces=scan.NS), str(height))
+            self.assertEqual(root.findtext("scan:YResolution", namespaces=scan.NS), "200")
+        for size, dpi in (("a3", 300), ("a4", "300"), ("a4", True), ("a4", 301)):
+            with self.assertRaises(scan.ScanError):
+                scan.scan_settings(size, dpi)
 
     def test_settings_use_fixed_units_at_all_resolutions(self):
         for dpi in (100, 300, 600):

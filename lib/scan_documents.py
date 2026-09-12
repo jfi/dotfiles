@@ -16,6 +16,7 @@ import base64
 from datetime import datetime
 import io
 import json
+import math
 import os
 from pathlib import Path
 import re
@@ -125,30 +126,26 @@ def check_capabilities(client: httpx.Client, scanner: str, size: str, dpi: int) 
 
 
 def scan_settings(size: str, dpi: int) -> bytes:
+    if size not in SIZES or type(dpi) is not int or dpi not in (100, 200, 300, 600):
+        raise ScanError("Unsupported paper size or resolution.")
     width, height = SIZES[size]
-    ET.register_namespace("scan", SCAN_NS)
-    ET.register_namespace("pwg", PWG_NS)
-    root = ET.Element(f"{{{SCAN_NS}}}ScanSettings")
-
-    def add(parent: ET.Element, namespace: str, name: str, value: str) -> None:
-        ET.SubElement(parent, f"{{{namespace}}}{name}").text = value
-
-    add(root, PWG_NS, "Version", "2.0")
-    add(root, SCAN_NS, "Intent", "Document")
-    regions = ET.SubElement(root, f"{{{PWG_NS}}}ScanRegions")
-    region = ET.SubElement(regions, f"{{{PWG_NS}}}ScanRegion")
-    for name, value in (("ContentRegionUnits", "escl:ThreeHundredthsOfInches"),
-                        ("XOffset", "0"), ("YOffset", "0"),
-                        ("Width", str(width)), ("Height", str(height))):
-        add(region, PWG_NS, name, value)
-    add(root, PWG_NS, "InputSource", "Feeder")
-    add(root, SCAN_NS, "ColorMode", "RGB24")
-    add(root, PWG_NS, "DocumentFormat", "image/jpeg")
-    add(root, SCAN_NS, "DocumentFormatExt", "image/jpeg")
-    add(root, SCAN_NS, "XResolution", str(dpi))
-    add(root, SCAN_NS, "YResolution", str(dpi))
-    add(root, SCAN_NS, "Duplex", "true")
-    return ET.tostring(root, encoding="utf-8", xml_declaration=True)
+    # This conventional serialisation was tested on the Brother MFC-J5740DW.
+    # The precise cause of ignored settings in the previous format is unproven.
+    return (
+        '<?xml version="1.0" encoding="UTF-8"?>'
+        f'<scan:ScanSettings xmlns:scan="{SCAN_NS}" xmlns:pwg="{PWG_NS}">'
+        '<pwg:Version>2.0</pwg:Version><scan:Intent>TextAndGraphic</scan:Intent>'
+        '<pwg:ScanRegions pwg:MustHonor="true"><pwg:ScanRegion>'
+        f'<pwg:Height>{height}</pwg:Height>'
+        '<pwg:ContentRegionUnits>escl:ThreeHundredthsOfInches</pwg:ContentRegionUnits>'
+        f'<pwg:Width>{width}</pwg:Width>'
+        '<pwg:XOffset>0</pwg:XOffset><pwg:YOffset>0</pwg:YOffset>'
+        '</pwg:ScanRegion></pwg:ScanRegions>'
+        '<pwg:InputSource>Feeder</pwg:InputSource><scan:Duplex>true</scan:Duplex>'
+        '<scan:ColorMode>RGB24</scan:ColorMode>'
+        f'<scan:XResolution>{dpi}</scan:XResolution><scan:YResolution>{dpi}</scan:YResolution>'
+        '<pwg:DocumentFormat>image/jpeg</pwg:DocumentFormat></scan:ScanSettings>'
+    ).encode("ascii")
 
 
 def job_url(scanner: str, location: str) -> str:
@@ -199,7 +196,7 @@ def capture(client: httpx.Client, scanner: str, run: Path, size: str, dpi: int) 
     raw.mkdir(mode=0o700)
     # POST must never be automatically retried: a lost reply can still start feeding paper.
     response = client.post(scanner + "/ScanJobs", content=scan_settings(size, dpi),
-                           headers={"Content-Type": "text/xml"})
+                           headers={"Content-Type": "text/xml; charset=utf-8"})
     if response.status_code != 201:
         raise ScanError(f"Scanner rejected the duplex job (HTTP {response.status_code}).")
     url = job_url(scanner, response.headers.get("Location", ""))
@@ -224,6 +221,13 @@ def capture(client: httpx.Client, scanner: str, run: Path, size: str, dpi: int) 
                             if picture.format != "JPEG":
                                 raise ScanError(f"Scanner returned a non-JPEG page; retained at {partial}.")
                             picture.load()
+                            actual_dpi = embedded_dpi(picture)
+                            if actual_dpi and any(abs(value - dpi) > 1 for value in actual_dpi):
+                                raise ScanError(
+                                    f"Scanner returned {actual_dpi} dpi instead of {dpi} dpi; "
+                                    f"it may have ignored the duplex settings. Page retained at {partial}. "
+                                    "Check scanner settings and rescan the batch before splitting."
+                                )
                     except (OSError, SyntaxError) as exc:
                         raise ScanError(f"Scanner returned a damaged page; retained at {partial}.") from exc
                     # A hard link publishes the complete page without replacing a file.
@@ -257,12 +261,23 @@ def capture(client: httpx.Client, scanner: str, run: Path, size: str, dpi: int) 
             pass
 
 
+def embedded_dpi(image: Image.Image) -> tuple[float, float] | None:
+    value = image.info.get("dpi")
+    if not isinstance(value, (tuple, list)) or len(value) != 2:
+        return None
+    if any(isinstance(number, bool) or not isinstance(number, (int, float))
+           or not math.isfinite(number) or number <= 0 for number in value):
+        return None
+    return float(value[0]), float(value[1])
+
+
 def make_original(pages: list[Path], destination: Path, dpi: int) -> None:
     with pymupdf.open() as document:
         for path in pages:
             with Image.open(path) as image:
                 width, height = image.size
-            page = document.new_page(width=width * 72 / dpi, height=height * 72 / dpi)
+                x_dpi, y_dpi = embedded_dpi(image) or (dpi, dpi)
+            page = document.new_page(width=width * 72 / x_dpi, height=height * 72 / y_dpi)
             page.insert_image(page.rect, filename=str(path))
         with destination.open("xb") as stream:
             document.save(stream, deflate=True)
