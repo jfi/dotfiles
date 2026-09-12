@@ -1,0 +1,92 @@
+#!/usr/bin/env bash
+# label - render a 6 x 4 in address label to PDF and optionally print it.
+#
+# Usage:
+#   label [-o FILE] [-p] LINE [LINE ...]     one argument per address line
+#   label [-o FILE] [-p] "$(cat address.txt)" newlines inside an argument split too
+#   label [-o FILE] [-p] < address.txt       or read the lines from stdin
+#
+#   -o, --output FILE   PDF to write (default: label.pdf)
+#   -p, --print         also send it to the Munbyn_P44S queue (see munbyn-p44s)
+#
+# The address sits left and vertically centred in Helvetica Neue Medium, leaving
+# the right 1.25 in clear for a stamp. It uses the largest size from 28pt down to
+# 16pt at which no line wraps; below that, long lines wrap instead and the block
+# shrinks only if it still overflows. Blank lines are dropped.
+#
+# The PDF is the 4 x 6 in portrait page exactly as the printer feeds it, with
+# the 6 x 4 in design turned a quarter clockwise: address at the leading edge,
+# stamp space at the trailing edge. Held with the leading edge on the left it
+# reads upright, and it prints with no orientation option.
+#
+# The body is Ruby (Prawn). This bash stub hands off with `ruby -x`, which
+# starts executing at the "#!ruby" line, and keeps shellcheck happy with bin/*.
+exec ruby -x "$0" "$@"
+: <<'RUBY'
+#!ruby
+# frozen_string_literal: true
+
+require "optparse"
+require "bundler/inline"
+
+gemfile(true, quiet: true) do
+  source "https://rubygems.org"
+  gem "prawn", "~> 2.5"
+end
+
+PAGE_SIZE = [288, 432].freeze # 4 x 6 in portrait, the way the printer feeds it
+LABEL_SIZE = [432, 288].freeze # the 6 x 4 in design laid across it
+MARGIN = 24
+STAMP_WIDTH = 90 # 1.25 in kept clear on the right of the design
+QUEUE = "Munbyn_P44S"
+MEDIA = "w288h432"
+NEUE_TTC = "/System/Library/Fonts/HelveticaNeue.ttc"
+MAX_FONT_SIZE = 28
+NOWRAP_FLOOR_SIZE = 16
+MIN_FONT_SIZE = 10
+
+options = { output: "label.pdf", print: false }
+OptionParser.new do |opts|
+  opts.banner = "Usage: label [-o FILE] [-p] [LINE ...]\n\n" \
+                "Address lines come from the arguments, or from stdin when there are none."
+  opts.on("-o", "--output FILE", "PDF to write (default: label.pdf)") { options[:output] = _1 }
+  opts.on("-p", "--print", "Also send the PDF to the #{QUEUE} queue") { options[:print] = true }
+end.parse!
+
+lines = (ARGV.empty? ? $stdin.read : ARGV.join("\n")).lines.map(&:strip).reject(&:empty?)
+abort "label: no address lines given (see label --help)" if lines.empty?
+
+def use_medium_font(pdf)
+  return pdf.font("Helvetica") unless File.exist?(NEUE_TTC)
+
+  pdf.font_families.update("Helvetica Neue" => { normal: { file: NEUE_TTC, font: "HelveticaNeue-Medium" } })
+  pdf.font("Helvetica Neue")
+end
+
+def largest_unwrapped_size(pdf, lines, width, height)
+  MAX_FONT_SIZE.downto(NOWRAP_FLOOR_SIZE).find do |size|
+    lines.all? { pdf.width_of(_1, size:) <= width } &&
+      pdf.height_of(lines.join("\n"), size:, width:) <= height
+  end
+end
+
+page_width, page_height = PAGE_SIZE
+label_width, label_height = LABEL_SIZE
+text_width = label_width - (2 * MARGIN) - STAMP_WIDTH
+text_height = label_height - (2 * MARGIN)
+# Top-left of the text area with the design centred on the page, before the quarter turn.
+text_origin = [((page_width - label_width) / 2.0) + MARGIN, ((page_height + label_height) / 2.0) - MARGIN]
+
+pdf = Prawn::Document.new(page_size: PAGE_SIZE, margin: 0)
+use_medium_font(pdf)
+size = largest_unwrapped_size(pdf, lines, text_width, text_height) || NOWRAP_FLOOR_SIZE
+pdf.rotate(-90, origin: [page_width / 2.0, page_height / 2.0]) do
+  pdf.text_box(lines.join("\n"), at: text_origin, width: text_width, height: text_height, size:,
+                                  min_font_size: MIN_FONT_SIZE, overflow: :shrink_to_fit, valign: :center)
+end
+pdf.render_file(options[:output])
+puts "Wrote #{options[:output]} (#{lines.size} lines, #{size}pt#{' with wrapping' if size == NOWRAP_FLOOR_SIZE})"
+
+system("lp", "-d", QUEUE, "-o", "media=#{MEDIA}", options[:output], exception: true) if options[:print]
+__END__
+RUBY

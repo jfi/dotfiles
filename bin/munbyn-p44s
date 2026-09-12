@@ -1,0 +1,124 @@
+#!/usr/bin/env bash
+# munbyn-p44s - set up the Munbyn P44S label printer on this Mac.
+#
+# Installs the vendor CUPS driver (PPD + TSPL raster filter) if it is missing,
+# switches off the vendor's root LaunchDaemon (it only polls system_profiler
+# to auto-add a USB queue, and would add a duplicate next to ours), then adds
+# or updates the Munbyn_P44S print queue. Safe to re-run.
+#
+# Usage:
+#   munbyn-p44s <printer-ip-or-hostname>   Wi-Fi: raw socket on port 9100
+#   munbyn-p44s usb                        USB: printer plugged in and on
+#
+# Munbyn's Mac bundle has no Wi-Fi configuration tool, so join the printer to
+# Wi-Fi with the Munbyn Print phone app first (Bluetooth pairing PIN 0000),
+# then read its IP off your router's client list.
+
+set -euo pipefail
+
+red()    { printf "\033[31m%s\033[0m\n" "$*" >&2; }
+green()  { printf "\033[32m%s\033[0m\n" "$*"; }
+yellow() { printf "\033[33m%s\033[0m\n" "$*" >&2; }
+
+QUEUE="Munbyn_P44S"
+PPD="/Library/Printers/p44s/PPDs/P44S Label printer.ppd"
+DAEMON="com.launch.p44s"
+# munbyn.biz/p44smacd redirects to this pCloud public link (v1.3, July 2023).
+DMG_CODE="XZsvPAVZCaE9ukvtr6k2dkGsha5yOjUWf9a7"
+DMG_SHA256="d113d535b9f455f110e8d2ac3ef7bcf3ef08eca624aac89f3b4dc37612b0e319"
+
+target="${1:-}"
+if [ -z "${target}" ]; then
+  sed -n '2,/^$/p' "$0" | sed 's/^# \{0,1\}//'
+  exit 1
+fi
+
+ensure_rosetta() {
+  [ "$(uname -m)" = "arm64" ] || return 0
+  if arch -x86_64 /usr/bin/true 2>/dev/null; then
+    green "Rosetta 2 present (the vendor filter is x86_64 only)"
+    return 0
+  fi
+  yellow "Installing Rosetta 2; the vendor filter is x86_64 only"
+  sudo softwareupdate --install-rosetta --agree-to-license
+}
+
+ensure_driver() {
+  if [ -f "${PPD}" ]; then
+    green "Driver already installed: ${PPD}"
+    return 0
+  fi
+
+  local tmp dmg mnt url
+  tmp="$(mktemp -d -t munbyn-p44s.XXXXXX)"
+  dmg="${tmp}/P44S-Mac-Driver-Latest.dmg"
+  mnt="${tmp}/dmg"
+  trap 'hdiutil detach "${mnt}" -quiet 2>/dev/null || true; rm -rf "${tmp}"' EXIT
+
+  yellow "Downloading the P44S Mac driver"
+  url="$(curl -fsS "https://api.pcloud.com/getpublinkdownload?code=${DMG_CODE}" |
+    python3 -c 'import json, sys; d = json.load(sys.stdin); print("https://" + d["hosts"][0] + d["path"])')"
+  curl -fsSL -o "${dmg}" "${url}"
+  if ! echo "${DMG_SHA256}  ${dmg}" | shasum -a 256 -c - >/dev/null; then
+    red "ERROR: driver checksum mismatch; not installing"
+    exit 1
+  fi
+
+  mkdir -p "${mnt}"
+  hdiutil attach -nobrowse -readonly -mountpoint "${mnt}" "${dmg}" >/dev/null
+  if ! pkgutil --check-signature "${mnt}"/P44SPrinter_*_signed.pkg | grep -q "Notarization: trusted"; then
+    red "ERROR: driver package is not notarised; not installing"
+    exit 1
+  fi
+  yellow "Installing the driver package (sudo)"
+  sudo installer -pkg "${mnt}"/P44SPrinter_*_signed.pkg -target /
+  hdiutil detach "${mnt}" -quiet
+  green "Driver installed"
+}
+
+disable_vendor_daemon() {
+  if launchctl print-disabled system 2>/dev/null | grep -q "\"${DAEMON}\" => disabled"; then
+    green "Vendor LaunchDaemon ${DAEMON} already disabled"
+    return 0
+  fi
+  if sudo launchctl print "system/${DAEMON}" >/dev/null 2>&1; then
+    sudo launchctl bootout "system/${DAEMON}"
+  fi
+  sudo launchctl disable "system/${DAEMON}"
+  green "Vendor LaunchDaemon ${DAEMON} disabled"
+}
+
+device_uri() {
+  if [ "${target}" != "usb" ]; then
+    if ! nc -z -G 3 "${target}" 9100 2>/dev/null; then
+      yellow "WARN: ${target}:9100 is not answering; adding the queue anyway"
+    fi
+    echo "socket://${target}"
+    return 0
+  fi
+
+  local uri
+  uri="$(lpinfo -v | awk 'tolower($2) ~ /^usb:\/\/.*p44s/ { print $2; exit }')"
+  if [ -z "${uri}" ]; then
+    red "ERROR: no P44S found on USB. Is it switched on and plugged in? USB devices seen:"
+    lpinfo -v | grep -i "usb://" >&2 || true
+    exit 1
+  fi
+  echo "${uri}"
+}
+
+add_queue() {
+  local uri="$1"
+  lpadmin -p "${QUEUE}" -D "Munbyn P44S" -v "${uri}" -P "${PPD}" \
+    -o printer-is-shared=false -E
+  green "Queue ${QUEUE} -> ${uri}"
+  lpstat -p "${QUEUE}"
+  echo
+  echo "Test print on a 4 x 6 in label:"
+  echo "  lp -d ${QUEUE} -o media=w288h432 <file.pdf>"
+}
+
+ensure_rosetta
+ensure_driver
+disable_vendor_daemon
+add_queue "$(device_uri)"
