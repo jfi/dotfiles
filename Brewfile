@@ -202,3 +202,29 @@ mas "UK Salary Calculator", id: 505795901
 mas "Under My Roof", id: 1524335878
 mas "Wipr", id: 1662217862
 mas "Xcode", id: 497799835
+brew "depot/tap/depot", trusted: true
+brew "docker"
+brew "duti"
+brew "gogcli"
+brew "homeport/tap/dyff", trusted: true
+brew "lazygit"
+brew "ollama"
+brew "python@3.13"
+cask "mactools"
+cask "mitmproxy"
+cask "proton-mail-bridge"
+cask "responsively"
+cask "sorkila/lockpaw/lockpaw", trusted: true
+mas "Canary Mail", id: 1236045954
+mas "Canva", id: 897446215
+mas "Cardhop", id: 1290358394
+mas "Dove", id: 6749230975
+mas "Numbers", id: 361304891
+mas "Pages", id: 361309726
+mas "Spark Desktop", id: 6445813049
+mas "Trello", id: 1278508951
+tap "depot/tap"
+tap "homebrew/cask"
+tap "homeport/tap"
+tap "m13v/tap"
+tap "sorkila/lockpaw"
