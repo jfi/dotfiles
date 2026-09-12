@@ -137,6 +137,8 @@ read that file, so the prose list is the fallback there.
     ├── brewfile-sync         # interactive Brewfile <-> install reconciler
     ├── check-baseline        # workstation health check
     ├── claude                # Claude Code wrapper
+    ├── label                 # 6 x 4 in address label -> PDF (Ruby/Prawn), -p prints
+    ├── munbyn-p44s           # Munbyn P44S label printer driver + CUPS queue
     ├── agents-sync           # regenerates the AGENTS.md copies (Claude, Cursor)
     └── with-ai-env           # 1Password-sourced AI env exec wrapper
 ```
@@ -190,6 +192,16 @@ machine from the upstream site:
   it's kept manual to avoid that dependency.
 - **UniFi** — download from ui.com. No Homebrew cask exists for the UniFi
   Network application (only the self-hosted controller, which is separate).
+- **Munbyn P44S label printer** - no cask, and the vendor driver is a plain
+  `.pkg` (a CUPS PPD plus a TSPL raster filter, x86_64 only, so Rosetta 2).
+  Run `munbyn-p44s <printer-ip>` (or `munbyn-p44s usb`): it downloads and
+  checksums the driver, disables the vendor's root LaunchDaemon and adds the
+  `Munbyn_P44S` queue over a raw socket. Join the printer to Wi-Fi first with
+  the Munbyn Print phone app (Bluetooth pairing PIN `0000`), then take its IP
+  from the router's client list. Bluetooth from macOS is not a supported path
+  for this model, and it speaks TSPL, not ZPL. `label "Name" "Street" "Town"`
+  renders a 6 x 4 in address label to PDF, sideways on the 4 x 6 in page as
+  the printer feeds it and with room for a stamp, and `label -p` prints it.
 
 ---
 
