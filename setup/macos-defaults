@@ -2,7 +2,8 @@
 # `defaults` writes are independent best-effort steps — if one fails (Safari
 # container needs Full Disk Access, systemsetup -settimezone gets a flaky -99
 # from Apple's services, etc.) we want the rest to keep going.
-set -ux
+# Do not trace commands: sourcing the machine-local .env can expose credentials.
+set -u
 
 # Load .env if present (for DOTFILES_COMPUTER_NAME, etc.)
 ENV_FILE="${HOME}/.dotfiles/.env"

@@ -1,10 +1,13 @@
-# mise shims (if present)
-if [ -d "${HOME}/.local/share/mise/shims" ]; then
-  export PATH="${HOME}/.local/share/mise/shims:${PATH}"
-fi
-# Homebrew environment (only if brew exists)
+# Homebrew environment (Apple Silicon or Intel)
 if [ -x /opt/homebrew/bin/brew ]; then
   eval "$(/opt/homebrew/bin/brew shellenv)"
+elif [ -x /usr/local/bin/brew ]; then
+  eval "$(/usr/local/bin/brew shellenv)"
+fi
+
+# mise shims take priority over Homebrew language runtimes.
+if [ -d "${HOME}/.local/share/mise/shims" ]; then
+  export PATH="${HOME}/.local/share/mise/shims:${PATH}"
 fi
 
 # 1Password SSH agent (if its socket exists). Routes ssh + git signing

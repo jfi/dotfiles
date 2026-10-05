@@ -1,0 +1,11 @@
+# Global config template, not a project config for the dotfiles checkout.
+# Trust paths and account settings stay machine-local.
+[tools]
+go = "1.26.3"
+java = "temurin-21"
+"npm:@rails-blocks/mcp" = "0.1.1"
+"npm:firebase-tools" = "latest"
+ruby = "4.0.7"
+
+[settings.ruby]
+compile = false

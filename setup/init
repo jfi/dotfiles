@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
+umask 077
 
 # Colours
 green() { printf "\033[32m%s\033[0m\n" "$*"; }
@@ -23,6 +24,54 @@ require_cmd() {
 
 has_cmd() {
   command -v "$1" >/dev/null 2>&1
+}
+
+# Move replaced files (including symlinks, not their targets) out of the way.
+# Create a backup directory only when something actually needs preserving.
+backup_dir=""
+backup_file() {
+  local file="$1" dest
+  if [ -e "$file" ] || [ -L "$file" ]; then
+    if [ -z "$backup_dir" ]; then
+      mkdir -p "${HOME}/.local/state/dotfiles/backups"
+      backup_dir="$(mktemp -d "${HOME}/.local/state/dotfiles/backups/init.XXXXXX")"
+    fi
+    dest="${backup_dir}/${file#"${HOME}/"}"
+    mkdir -p "$(dirname "$dest")"
+    mv "$file" "$dest"
+    echo "Backed up ${file} to ${dest}" >&2
+  fi
+}
+
+write_config() {
+  local dest="$1" tmp
+  tmp="$(mktemp "${dest}.XXXXXX")"
+  cat > "$tmp"
+  if [ -L "$dest" ] || ! cmp -s "$tmp" "$dest"; then
+    backup_file "$dest"
+  fi
+  mv "$tmp" "$dest"
+}
+
+link_config() {
+  local src="$1" dest="$2"
+  if [ -L "$dest" ] && [ "$(readlink "$dest")" = "$src" ]; then
+    return
+  fi
+  mkdir -p "$(dirname "$dest")"
+  backup_file "$dest"
+  ln -s "$src" "$dest"
+}
+
+# These applications rewrite their config and may add machine-specific state.
+seed_config() {
+  local src="$1" dest="$2"
+  if [ ! -e "$dest" ] && [ ! -L "$dest" ]; then
+    mkdir -p "$(dirname "$dest")"
+    cp "$src" "$dest"
+  else
+    echo "Preserving existing ${dest}"
+  fi
 }
 
 prompt_if_missing() {
@@ -126,20 +175,19 @@ if [ -f "${ENV_FILE}" ]; then
   source "${ENV_FILE}"
 fi
 
-# Resolve git identity (env → .env → interactive)
+# Resolve Git identity from .env, inherited variables or interactive input.
 GIT_NAME="$(prompt_if_missing "DOTFILES_GIT_NAME" "Enter your Git name" "${DOTFILES_GIT_NAME:-}")"
 GIT_EMAIL="$(prompt_if_missing "DOTFILES_GIT_EMAIL" "Enter your Git email" "${DOTFILES_GIT_EMAIL:-}")"
 
-# Persist identity to .env if it wasn't already set
-if [ -r /dev/tty ]; then
-  touch "${ENV_FILE}"
-  grep -q '^DOTFILES_GIT_NAME=' "${ENV_FILE}" || echo "DOTFILES_GIT_NAME=\"${GIT_NAME}\"" >> "${ENV_FILE}"
-  grep -q '^DOTFILES_GIT_EMAIL=' "${ENV_FILE}" || echo "DOTFILES_GIT_EMAIL=\"${GIT_EMAIL}\"" >> "${ENV_FILE}"
-fi
+# Persist shell-escaped values; quotes and dollar signs must survive sourcing.
+touch "${ENV_FILE}"
+chmod 600 "${ENV_FILE}"
+grep -q '^DOTFILES_GIT_NAME=' "${ENV_FILE}" || printf 'DOTFILES_GIT_NAME=%q\n' "${GIT_NAME}" >> "${ENV_FILE}"
+grep -q '^DOTFILES_GIT_EMAIL=' "${ENV_FILE}" || printf 'DOTFILES_GIT_EMAIL=%q\n' "${GIT_EMAIL}" >> "${ENV_FILE}"
 
 # Write ~/.zshrc thin loader
 green "Writing ~/.zshrc..."
-cat > "${HOME}/.zshrc" <<'EOF'
+write_config "${HOME}/.zshrc" <<'EOF'
 DOTFILES="$HOME/.dotfiles"
 [ -f "$DOTFILES/zsh/zshrc" ] && source "$DOTFILES/zsh/zshrc"
 
@@ -149,38 +197,33 @@ EOF
 
 # Write ~/.zprofile thin loader
 green "Writing ~/.zprofile..."
-cat > "${HOME}/.zprofile" <<'EOF'
+write_config "${HOME}/.zprofile" <<'EOF'
 DOTFILES="$HOME/.dotfiles"
 [ -f "$DOTFILES/zsh/zprofile" ] && source "$DOTFILES/zsh/zprofile"
+
+[ -f ~/.zprofile.local ] && source ~/.zprofile.local
 EOF
 
-# Write ~/.gitconfig (shared dotfiles config + user's own ~/.gitconfig.local)
-green "Writing ~/.gitconfig..."
-cat > "${HOME}/.gitconfig" <<'EOF'
+# Add includes without discarding personal aliases, credentials or signing keys.
+green "Configuring ~/.gitconfig includes..."
+# Git expands the tilde itself. Shared defaults precede personal overrides.
+# shellcheck disable=SC2088
+if ! git config --global --get-all include.path | grep -qxF '~/.dotfiles/git/gitconfig'; then
+  existing_gitconfig=""
+  if [ -f "${HOME}/.gitconfig" ]; then
+    existing_gitconfig="$(cat "${HOME}/.gitconfig")"
+  fi
+  write_config "${HOME}/.gitconfig" <<EOF
 [include]
   path = ~/.dotfiles/git/gitconfig
 
-[include]
-  path = ~/.gitconfig.local
+${existing_gitconfig}
 EOF
-
-# Write ~/.ssh/config with ForwardAgent (for Touch ID sudo forwarding)
-green "Writing ~/.ssh/config..."
-mkdir -p "${HOME}/.ssh"
-chmod 700 "${HOME}/.ssh"
-if [ ! -f "${HOME}/.ssh/config" ]; then
-  cat > "${HOME}/.ssh/config" <<'EOF'
-Host *
-  ForwardAgent yes
-EOF
-  chmod 600 "${HOME}/.ssh/config"
-elif ! grep -q "ForwardAgent yes" "${HOME}/.ssh/config"; then
-  # Add ForwardAgent to existing config if not present
-  cat >> "${HOME}/.ssh/config" <<'EOF'
-
-Host *
-  ForwardAgent yes
-EOF
+fi
+# shellcheck disable=SC2088
+if ! git config --global --get-all include.path | grep -qxF '~/.gitconfig.local'; then
+  # shellcheck disable=SC2088
+  git config --global --add include.path '~/.gitconfig.local'
 fi
 
 # macOS: create ~/.config/git/allowed_signers using 1Password (vault_id + item_id + field_id)
@@ -199,7 +242,8 @@ if has_cmd op; then
     require_op_session
 
     # Vault menu: "Name (id)"
-    mapfile -t VAULT_MENU < <(
+    VAULT_MENU=()
+    while IFS= read -r option; do VAULT_MENU+=("$option"); done < <(
       op vault list --format json | python3 -c '
 import json,sys
 v=json.load(sys.stdin)
@@ -212,7 +256,8 @@ for x in v:
     OP_VAULT_ID="$(printf '%s' "$VAULT_PICK" | sed -n 's/.*(\(.*\)).*/\1/p')"
 
     # Item menu: "Title (id)" - much nicer with fzf when lots of items
-    mapfile -t ITEM_MENU < <(
+    ITEM_MENU=()
+    while IFS= read -r option; do ITEM_MENU+=("$option"); done < <(
       op item list --vault "${OP_VAULT_ID}" --format json | python3 -c '
 import json,sys
 items=json.load(sys.stdin)
@@ -231,7 +276,8 @@ for x in items:
     fi
 
     # Field menu: "field_id (label)" and prefer public_key if present
-    mapfile -t FIELD_ID_MENU < <(
+    FIELD_ID_MENU=()
+    while IFS= read -r option; do FIELD_ID_MENU+=("$option"); done < <(
       python3 -c '
 import json,sys
 item=json.load(sys.stdin)
@@ -296,7 +342,7 @@ raise SystemExit(1)
     exit 1
   fi
 
-  cat > "${HOME}/.config/git/allowed_signers" <<EOF
+  write_config "${HOME}/.config/git/allowed_signers" <<EOF
 ${GIT_EMAIL} ${SIGNING_PUBKEY}
 EOF
 
@@ -318,43 +364,50 @@ git config --global user.name "${GIT_NAME}"
 git config --global user.email "${GIT_EMAIL}"
 
 # Claude global config (and AGENTS.md mirror for non-Claude tools).
-# Only portable, secret-free config is linked here — credentials, history,
+# Only portable, secret-free config is linked here - credentials, history,
 # projects/, sessions/, and other machine-local state stay out of the repo.
 # ~/.claude/CLAUDE.md is a copy rather than a symlink because Cowork skips
 # symlinked user-level CLAUDE.md files; bin/agents-sync keeps it current.
-green "Linking ~/.claude/AGENTS.md, keybindings.json, settings.json..."
+green "Configuring ~/.claude/AGENTS.md, keybindings.json, settings.json..."
 mkdir -p "${HOME}/.claude"
-ln -sf "${DOTFILES_DIR}/claude/AGENTS.md" "${HOME}/.claude/AGENTS.md"
-ln -sf "${DOTFILES_DIR}/claude/keybindings.json" "${HOME}/.claude/keybindings.json"
-ln -sf "${DOTFILES_DIR}/claude/settings.json" "${HOME}/.claude/settings.json"
+link_config "${DOTFILES_DIR}/claude/AGENTS.md" "${HOME}/.claude/AGENTS.md"
+link_config "${DOTFILES_DIR}/claude/keybindings.json" "${HOME}/.claude/keybindings.json"
+seed_config "${DOTFILES_DIR}/claude/settings.json" "${HOME}/.claude/settings.json"
 green "Copying ~/.claude/CLAUDE.md (Cowork ignores symlinks)..."
+if ! cmp -s "${DOTFILES_DIR}/claude/AGENTS.md" "${HOME}/.claude/CLAUDE.md"; then
+  backup_file "${HOME}/.claude/CLAUDE.md"
+fi
 "${DOTFILES_DIR}/bin/agents-sync"
 
 # Codex reads its global instructions from ~/.codex/AGENTS.md; Cursor has no
 # global file (paste claude/AGENTS.md into Cursor Settings > Rules > User Rules).
 green "Linking ~/.codex/AGENTS.md..."
 mkdir -p "${HOME}/.codex"
-ln -sf "${DOTFILES_DIR}/claude/AGENTS.md" "${HOME}/.codex/AGENTS.md"
+link_config "${DOTFILES_DIR}/claude/AGENTS.md" "${HOME}/.codex/AGENTS.md"
 
 # Symlink Zed config
 green "Linking ~/.config/zed/{settings,keymap}.json..."
 mkdir -p "${HOME}/.config/zed"
-ln -sf "${DOTFILES_DIR}/zed/settings.json" "${HOME}/.config/zed/settings.json"
-ln -sf "${DOTFILES_DIR}/zed/keymap.json" "${HOME}/.config/zed/keymap.json"
+link_config "${DOTFILES_DIR}/zed/settings.json" "${HOME}/.config/zed/settings.json"
+link_config "${DOTFILES_DIR}/zed/keymap.json" "${HOME}/.config/zed/keymap.json"
 
-# Symlink Ghostty config and remove the macOS Application Support config so
+# Symlink Ghostty config and back up the macOS Application Support config so
 # it doesn't shadow the dotfiles version.
 green "Linking ~/.config/ghostty/config..."
 mkdir -p "${HOME}/.config/ghostty"
-ln -sf "${DOTFILES_DIR}/ghostty/config" "${HOME}/.config/ghostty/config"
-rm -f "${HOME}/.config/ghostty/config.ghostty"
-rm -f "${HOME}/Library/Application Support/com.mitchellh.ghostty/config.ghostty"
-rm -f "${HOME}/Library/Application Support/com.mitchellh.ghostty/config"
+link_config "${DOTFILES_DIR}/ghostty/config" "${HOME}/.config/ghostty/config"
+backup_file "${HOME}/.config/ghostty/config.ghostty"
+backup_file "${HOME}/Library/Application Support/com.mitchellh.ghostty/config.ghostty"
+backup_file "${HOME}/Library/Application Support/com.mitchellh.ghostty/config"
+
+# Portable defaults only: never copy trust paths, credentials or history.
+seed_config "${DOTFILES_DIR}/mise/global.toml" "${HOME}/.config/mise/config.toml"
+seed_config "${DOTFILES_DIR}/atuin/config.toml" "${HOME}/.config/atuin/config.toml"
 
 # Symlink k9s plugins (macOS k9s config dir, per `k9s info`)
 green "Linking ~/Library/Application Support/k9s/plugins.yaml..."
 mkdir -p "${HOME}/Library/Application Support/k9s"
-ln -sf "${DOTFILES_DIR}/k9s/plugins.yaml" "${HOME}/Library/Application Support/k9s/plugins.yaml"
+link_config "${DOTFILES_DIR}/k9s/plugins.yaml" "${HOME}/Library/Application Support/k9s/plugins.yaml"
 
 # Install hk git hooks if available
 if has_cmd hk; then
@@ -367,7 +420,7 @@ green "init complete."
 echo
 
 # Pause for confirmation before proceeding
-if [ -r /dev/tty ]; then
+if [ -t 0 ]; then
   printf "Press Enter to continue to the next step..." >&2
   read -r </dev/tty
 fi
