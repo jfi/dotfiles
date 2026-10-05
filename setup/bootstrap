@@ -14,19 +14,17 @@ fi
 
 # Install Homebrew packages and everything else we need
 green "Installing Homebrew packages..."
-brew bundle upgrade --file="${DOTFILES_DIR}/Brewfile"
+brew bundle install --no-upgrade --file="${DOTFILES_DIR}/Brewfile"
 
-# Spark Desktop CLI symlink
-green "Setting up Spark symlink..."
-sudo mkdir -p /usr/local/bin
-sudo ln -sf '/Applications/Spark Desktop.app/Contents/MacOS/SparklyRemote' '/usr/local/bin/spark'
+# init runs before hk is installed on a fresh Mac.
+(cd "${DOTFILES_DIR}" && hk install)
 
-# Enable Touch ID for sudo (if not already configured)
-if ! grep -q "pam_tid.so" /etc/pam.d/sudo 2>/dev/null; then
+# Use Apple's local PAM include, which survives OS updates. Never replace an
+# existing local policy or edit /etc/pam.d/sudo itself.
+if [ -f /etc/pam.d/sudo_local.template ] && [ ! -e /etc/pam.d/sudo_local ]; then
   green "Enabling Touch ID for sudo..."
-  sudo sed -i '' '1a\
-auth       sufficient     pam_tid.so
-' /etc/pam.d/sudo
+  sudo cp /etc/pam.d/sudo_local.template /etc/pam.d/sudo_local
+  sudo sed -i '' 's/^#auth/auth/' /etc/pam.d/sudo_local
 fi
 
 # Enable the Application Firewall (idempotent)
@@ -35,24 +33,17 @@ if [ "$(sudo /usr/libexec/ApplicationFirewall/socketfilterfw --getglobalstate 2>
   sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate on >/dev/null
 fi
 
-# Verify mise installation
-green "Verifying mise installation..."
-mise doctor
-
-# Configure mise defaults
-green "Configuring mise defaults..."
-mise settings ruby.compile=false
-
-# Install mise dependencies
+# Install the global tools seeded by init, not a calling project's tools.
+# mise doctor expects shell activation and is not a bootstrap prerequisite.
 green "Installing mise dependencies..."
-mise install -y
+(cd "${HOME}" && mise install -y)
 
 echo
 green "bootstrap complete."
 echo
 
 # Pause for confirmation before proceeding
-if [ -r /dev/tty ]; then
+if [ -t 0 ]; then
   printf "Press Enter to continue to the next step..." >&2
   read -r </dev/tty
 fi

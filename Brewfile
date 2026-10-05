@@ -1,4 +1,5 @@
 # Taps
+tap "codescene-oss/codescene-mcp-server", trusted: true
 tap "common-fate/granted", trusted: true
 tap "depot/tap", trusted: true
 tap "hashicorp/tap", trusted: true
@@ -18,34 +19,43 @@ brew "atmos"
 brew "atuin", restart_service: :changed
 brew "aube"
 brew "awscli"
+brew "bash"
 brew "bat"
 brew "bats-core"
 brew "bundler-completion"
 brew "chart-testing"
+brew "cloudflare-wrangler"
+brew "cloudflared"
 brew "cmake"
+brew "codescene-oss/codescene-mcp-server/cs-mcp"
 brew "commitlint"
 brew "common-fate/granted/granted"
 brew "coreutils"
 brew "curl"
 brew "d2"
 brew "dash-shell"
-brew "depot/tap/depot"
+brew "depot/tap/depot", trusted: true
 brew "direnv"
 brew "displayplacer"
 brew "dockutil"
+brew "docker"
 brew "docker-compose"
 brew "docker-credential-helper"
 brew "duckdb"
+brew "duti"
 brew "eza"
+brew "exiftool"
 brew "ffmpeg"
 brew "fx"
 brew "fzf"
 brew "gh"
 brew "git"
+brew "git-lfs"
+brew "gogcli"
 brew "helm"
 brew "helm-ls"
 brew "hk"
-brew "homeport/tap/dyff"
+brew "homeport/tap/dyff", trusted: true
 brew "hub"
 brew "imagemagick"
 brew "jq"
@@ -53,6 +63,7 @@ brew "jsonlint"
 brew "k9s"
 brew "kubeconform"
 brew "kubernetes-cli"
+brew "lazygit"
 brew "libb2"
 brew "libpq"
 brew "libxml2"
@@ -67,6 +78,8 @@ brew "nano"
 brew "nmap"
 brew "node"
 brew "numpy"
+brew "ocrmypdf"
+brew "ollama"
 brew "opencode"
 brew "openconnect"
 brew "openssl@3"
@@ -75,10 +88,13 @@ brew "overmind"
 brew "pandoc"
 brew "pgxnclient"
 brew "pipx"
+brew "pkgconf"
 brew "playwright-cli"
 brew "postgresql@16"
 brew "postgresql@17"
 brew "powershell"
+brew "python"
+brew "rclone"
 brew "redis"
 brew "ripgrep"
 brew "shellcheck"
@@ -109,18 +125,22 @@ brew "zsh-syntax-highlighting"
 
 # Casks
 cask "1password"
-cask "1password-cli"
+cask "1password-cli@beta"
+cask "antigravity-cli"
 cask "applite"
 cask "balenaetcher"
 cask "beardedspice"
 cask "bruno"
 cask "canva"
 cask "cardhop"
+cask "chatgpt"
 cask "claude"
+cask "claude-code"
 cask "cleanshot"
 cask "codex"
 cask "conductor"
 cask "copilot-cli"
+cask "cursor"
 cask "db-browser-for-sqlite"
 cask "espanso"
 cask "fantastical"
@@ -135,21 +155,24 @@ cask "font-zed-mono-nerd-font"
 cask "gcloud-cli"
 cask "ghostty"
 cask "git-credential-manager"
-cask "github"
 cask "google-chrome"
+cask "homebrew-app"
 cask "jordanbaird-ice"
 cask "kap"
 cask "kubeterm"
 cask "libreoffice"
 cask "linear-linear"
 cask "m13v/tap/claude-meter", trusted: true
+cask "mactools"
 cask "microsoft-excel"
 cask "microsoft-outlook"
 cask "microsoft-powerpoint"
 cask "microsoft-teams"
 cask "microsoft-word"
+cask "mitmproxy"
 cask "mole-app"
-cask "moonlight"
+cask "nimbalyst"
+cask "notion"
 cask "numi"
 cask "omnigraffle"
 cask "omnioutliner"
@@ -159,29 +182,31 @@ cask "pieces"
 cask "pieces-os"
 cask "postgres-app"
 cask "proton-mail"
+cask "proton-mail-bridge"
 cask "protonvpn"
 cask "raycast"
 cask "readdle-spark"
 cask "rectangle-pro"
+cask "responsively"
 cask "session-manager-plugin"
 cask "setapp"
 cask "slack"
-cask "sorkila/lockpaw/lockpaw"
+cask "sorkila/lockpaw/lockpaw", trusted: true
 cask "tailscale-app"
-cask "taphouse"
 cask "the-unarchiver"
 cask "whatsapp"
 cask "windows-app"
 cask "zed@preview"
-cask "zen@twilight"
 cask "zoom"
 
 # Mac App Store
+mas "1Blocker", id: 1365531024
 mas "1Password for Safari", id: 1569813296
 mas "Amphetamine", id: 937984704
 mas "Anybox", id: 1593408455
 mas "Bear", id: 1091189122
 mas "Drafts", id: 1435957248
+mas "Dove", id: 6749230975
 mas "Expenses", id: 1492055171
 mas "FireShot - Full web page screenshots", id: 1541862561
 mas "GarageBand", id: 682658836
@@ -190,41 +215,21 @@ mas "iMovie", id: 408981434
 mas "InYourFace", id: 1476964367
 mas "Keynote", id: 409183694
 mas "Mela", id: 1568924476
+mas "Minimal", id: 1442727443
+mas "Momentum", id: 1564329434
 mas "Msg Viewer Pro", id: 1019539949
-mas "NotePlan", id: 1505432629
 mas "Numbers", id: 409203825
+mas "Numbers Creator Studio", id: 361304891
 mas "Pages", id: 409201541
+mas "Pages Creator Studio", id: 361309726
+mas "Pixelmator Pro", id: 1289583905
 mas "Prime Video", id: 545519333
-mas "SnippetsLab", id: 1006087419
 mas "Sofa", id: 1276554886
 mas "TestFlight", id: 899247664
+mas "Things", id: 904280696
+mas "Trello", id: 1278508951
 mas "UK Salary Calculator", id: 505795901
 mas "Under My Roof", id: 1524335878
+mas "Unforgetful", id: 6785630295
 mas "Wipr", id: 1662217862
 mas "Xcode", id: 497799835
-brew "depot/tap/depot", trusted: true
-brew "docker"
-brew "duti"
-brew "gogcli"
-brew "homeport/tap/dyff", trusted: true
-brew "lazygit"
-brew "ollama"
-brew "python@3.13"
-cask "mactools"
-cask "mitmproxy"
-cask "proton-mail-bridge"
-cask "responsively"
-cask "sorkila/lockpaw/lockpaw", trusted: true
-mas "Canary Mail", id: 1236045954
-mas "Canva", id: 897446215
-mas "Cardhop", id: 1290358394
-mas "Dove", id: 6749230975
-mas "Numbers", id: 361304891
-mas "Pages", id: 361309726
-mas "Spark Desktop", id: 6445813049
-mas "Trello", id: 1278508951
-tap "depot/tap"
-tap "homebrew/cask"
-tap "homeport/tap"
-tap "m13v/tap"
-tap "sorkila/lockpaw"

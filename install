@@ -13,6 +13,12 @@ if [ "$(uname -s)" != "Darwin" ]; then
   exit 1
 fi
 
+# The curl entry point uses stdin for the script, not for answers to prompts.
+if ! exec 3</dev/tty; then
+  red "ERROR: Run this installer from an interactive terminal."
+  exit 1
+fi
+
 # Require FileVault (full-disk encryption) before continuing
 if ! fdesetup status 2>/dev/null | grep -q "FileVault is On"; then
   red "ERROR: FileVault is not enabled."
@@ -28,32 +34,48 @@ if ! command -v xcode-select >/dev/null 2>&1 || ! xcode-select -p >/dev/null 2>&
   exit 0
 fi
 
-# Accept the Xcode license — but only if the full Xcode.app is the active
+# Accept the Xcode licence, but only if a full Xcode app is the active
 # developer directory. xcodebuild ships with Xcode, not the Command Line
 # Tools, so this is a no-op until/unless Xcode is installed (e.g. via the
 # MAS entry in Brewfile).
-if xcode-select -p 2>/dev/null | grep -q "Xcode.app"; then
+if xcode-select -p 2>/dev/null | grep -q '\.app/Contents/Developer'; then
   sudo xcodebuild -license accept
 fi
 
-# Install Homebrew if necessary
+# Discover Homebrew even before the login shell has been configured.
+if ! command -v brew >/dev/null 2>&1; then
+  for prefix in /opt/homebrew /usr/local; do
+    if [ -x "${prefix}/bin/brew" ]; then
+      eval "$("${prefix}/bin/brew" shellenv)"
+      break
+    fi
+  done
+fi
+
+# Install Homebrew if necessary, using the architecture's default prefix.
 if ! command -v brew >/dev/null 2>&1; then
   green "Installing Homebrew..."
-  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-  eval "$(/opt/homebrew/bin/brew shellenv)"
-  # shellcheck disable=SC2016
-  echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> "${HOME}/.zprofile"
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" <&3
+  if [ "$(uname -m)" = arm64 ]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+  else
+    eval "$(/usr/local/bin/brew shellenv)"
+  fi
 fi
+
+# The signing-key wizard needs Python before the main Brewfile is installed.
+brew install python fzf
 
 # Install 1Password CLI if necessary
 if ! command -v op >/dev/null 2>&1; then
   green "Installing 1Password CLI..."
   brew install --cask 1password
-  brew install 1password-cli
+  brew install --cask 1password-cli@beta
   read -r -p "Open 1Password, log in, go to Settings > Developer, enable CLI & SSH Agent. Press enter when done: " -t 300 || true
-fi
+fi <&3
 
-DOTFILES_REPO="${DOTFILES_REPO:-git@github.com:jfi/dotfiles.git}"
+# Cloning public dotfiles must not depend on SSH keys that init has yet to set up.
+DOTFILES_REPO="${DOTFILES_REPO:-https://github.com/jfi/dotfiles.git}"
 
 # Clone repo if not present
 if [ ! -d "${DOTFILES_DIR}" ]; then
@@ -68,9 +90,9 @@ fi
 
 # Run setup scripts in order (with TTY for interactive prompts)
 green "Running setup scripts..."
-"${DOTFILES_DIR}/setup/init" </dev/tty
-"${DOTFILES_DIR}/setup/bootstrap" </dev/tty
-"${DOTFILES_DIR}/setup/install-ruby" </dev/tty
-"${DOTFILES_DIR}/setup/macos-defaults" </dev/tty
+"${DOTFILES_DIR}/setup/init" <&3
+"${DOTFILES_DIR}/setup/bootstrap" <&3
+"${DOTFILES_DIR}/setup/install-ruby" <&3
+"${DOTFILES_DIR}/setup/macos-defaults" <&3
 
 green "Setup complete!"

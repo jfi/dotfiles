@@ -1,7 +1,16 @@
 # Shared zsh config (safe to commit)
 
 # PATH
-export PATH="$HOME/.dotfiles/bin:$HOME/.local/bin:$HOME/bin:$PATH"
+export PATH="$HOME/.dotfiles/bin:$HOME/.local/bin:$HOME/.amp/bin:$HOME/bin:$PATH"
+
+# Homebrew and locally installed completions must precede compinit.
+if [[ -z "$HOMEBREW_PREFIX" ]] && command -v brew >/dev/null; then
+  export HOMEBREW_PREFIX="$(brew --prefix)"
+fi
+fpath=("$HOME/.local/share/zsh/site-functions" $fpath)
+if [[ -n "$HOMEBREW_PREFIX" ]]; then
+  fpath=("$HOMEBREW_PREFIX/share/zsh/site-functions" $fpath)
+fi
 
 # Initialise completions before anything that registers via `compdef`
 # (mise activate, direnv hook, atuin/zoxide/starship init all use it).
@@ -28,11 +37,13 @@ precmd_functions+=(set_term_title)
 
 command -v direnv >/dev/null && eval "$(direnv hook zsh)"
 
-# Plugins (Homebrew paths)
-[ -f /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ] \
-  && source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-[ -f /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh ] \
-  && source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+# Plugins (Intel and Apple Silicon Homebrew paths)
+if [[ -n "$HOMEBREW_PREFIX" ]]; then
+  [[ -f "$HOMEBREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]] \
+    && source "$HOMEBREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+  [[ -f "$HOMEBREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]] \
+    && source "$HOMEBREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+fi
 
 # Local scripts
 export PATH="$HOME/Scripts:$PATH"
@@ -81,16 +92,12 @@ tinyprompt() {
 }
 
 # Build flags (libxml2)
-export LDFLAGS="-L/opt/homebrew/opt/libxml2/lib"
-export CPPFLAGS="-I/opt/homebrew/opt/libxml2/include"
-export PKG_CONFIG_PATH="/opt/homebrew/opt/libxml2/lib/pkgconfig"
-export PATH="/opt/homebrew/opt/libxml2/bin:$PATH"
-
-# pipx
-export PATH="$PATH:/Users/james/.local/bin"
-
-# Amp CLI
-export PATH="/Users/james/.amp/bin:$PATH"
+if [[ -n "$HOMEBREW_PREFIX" && -d "$HOMEBREW_PREFIX/opt/libxml2" ]]; then
+  export LDFLAGS="-L$HOMEBREW_PREFIX/opt/libxml2/lib${LDFLAGS:+ $LDFLAGS}"
+  export CPPFLAGS="-I$HOMEBREW_PREFIX/opt/libxml2/include${CPPFLAGS:+ $CPPFLAGS}"
+  export PKG_CONFIG_PATH="$HOMEBREW_PREFIX/opt/libxml2/lib/pkgconfig${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"
+  export PATH="$HOMEBREW_PREFIX/opt/libxml2/bin:$PATH"
+fi
 
 # Aliases
 command -v eza    >/dev/null && alias ls='eza --icons --group-directories-first'
@@ -107,6 +114,6 @@ mkcd() {
 
 # zoxide is initialised last (its hook must register after direnv/mise). The
 # doctor check false-positives in non-interactive harness shells that reset
-# chpwd_functions, so disable the nag — the init below is already correctly ordered.
+# chpwd_functions, so disable the nag - the init below is already correctly ordered.
 export _ZO_DOCTOR=0
 command -v zoxide >/dev/null && eval "$(zoxide init zsh)"

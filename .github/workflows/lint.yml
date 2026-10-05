@@ -31,3 +31,12 @@ jobs:
           find . -type f \( -name '*.sh' -o -path './setup/*' -o -path './bin/*' -o -name 'install' \) \
             -not -path './.git/*' \
             -exec shellcheck {} +
+
+  setup-tests:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Test setup with system Bash and a disposable HOME
+        run: python3 -m unittest discover -s tests -p test_setup.py -v
