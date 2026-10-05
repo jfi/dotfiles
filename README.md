@@ -111,6 +111,8 @@ read that file, so the prose list is the fallback there.
 - enables Touch ID for `sudo`
 - enables the macOS Application Firewall
 - runs `mise install` from the home directory, not the caller's project
+- selects Node 24 LTS for Firebase's supported runtime, independently of
+  Homebrew's newer Node dependency
 
 **`setup/install-ruby`**
 
