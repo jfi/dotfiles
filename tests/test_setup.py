@@ -154,7 +154,7 @@ esac
         )
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertEqual((self.home / "brew-calls").read_text().splitlines(),
-                         [f"bundle install --no-upgrade --file={self.repo}/Brewfile"])
+                         [f"bundle install --verbose --no-upgrade --file={self.repo}/Brewfile"])
         self.assertEqual((self.home / "hk-calls").read_text(), "install\n")
         self.assertNotIn("Spark", (self.home / "sudo-calls").read_text())
         self.assertNotIn("doctor", (self.home / "mise-calls").read_text())
