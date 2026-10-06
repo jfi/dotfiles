@@ -14,10 +14,11 @@ fi
 
 # Install Homebrew packages and everything else we need
 green "Installing Homebrew packages..."
-# brew bundle captures each install's output and only prints it on failure, so
-# a licence prompt (e.g. microsoft/mssql-release) is invisible and blocks forever.
+# Without --verbose, brew bundle captures each install's output and only prints
+# it on failure, so prompts and progress never reach the terminal. Accept
+# licences (e.g. microsoft/mssql-release) up front so the run is unattended.
 export HOMEBREW_ACCEPT_EULA=Y
-brew bundle install --no-upgrade --file="${DOTFILES_DIR}/Brewfile"
+brew bundle install --verbose --no-upgrade --file="${DOTFILES_DIR}/Brewfile"
 
 # init runs before hk is installed on a fresh Mac.
 (cd "${DOTFILES_DIR}" && hk install)
