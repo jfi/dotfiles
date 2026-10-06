@@ -495,40 +495,83 @@ killall cfprefsd 2>/dev/null || true
 killall cfprefsd 2>/dev/null || true
 killall SystemUIServer 2>/dev/null || true
 
-# Manual permissions checklist. macOS' TCC database is SIP-protected
-# and can't be scripted without disabling SIP or shipping an MDM
-# profile, so the rest is on you. (set +x to keep this readable.)
-set +x
+# Privacy permissions. TCC is SIP-protected, so scripts can't grant these
+# without disabling SIP or an MDM profile. Instead, read the TCC databases
+# (readable once the terminal has Full Disk Access), list only installed apps
+# that still need a grant, and open each System Settings pane.
+TCC_DBS=(
+  "/Library/Application Support/com.apple.TCC/TCC.db"
+  "${HOME}/Library/Application Support/com.apple.TCC/TCC.db"
+)
+
+# Prints "yes", "no", or "unknown" when no TCC database is readable.
+tcc_granted() {
+  local service="$1" bundle_id="$2" db readable=no
+  for db in "${TCC_DBS[@]}"; do
+    if sqlite3 -readonly "${db}" "select 1 limit 1" >/dev/null 2>&1; then
+      readable=yes
+      if [ "$(sqlite3 -readonly "${db}" "select count(*) from access where service = '${service}' and client = '${bundle_id}' and auth_value = 2" 2>/dev/null)" != 0 ]; then
+        echo yes
+        return
+      fi
+    fi
+  done
+  [ "${readable}" = yes ] && echo no || echo unknown
+}
+
+# service|settings anchor|heading|bundle id|app|reason
+PERMISSIONS="
+kTCCServiceAccessibility|Privacy_Accessibility|Accessibility|com.raycast.macos|Raycast|global hotkey, window mgmt, paste history
+kTCCServiceAccessibility|Privacy_Accessibility|Accessibility|com.knollsoft.Hookshot|Rectangle Pro|window resizing / snapping
+kTCCServiceAccessibility|Privacy_Accessibility|Accessibility|com.1password.1password|1Password|browser/app autofill
+kTCCServiceScreenCapture|Privacy_ScreenCapture|Screen Recording|com.raycast.macos|Raycast|screen-capture / window screenshots
+kTCCServiceScreenCapture|Privacy_ScreenCapture|Screen Recording|com.tinyspeck.slackmacgap|Slack|screen-share in calls
+kTCCServiceScreenCapture|Privacy_ScreenCapture|Screen Recording|com.wulkano.kap|Kap|screen recording
+kTCCServiceSystemPolicyAllFiles|Privacy_AllFiles|Full Disk Access|com.raycast.macos|Raycast|some file-search extensions
+kTCCServiceSystemPolicyAllFiles|Privacy_AllFiles|Full Disk Access|com.mitchellh.ghostty|Ghostty|lets defaults write Safari's sandboxed prefs; re-run this script after
+kTCCServiceListenEvent|Privacy_ListenEvent|Input Monitoring|com.raycast.macos|Raycast|hotkey listener
+kTCCServiceListenEvent|Privacy_ListenEvent|Input Monitoring|com.knollsoft.Hookshot|Rectangle Pro|keyboard shortcuts
+"
+
+missing_panes=()
+last_heading=""
+unknown=no
+while IFS='|' read -r service anchor heading bundle_id app reason; do
+  [ -n "${service}" ] || continue
+  # Skip apps that aren't installed on this Mac.
+  [ -d "/Applications/${app}.app" ] || continue
+  status="$(tcc_granted "${service}" "${bundle_id}")"
+  [ "${status}" = yes ] && continue
+  [ "${status}" = unknown ] && unknown=yes
+  if [ "${heading}" != "${last_heading}" ]; then
+    [ ${#missing_panes[@]} -eq 0 ] && printf '\n------------------------------------------------------------\nPermission grants still needed (System Settings -> Privacy & Security)\n'
+    printf '\n%s:\n' "${heading}"
+    missing_panes+=("${anchor}")
+    last_heading="${heading}"
+  fi
+  printf '  - %-20s (%s)\n' "${app}" "${reason}"
+done <<<"${PERMISSIONS}"
+
+if [ ${#missing_panes[@]} -eq 0 ]; then
+  printf '\nAll privacy permission grants are in place.\n'
+else
+  if [ "${unknown}" = yes ]; then
+    printf '\n(Could not read the TCC database, so this lists every app. Give\nyour terminal Full Disk Access to list only missing grants.)\n'
+  fi
+  if [ -t 0 ]; then
+    printf '\nPress Enter to open each pane in turn (or type s to skip): ' >&2
+    read -r answer || answer=s
+    if [ "${answer}" != s ]; then
+      for anchor in "${missing_panes[@]}"; do
+        open "x-apple.systempreferences:com.apple.preference.security?${anchor}"
+        printf 'Opened %s. Press Enter for the next pane...' "${anchor#Privacy_}" >&2
+        read -r _ || true
+      done
+    fi
+  fi
+fi
+
 cat <<'CHECKLIST'
-
-------------------------------------------------------------
-Manual permission grants needed
-(System Settings -> Privacy & Security)
-
-Accessibility:
-  - Raycast              (global hotkey, window mgmt, paste history)
-  - Rectangle Pro        (window resizing / snapping)
-  - 1Password            (browser/app autofill)
-
-Screen Recording:
-  - Raycast              (screen-capture / window screenshots)
-  - Slack                (screen-share in calls)
-  - Kap                  (screen recording)
-
-Full Disk Access:
-  - Raycast              (some file-search extensions)
-  - Ghostty              (REQUIRED for `defaults` to write Safari's
-                          sandboxed prefs — re-run this script after
-                          granting, otherwise Safari section is skipped)
-
-Input Monitoring:
-  - Raycast              (hotkey listener — overlaps Accessibility)
-  - Rectangle Pro
-
-macOS won't let scripts grant these for security reasons. Open
-System Settings -> Privacy & Security, find each section, and add
-the apps with the toggle. You may need to drag the .app in or click
-the + button.
 
 Heads-up: already-running apps cached the old settings at launch.
 Keyboard repeat, language, locale, etc. won't reflect their new
