@@ -35,6 +35,17 @@ green "Installing Homebrew packages..."
 export HOMEBREW_ACCEPT_EULA=Y
 brew bundle install --verbose --no-upgrade --file="${DOTFILES_DIR}/Brewfile"
 
+# restart_service: :changed only fires when brew bundle installs or upgrades
+# atuin, so start the sync daemon explicitly. A no-op if it is already running.
+green "Starting atuin service..."
+brew services start atuin
+
+# The git-credential-manager cask registers itself as the global credential
+# helper, which overrides gh for GitHub. git/gitconfig scopes it to Azure DevOps.
+if git config --global --get-all credential.helper 2>/dev/null | grep -q git-credential-manager; then
+  git config --global --unset-all credential.helper
+fi
+
 # init runs before hk is installed on a fresh Mac.
 (cd "${DOTFILES_DIR}" && hk install)
 

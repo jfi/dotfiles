@@ -3,7 +3,6 @@ tap "codescene-oss/codescene-mcp-server", "https://github.com/codescene-oss/code
 tap "common-fate/granted", trusted: true
 tap "depot/tap", trusted: true
 tap "hashicorp/tap", trusted: true
-tap "homeport/tap", trusted: true
 tap "m13v/tap", trusted: true
 tap "microsoft/mssql-release", "https://github.com/Microsoft/homebrew-mssql-release", trusted: true
 tap "sorkila/lockpaw", trusted: true
@@ -42,6 +41,7 @@ brew "docker"
 brew "docker-compose"
 brew "docker-credential-helper"
 brew "duckdb"
+brew "dyff"
 brew "duti"
 brew "eza"
 brew "exiftool"
@@ -55,7 +55,6 @@ brew "gogcli"
 brew "helm"
 brew "helm-ls"
 brew "hk"
-brew "homeport/tap/dyff", trusted: true
 brew "hub"
 brew "imagemagick"
 brew "jq"
@@ -98,7 +97,6 @@ brew "rclone"
 brew "redis"
 brew "ripgrep"
 brew "shellcheck"
-brew "sqlcmd"
 brew "ssh-copy-id"
 brew "starship"
 brew "stripe/stripe-cli/stripe"
@@ -161,7 +159,7 @@ cask "jordanbaird-ice"
 cask "kap"
 cask "kubeterm"
 cask "libreoffice"
-cask "linear-linear"
+cask "linear"
 cask "m13v/tap/claude-meter", trusted: true
 cask "mactools"
 cask "microsoft-excel"
@@ -213,15 +211,13 @@ mas "GarageBand", id: 682658836
 mas "Goodnotes", id: 1444383602
 mas "iMovie", id: 408981434
 mas "InYourFace", id: 1476964367
-mas "Keynote", id: 409183694
+mas "Keynote", id: 361285480
 mas "Mela", id: 1568924476
 mas "Minimal", id: 1442727443
 mas "Momentum", id: 1564329434
 mas "Msg Viewer Pro", id: 1019539949
-mas "Numbers", id: 409203825
-mas "Numbers Creator Studio", id: 361304891
-mas "Pages", id: 409201541
-mas "Pages Creator Studio", id: 361309726
+mas "Numbers", id: 361304891
+mas "Pages", id: 361309726
 mas "Pixelmator Pro", id: 1289583905
 mas "Prime Video", id: 545519333
 mas "Sofa", id: 1276554886
