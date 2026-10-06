@@ -64,7 +64,14 @@ if ! command -v brew >/dev/null 2>&1; then
 fi
 
 # The signing-key wizard needs Python before the main Brewfile is installed.
-brew install python fzf
+# Only install what is missing, so re-runs don't warn about existing formulae.
+missing=()
+for formula in python fzf; do
+  brew list --formula "${formula}" >/dev/null 2>&1 || missing+=("${formula}")
+done
+if [ "${#missing[@]}" -gt 0 ]; then
+  brew install "${missing[@]}"
+fi
 
 # Install 1Password CLI if necessary
 if ! command -v op >/dev/null 2>&1; then

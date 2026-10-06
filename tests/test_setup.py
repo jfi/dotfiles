@@ -214,6 +214,7 @@ if [ "$1" = ls-remote ]; then printf '3.3.0\\n9.9.9\\n'; fi
         self.stub("brew", '''
 printf "%s\\n" "$*" >> "$HOME/install-calls"
 if [ "$1" = shellenv ]; then echo 'export HOMEBREW_PREFIX=/usr/local'; fi
+if [ "$*" = "list --formula python" ]; then exit 1; fi
 ''')
         self.stub("git", '''
 printf "%s\\n" "$*" >> "$HOME/install-calls"
@@ -230,7 +231,8 @@ if [ "$1" = clone ]; then cp -R "$HOME/prepared" "$3"; fi
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         calls = (self.home / "install-calls").read_text().splitlines()
         self.assertIn(f"clone https://github.com/jfi/dotfiles.git {self.repo}", calls)
-        self.assertLess(calls.index("install python fzf"), calls.index("init"))
+        self.assertLess(calls.index("install python"), calls.index("init"))
+        self.assertNotIn("install python fzf", calls)
         self.assertEqual(calls[-4:], ["init", "bootstrap", "install-ruby", "macos-defaults"])
 
     def test_claude_wrapper_finds_homebrew_binary(self):
