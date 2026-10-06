@@ -158,7 +158,8 @@ esac
         )
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertEqual((self.home / "brew-calls").read_text().splitlines(),
-                         [f"bundle install --verbose --no-upgrade --file={self.repo}/Brewfile"])
+                         [f"bundle install --verbose --no-upgrade --file={self.repo}/Brewfile",
+                          "services start atuin"])
         self.assertEqual((self.home / "gh-calls").read_text(), "auth status --hostname github.com\n")
         self.assertEqual((self.home / "hk-calls").read_text(), "install\n")
         gitconfig = (self.home / ".gitconfig").read_text()
@@ -186,7 +187,8 @@ fi
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertEqual((self.home / "brew-calls").read_text().splitlines(),
                          ["install gh",
-                          f"bundle install --verbose --no-upgrade --file={self.repo}/Brewfile"])
+                          f"bundle install --verbose --no-upgrade --file={self.repo}/Brewfile",
+                          "services start atuin"])
         self.assertEqual((self.home / "gh-calls").read_text(), "auth status --hostname github.com\n")
         self.assertIn("gh auth login", result.stderr)
 
