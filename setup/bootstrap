@@ -14,6 +14,9 @@ fi
 
 # Install Homebrew packages and everything else we need
 green "Installing Homebrew packages..."
+# brew bundle captures each install's output and only prints it on failure, so
+# a licence prompt (e.g. microsoft/mssql-release) is invisible and blocks forever.
+export HOMEBREW_ACCEPT_EULA=Y
 brew bundle install --no-upgrade --file="${DOTFILES_DIR}/Brewfile"
 
 # init runs before hk is installed on a fresh Mac.
