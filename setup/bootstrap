@@ -12,6 +12,21 @@ if ! command -v brew >/dev/null 2>&1; then
   exit 1
 fi
 
+# git/gitconfig uses gh as the GitHub credential helper, so install and sign
+# in to gh before anything clones from GitHub.
+if ! command -v gh >/dev/null 2>&1; then
+  green "Installing GitHub CLI..."
+  brew install gh
+fi
+if ! gh auth status --hostname github.com >/dev/null 2>&1; then
+  if [ -t 0 ]; then
+    green "Signing in to GitHub..."
+    gh auth login --hostname github.com --git-protocol https --web
+  else
+    red "WARNING: gh is not signed in to GitHub; run 'gh auth login' and re-run bootstrap."
+  fi
+fi
+
 # Install Homebrew packages and everything else we need
 green "Installing Homebrew packages..."
 # Without --verbose, brew bundle captures each install's output and only prints

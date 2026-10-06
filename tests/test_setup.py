@@ -148,6 +148,7 @@ case "$*" in
 esac
 ''')
         self.stub("mise", 'printf "%s\\n" "$*" >> "$HOME/mise-calls"')
+        self.stub("gh", 'printf "%s\\n" "$*" >> "$HOME/gh-calls"')
         result = subprocess.run(
             ["/bin/bash", str(self.repo / "setup/bootstrap")],
             cwd=self.home, env=self.env, text=True, capture_output=True, timeout=15,
@@ -155,9 +156,33 @@ esac
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertEqual((self.home / "brew-calls").read_text().splitlines(),
                          [f"bundle install --verbose --no-upgrade --file={self.repo}/Brewfile"])
+        self.assertEqual((self.home / "gh-calls").read_text(), "auth status --hostname github.com\n")
         self.assertEqual((self.home / "hk-calls").read_text(), "install\n")
         self.assertNotIn("Spark", (self.home / "sudo-calls").read_text())
         self.assertNotIn("doctor", (self.home / "mise-calls").read_text())
+
+    def test_bootstrap_installs_gh_before_brew_bundle_and_warns_when_signed_out(self):
+        gh = self.commands / "gh"
+        self.stub("brew", f'''
+printf "%s\\n" "$*" >> "$HOME/brew-calls"
+if [ "$*" = "install gh" ]; then
+  printf '#!/bin/bash\\nprintf "%%s\\\\n" "$*" >> "$HOME/gh-calls"\\nexit 1\\n' > "{gh}"
+  chmod +x "{gh}"
+fi
+''')
+        self.stub("sudo", "echo 'Firewall is enabled. (State = 1)'")
+        self.stub("mise", "true")
+        result = subprocess.run(
+            ["/bin/bash", str(self.repo / "setup/bootstrap")],
+            cwd=self.home, env=self.env, text=True, capture_output=True, timeout=15,
+            stdin=subprocess.DEVNULL,
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual((self.home / "brew-calls").read_text().splitlines(),
+                         ["install gh",
+                          f"bundle install --verbose --no-upgrade --file={self.repo}/Brewfile"])
+        self.assertEqual((self.home / "gh-calls").read_text(), "auth status --hostname github.com\n")
+        self.assertIn("gh auth login", result.stderr)
 
     def test_ruby_setup_keeps_the_configured_version_instead_of_selecting_latest(self):
         self.stub("mise", '''
