@@ -83,6 +83,10 @@
 [credential "https://gist.github.com"]
   helper =
   helper = !gh auth git-credential
+[credential "https://dev.azure.com"]
+  helper =
+  helper = /usr/local/share/gcm-core/git-credential-manager
+  useHttpPath = true
 [init]
   defaultBranch = main
 [tag]

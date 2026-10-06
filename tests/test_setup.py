@@ -149,6 +149,9 @@ esac
 ''')
         self.stub("mise", 'printf "%s\\n" "$*" >> "$HOME/mise-calls"')
         self.stub("gh", 'printf "%s\\n" "$*" >> "$HOME/gh-calls"')
+        (self.home / ".gitconfig").write_text(
+            "[credential]\n\thelper = \n\thelper = /usr/local/share/gcm-core/git-credential-manager\n"
+            '[credential "https://dev.azure.com"]\n\tuseHttpPath = true\n')
         result = subprocess.run(
             ["/bin/bash", str(self.repo / "setup/bootstrap")],
             cwd=self.home, env=self.env, text=True, capture_output=True, timeout=15,
@@ -158,6 +161,9 @@ esac
                          [f"bundle install --verbose --no-upgrade --file={self.repo}/Brewfile"])
         self.assertEqual((self.home / "gh-calls").read_text(), "auth status --hostname github.com\n")
         self.assertEqual((self.home / "hk-calls").read_text(), "install\n")
+        gitconfig = (self.home / ".gitconfig").read_text()
+        self.assertNotIn("git-credential-manager", gitconfig)
+        self.assertIn("useHttpPath = true", gitconfig)
         self.assertNotIn("Spark", (self.home / "sudo-calls").read_text())
         self.assertNotIn("doctor", (self.home / "mise-calls").read_text())
 
