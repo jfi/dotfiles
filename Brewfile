@@ -124,6 +124,7 @@ brew "zsh-syntax-highlighting"
 # Casks
 cask "1password"
 cask "1password-cli@beta"
+cask "amp-app"
 cask "antigravity-cli"
 cask "applite"
 cask "balenaetcher"
