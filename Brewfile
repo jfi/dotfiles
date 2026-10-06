@@ -1,5 +1,5 @@
 # Taps
-tap "codescene-oss/codescene-mcp-server", trusted: true
+tap "codescene-oss/codescene-mcp-server", "https://github.com/codescene-oss/codescene-mcp-server", trusted: true
 tap "common-fate/granted", trusted: true
 tap "depot/tap", trusted: true
 tap "hashicorp/tap", trusted: true
