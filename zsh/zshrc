@@ -19,6 +19,9 @@ autoload -Uz compinit && compinit
 # Activate mise (if present)
 command -v mise >/dev/null && eval "$(mise activate zsh)"
 
+# Amp completions (registers via `compdef`, so it must follow compinit)
+command -v amp >/dev/null && source <(amp completions zsh)
+
 # History (sane defaults)
 setopt hist_ignore_dups
 setopt share_history
