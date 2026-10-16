@@ -125,8 +125,11 @@ defaults write NSGlobalDomain AppleLocale -string "en_GB@currency=GBP"
 defaults write NSGlobalDomain AppleMeasurementUnits -string "Centimeters"
 defaults write NSGlobalDomain AppleMetricUnits -bool true
 
-# Set the timezone
-sudo systemsetup -settimezone "Europe/London" > /dev/null
+# Set the timezone. systemsetup needs Full Disk Access for the terminal and
+# otherwise logs a -99 error, so skip it when the zone is already right.
+if [ "$(readlink /etc/localtime)" != "/var/db/timezone/zoneinfo/Europe/London" ]; then
+  sudo systemsetup -settimezone "Europe/London" > /dev/null
+fi
 
 # Finder: disable window animations and Get Info animations
 defaults write com.apple.finder DisableAllAnimations -bool true
@@ -351,8 +354,10 @@ defaults write com.google.Chrome.canary PMPrintingExpandedStateForPrint2 -bool t
 # Restart automatically on power loss
 sudo pmset -a autorestart 1
 
-# Restart automatically if the computer freezes
-sudo systemsetup -setrestartfreeze on
+# Restart automatically if the computer freezes. Needs Full Disk Access for
+# the terminal (see the checklist at the end); without it systemsetup logs
+# a -99 error, so silence that noise.
+sudo systemsetup -setrestartfreeze on >/dev/null 2>&1 || true
 
 # Finder
 echo "Setting Finder Preferences..."
@@ -426,7 +431,9 @@ if ! defaults read com.1password.1password >/dev/null 2>&1; then
 fi
 
 # Finder
-/usr/libexec/plistbuddy -c "Set :DesktopViewSettings:GroupBy Kind" ~/Library/preferences/com.apple.finder.plist
+# GroupBy is absent until it is first changed in Finder, so Add when Set fails.
+/usr/libexec/plistbuddy -c "Set :DesktopViewSettings:GroupBy Kind" ~/Library/preferences/com.apple.finder.plist 2>/dev/null ||
+  /usr/libexec/plistbuddy -c "Add :DesktopViewSettings:GroupBy string Kind" ~/Library/preferences/com.apple.finder.plist
 /usr/libexec/plistbuddy -c "Set :DesktopViewSettings:IconViewSettings:arrangeBy kind" ~/Library/preferences/com.apple.finder.plist
 /usr/libexec/plistbuddy -c "Set :DesktopViewSettings:IconViewSettings:labelOnBottom true" ~/Library/preferences/com.apple.finder.plist
 /usr/libexec/plistbuddy -c "Set :DesktopViewSettings:IconViewSettings:showIconPreview true" ~/Library/preferences/com.apple.finder.plist
