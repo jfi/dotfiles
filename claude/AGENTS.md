@@ -129,9 +129,11 @@ file, so this list is the fallback there.
   say it's done, then re-probe with `aws sts get-caller-identity`. One sign-in
   covers every role on that start URL. Don't use `assume --exec` inline; it
   hangs without a TTY.
-- **After `granted sso populate`, re-add the explicit `region` keys.** Populate
-  regenerates profiles without `region`, which breaks region-dependent calls in
-  any shell that hasn't been through `assume`.
+- **Regenerate profiles with `granted-populate`, not `granted sso populate`.**
+  Populate rewrites every generated profile from scratch, dropping
+  `granted_sso_registration_scopes`. Without that key Granted gets a token it
+  cannot refresh, so every expiry needs a browser login. The wrapper passes
+  `--default-region` and re-adds the scopes.
 
 ## Context Compaction
 
