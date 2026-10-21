@@ -1,6 +1,5 @@
 # Taps
 tap "codescene-oss/codescene-mcp-server", "https://github.com/codescene-oss/codescene-mcp-server", trusted: true
-tap "common-fate/granted", trusted: true
 tap "depot/tap", trusted: true
 tap "hashicorp/tap", trusted: true
 tap "m13v/tap", trusted: true
@@ -28,7 +27,6 @@ brew "cloudflared"
 brew "cmake"
 brew "codescene-oss/codescene-mcp-server/cs-mcp"
 brew "commitlint"
-brew "common-fate/granted/granted"
 brew "coreutils"
 brew "curl"
 brew "d2"
@@ -52,6 +50,7 @@ brew "gh"
 brew "git"
 brew "git-lfs"
 brew "gogcli"
+brew "granted"
 brew "helm"
 brew "helm-ls"
 brew "hk"

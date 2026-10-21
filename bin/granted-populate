@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+# granted-populate - regenerate the Granted SSO profiles in ~/.aws/config
+# without losing the keys `granted sso populate` drops.
+#
+# Populate deletes and rewrites every profile it generated, so anything added
+# by hand is lost. --default-region keeps `region`. Populate cannot write
+# `granted_sso_registration_scopes` at all, and without it Granted gets a
+# legacy token it cannot refresh, so every expiry means a browser login. This
+# re-adds it to each SSO profile that lacks it.
+#
+# Usage: granted-populate [start-url]
+
+set -euo pipefail
+
+START_URL="${1:-https://wawafertility.awsapps.com/start}"
+SSO_REGION="${GRANTED_POPULATE_REGION:-eu-west-1}"
+SCOPES="sso:account:access"
+CONFIG="${AWS_CONFIG_FILE:-${HOME}/.aws/config}"
+BACKUP="${CONFIG}.bak-$(date +%Y%m%d%H%M%S)"
+
+cp -p "$CONFIG" "$BACKUP"
+echo "Backed up ${CONFIG} to ${BACKUP}"
+
+granted sso populate \
+  --sso-region "$SSO_REGION" \
+  --default-region "$SSO_REGION" \
+  --sso-scope "$SCOPES" \
+  "$START_URL"
+
+TMP="$(mktemp "${CONFIG}.XXXXXX")"
+trap 'rm -f "$TMP"' EXIT
+
+# Buffer each section so a profile that already has the key is left alone.
+awk -v scopes="$SCOPES" '
+  function flush(  i) {
+    for (i = 1; i <= n; i++) {
+      print buf[i]
+      if (buf[i] ~ /^granted_sso_role_name[ \t]*=/ && !has_scopes) {
+        print "granted_sso_registration_scopes = " scopes
+        added++
+      }
+    }
+    n = 0
+    has_scopes = 0
+  }
+  /^\[/ { flush() }
+  { buf[++n] = $0 }
+  /^granted_sso_registration_scopes[ \t]*=/ { has_scopes = 1 }
+  END {
+    flush()
+    printf "Added registration scopes to %d profiles\n", added > "/dev/stderr"
+  }
+' "$CONFIG" >"$TMP"
+
+# Write in place so the file keeps its permissions.
+cat "$TMP" >"$CONFIG"
