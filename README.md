@@ -97,7 +97,8 @@ read that file, so the prose list is the fallback there.
   - `~/.gitconfig` include
   - 1Password `allowed_signers` + `user.signingkey`
   - `~/.claude/AGENTS.md`, `~/.codex/AGENTS.md`,
-    `~/.config/zed/{settings,keymap}.json`, `~/.config/ghostty/config` symlinks
+    `~/.config/zed/{settings,keymap}.json`, `~/.config/ghostty/config`,
+    `~/.config/tinycast/settings.json` symlinks
   - `~/.claude/CLAUDE.md` as a copy (via `bin/agents-sync`)
   - hk git hooks
 - seeds missing mise, Atuin and Claude settings from portable templates, without
@@ -156,6 +157,7 @@ read that file, so the prose list is the fallback there.
 |-- atuin/config.toml         # history UI/sync preferences, never history data
 |-- zed/                      # Zed settings + keymap
 |-- ghostty/                  # Ghostty config
+|-- tinycast/                 # Tinycast settings file (content stays in iCloud)
 |-- k9s/                      # Rails console plugin
 |-- tests/                    # isolated setup and document-scanning tests
 `-- bin/
