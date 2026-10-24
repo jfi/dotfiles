@@ -107,6 +107,8 @@ command -v eza    >/dev/null && alias ls='eza --icons --group-directories-first'
 command -v bat    >/dev/null && alias cat='bat'
 command -v zoxide >/dev/null && alias cd='z'
 alias zed='zed-preview'
+# Granted's assume exports credentials, so it must be sourced into this shell.
+command -v assume >/dev/null && alias assume='. assume'
 alias bu='bundle update --all'
 alias bup='git pull && bundle update --all && git add Gemfile.lock && git commit -m "Update dependencies" && git push'
 

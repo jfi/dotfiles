@@ -101,8 +101,8 @@ read that file, so the prose list is the fallback there.
     `~/.config/tinycast/settings.json` symlinks
   - `~/.claude/CLAUDE.md` as a copy (via `bin/agents-sync`)
   - hk git hooks
-- seeds missing mise, Atuin and Claude settings from portable templates, without
-  overwriting existing settings, trust paths or account state
+- seeds missing mise, Atuin, gh, Granted and Claude settings from portable
+  templates, without overwriting existing settings, trust paths or account state
 
 **`setup/bootstrap`**
 
@@ -155,6 +155,8 @@ read that file, so the prose list is the fallback there.
 |-- cursor/                   # generated copy of AGENTS.md for Cursor User Rules
 |-- mise/global.toml          # portable global tools, copied only when missing
 |-- atuin/config.toml         # history UI/sync preferences, never history data
+|-- gh/config.yml             # gh aliases + prefs, copied only when missing
+|-- granted/config            # Granted browser + keychain, copied only when missing
 |-- zed/                      # Zed settings + keymap
 |-- ghostty/                  # Ghostty config
 |-- tinycast/                 # Tinycast settings file (content stays in iCloud)

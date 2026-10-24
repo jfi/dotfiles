@@ -1,0 +1,9 @@
+DefaultBrowser = "SAFARI"
+CustomBrowserPath = "/Applications/Safari.app/Contents/MacOS/Safari"
+CustomSSOBrowserPath = ""
+Ordering = ""
+ExportCredentialSuffix = ""
+UseAuthorizationCode = true
+
+[Keyring]
+  Backend = "keychain"
