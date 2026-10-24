@@ -411,6 +411,10 @@ link_config "${DOTFILES_DIR}/tinycast/settings.json" "${HOME}/.config/tinycast/s
 # Portable defaults only: never copy trust paths, credentials or history.
 seed_config "${DOTFILES_DIR}/mise/global.toml" "${HOME}/.config/mise/config.toml"
 seed_config "${DOTFILES_DIR}/atuin/config.toml" "${HOME}/.config/atuin/config.toml"
+# gh and Granted rewrite these themselves; tokens stay in gh's hosts.yml and
+# the keychain.
+seed_config "${DOTFILES_DIR}/gh/config.yml" "${HOME}/.config/gh/config.yml"
+seed_config "${DOTFILES_DIR}/granted/config" "${HOME}/.granted/config"
 
 # Symlink k9s plugins (macOS k9s config dir, per `k9s info`)
 green "Linking ~/Library/Application Support/k9s/plugins.yaml..."

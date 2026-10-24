@@ -23,7 +23,7 @@ class SetupTests(unittest.TestCase):
         for name in ("setup", "bin", "zsh", "git", "claude", "cursor", "zed", "ghostty", "k9s",
                      "tinycast"):
             shutil.copytree(ROOT / name, self.repo / name)
-        for name in ("mise", "atuin"):
+        for name in ("mise", "atuin", "gh", "granted"):
             if (ROOT / name).exists():
                 shutil.copytree(ROOT / name, self.repo / name)
         self.commands = self.home / "commands"
@@ -99,6 +99,10 @@ esac
                          (ROOT / "mise/global.toml").read_text())
         self.assertEqual((self.home / ".config/atuin/config.toml").read_text(),
                          (ROOT / "atuin/config.toml").read_text())
+        self.assertEqual((self.home / ".config/gh/config.yml").read_text(),
+                         (ROOT / "gh/config.yml").read_text())
+        self.assertEqual((self.home / ".granted/config").read_text(),
+                         (ROOT / "granted/config").read_text())
         self.assertEqual((self.repo / ".env").stat().st_mode & 0o777, 0o600)
         env_result = subprocess.check_output(
             ["/bin/bash", "-c", 'source "$HOME/.dotfiles/.env"; printf "%s" "$DOTFILES_GIT_NAME"'],
