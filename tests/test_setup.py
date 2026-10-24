@@ -1,5 +1,6 @@
 """Setup regression tests with a disposable HOME and no network or sudo."""
 
+import os
 from pathlib import Path
 import shutil
 import subprocess
@@ -19,7 +20,8 @@ class SetupTests(unittest.TestCase):
         self.home.mkdir()
         self.repo = self.home / ".dotfiles"
         self.repo.mkdir()
-        for name in ("setup", "bin", "zsh", "git", "claude", "cursor", "zed", "ghostty", "k9s"):
+        for name in ("setup", "bin", "zsh", "git", "claude", "cursor", "zed", "ghostty", "k9s",
+                     "tinycast"):
             shutil.copytree(ROOT / name, self.repo / name)
         for name in ("mise", "atuin"):
             if (ROOT / name).exists():
@@ -90,6 +92,8 @@ esac
         self.assertFalse(shadow.exists())
         backups = list((self.home / ".local/state/dotfiles/backups").rglob("config"))
         self.assertTrue(any(p.read_text() == "font-size = 19\n" for p in backups))
+        self.assertEqual(os.readlink(self.home / ".config/tinycast/settings.json"),
+                         str(self.repo / "tinycast/settings.json"))
         self.assertFalse((self.home / ".ssh/config").exists())
         self.assertEqual((self.home / ".config/mise/config.toml").read_text(),
                          (ROOT / "mise/global.toml").read_text())

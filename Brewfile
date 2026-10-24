@@ -192,6 +192,7 @@ cask "slack"
 cask "sorkila/lockpaw/lockpaw", trusted: true
 cask "tailscale-app"
 cask "the-unarchiver"
+cask "tinycast"
 cask "whatsapp"
 cask "windows-app"
 cask "zed@preview"

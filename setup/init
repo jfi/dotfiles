@@ -400,6 +400,14 @@ backup_file "${HOME}/.config/ghostty/config.ghostty"
 backup_file "${HOME}/Library/Application Support/com.mitchellh.ghostty/config.ghostty"
 backup_file "${HOME}/Library/Application Support/com.mitchellh.ghostty/config"
 
+# Symlink the Tinycast settings file (Tinycast writes through the link). It
+# only names the snippets and notes folders; their content lives in iCloud
+# Drive because this repository is public. Turn on Settings > Backup >
+# Settings File in the app, then choose Import.
+green "Linking ~/.config/tinycast/settings.json..."
+mkdir -p "${HOME}/.config/tinycast"
+link_config "${DOTFILES_DIR}/tinycast/settings.json" "${HOME}/.config/tinycast/settings.json"
+
 # Portable defaults only: never copy trust paths, credentials or history.
 seed_config "${DOTFILES_DIR}/mise/global.toml" "${HOME}/.config/mise/config.toml"
 seed_config "${DOTFILES_DIR}/atuin/config.toml" "${HOME}/.config/atuin/config.toml"
