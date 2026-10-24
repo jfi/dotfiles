@@ -126,7 +126,7 @@ read that file, so the prose list is the fallback there.
 
 - applies macOS system preferences tweaks (Dock layout + pins, Finder/Safari/Activity
   Monitor defaults, screen-lock-on-sleep, Calendar notifications off,
-  Spotlight Cmd-Space freed for Raycast, computer name)
+  Spotlight Cmd-Space freed for Tinycast, computer name)
 - prompts for the computer name on first run; persists to `.env`
 - does not trace `.env` values to the terminal
 - also invokes the upstream pam-watchid installer for Apple Watch authentication;

@@ -114,7 +114,7 @@ defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
 defaults write NSGlobalDomain KeyRepeat -int 1
 defaults write NSGlobalDomain InitialKeyRepeat -int 10
 
-# Disable Spotlight's Cmd-Space shortcut so Raycast can claim it.
+# Disable Spotlight's Cmd-Space shortcut so Tinycast can claim it.
 # Symbolic hotkey 64 = "Show Spotlight search".
 defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 64 \
   '<dict><key>enabled</key><false/><key>value</key><dict><key>parameters</key><array><integer>32</integer><integer>49</integer><integer>1048576</integer></array><key>type</key><string>standard</string></dict></dict>'
@@ -528,15 +528,13 @@ tcc_granted() {
 
 # service|settings anchor|heading|bundle id|app|reason
 PERMISSIONS="
-kTCCServiceAccessibility|Privacy_Accessibility|Accessibility|com.raycast.macos|Raycast|global hotkey, window mgmt, paste history
+kTCCServiceAccessibility|Privacy_Accessibility|Accessibility|com.tinycast.app|Tinycast|paste history, snippets, window mgmt
 kTCCServiceAccessibility|Privacy_Accessibility|Accessibility|com.knollsoft.Hookshot|Rectangle Pro|window resizing / snapping
 kTCCServiceAccessibility|Privacy_Accessibility|Accessibility|com.1password.1password|1Password|browser/app autofill
-kTCCServiceScreenCapture|Privacy_ScreenCapture|Screen Recording|com.raycast.macos|Raycast|screen-capture / window screenshots
 kTCCServiceScreenCapture|Privacy_ScreenCapture|Screen Recording|com.tinyspeck.slackmacgap|Slack|screen-share in calls
 kTCCServiceScreenCapture|Privacy_ScreenCapture|Screen Recording|com.wulkano.kap|Kap|screen recording
-kTCCServiceSystemPolicyAllFiles|Privacy_AllFiles|Full Disk Access|com.raycast.macos|Raycast|some file-search extensions
+kTCCServiceSystemPolicyAllFiles|Privacy_AllFiles|Full Disk Access|com.tinycast.app|Tinycast|file search
 kTCCServiceSystemPolicyAllFiles|Privacy_AllFiles|Full Disk Access|com.mitchellh.ghostty|Ghostty|lets defaults write Safari's sandboxed prefs; re-run this script after
-kTCCServiceListenEvent|Privacy_ListenEvent|Input Monitoring|com.raycast.macos|Raycast|hotkey listener
 kTCCServiceListenEvent|Privacy_ListenEvent|Input Monitoring|com.knollsoft.Hookshot|Rectangle Pro|keyboard shortcuts
 "
 
