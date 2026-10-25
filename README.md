@@ -46,6 +46,36 @@ to refresh configuration; the full installer also reapplies macOS preferences.
 - `allowed_signers` generated automatically
 - No private keys or secrets in the repo
 
+### SSH keys on disk
+
+`ssh-keys-sync` copies every SSH key from 1Password into `~/.ssh` as ordinary
+key files. 1Password remains the source of truth: it reads every SSH Key item
+in every configured account, collapses items that hold the same key (by
+fingerprint), and writes one private key and one `.pub` file per unique key.
+
+```bash
+ssh-keys-sync             # sync
+ssh-keys-sync --dry-run   # show what would change
+```
+
+- Private keys are written `0600`, public keys `0644`, and only when their
+  content differs, so a second run changes nothing.
+- `~/.ssh/.1password-ssh-keys.json` records what the script wrote. Deleting a
+  key in 1Password removes it on the next run, but only files named in that
+  manifest and only when they have not been edited since.
+- A file the script did not create is never overwritten. A colliding key is
+  written under a suffixed name instead.
+- `--account my.1password.eu` limits a run to one account, which is useful
+  when another account is locked.
+- `--no-prune` keeps files whose keys have gone from 1Password.
+
+The files exist for tools that need a key path (Ansible, Terraform, Kamal,
+`scp -i`); 1Password's SSH agent still serves the same keys interactively.
+`aldercrm-infra` is the AlderCRM server key and `aldercrm-github` is the key
+for GitHub.
+
+Tests: `python3 -m unittest discover -s tests -p 'test_ssh_keys_sync.py'`.
+
 ### Touch ID for sudo
 
 - Enables `pam_tid.so` using Apple's `/etc/pam.d/sudo_local.template`
@@ -161,7 +191,10 @@ read that file, so the prose list is the fallback there.
 |-- ghostty/                  # Ghostty config
 |-- tinycast/                 # Tinycast settings file (content stays in iCloud)
 |-- k9s/                      # Rails console plugin
-|-- tests/                    # isolated setup and document-scanning tests
+|-- lib/                      # Python implementations behind bin/ wrappers
+|   |-- scan_documents.py     # duplex scanner -> named PDFs
+|   `-- ssh_keys_sync.py      # 1Password -> ~/.ssh sync
+|-- tests/                    # isolated setup, scanning and SSH key sync tests
 `-- bin/
     |-- app-audit             # finds installed apps missing from Brewfile/README
     |-- brewfile-sync         # interactive Brewfile <-> install reconciler
@@ -170,6 +203,7 @@ read that file, so the prose list is the fallback there.
     |-- label                 # address label PDF (Ruby/Prawn), -p prints
     |-- munbyn-p44s           # Munbyn P44S label printer driver + CUPS queue
     |-- scan-documents        # document scanning (see docs/scanning.md)
+    |-- ssh-keys-sync         # materialises 1Password SSH keys in ~/.ssh
     |-- agents-sync           # regenerates the AGENTS.md copies (Claude, Cursor)
     `-- with-ai-env           # 1Password-sourced AI env exec wrapper
 ```
@@ -185,7 +219,9 @@ read that file, so the prose list is the fallback there.
 - AWS/SSO profiles, SSH hosts, MCP credentials, mise trust paths, histories,
   application sessions and synchronised agent skills are not copied into Git
 - Public SSH keys **are safe to commit**
-- Only the public signing key is saved into Git configuration
+- 1Password is the source of truth for SSH keys. `ssh-keys-sync` materialises
+  them in `~/.ssh` for tools that need a key path; only the public signing key
+  is saved into Git configuration
 
 ---
 

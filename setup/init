@@ -359,6 +359,17 @@ EOF
   echo "Configured git user.signingkey ($(git config --get user.signingkey | cut -c1-32)...)" >&2
 fi
 
+# Materialise every SSH key from 1Password as a file in ~/.ssh. 1Password stays
+# the source of truth; the files exist for tools that need a key path (Ansible,
+# Terraform, Kamal) rather than the SSH agent. Set DOTFILES_SKIP_SSH_KEY_SYNC=1
+# to skip this on a machine that should not hold the private keys.
+if has_cmd op && [ "${DOTFILES_SKIP_SSH_KEY_SYNC:-}" != "1" ]; then
+  green "Syncing SSH keys from 1Password..."
+  if ! "${DOTFILES_DIR}/bin/ssh-keys-sync"; then
+    red "WARNING: SSH key sync failed; run bin/ssh-keys-sync by hand."
+  fi
+fi
+
 # Write git user configuration (from env / .env / prompt)
 git config --global user.name "${GIT_NAME}"
 git config --global user.email "${GIT_EMAIL}"
