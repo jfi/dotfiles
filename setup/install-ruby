@@ -8,21 +8,11 @@ red() { printf "\033[31m%s\033[0m\n" "$*" >&2; }
 # Ensure mise is in PATH (may have just been installed)
 export PATH="${HOME}/.local/bin:${PATH}"
 
-# Activate mise for this session
-eval "$(mise activate bash)"
-
-# Use prebuilt Ruby binaries instead of compiling from source
-mise settings ruby.compile=false
-
-# Install latest stable Ruby via mise
-green "Installing latest stable Ruby via mise..."
-LATEST_RUBY=$(mise ls-remote ruby | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | tail -1)
-mise use --global "ruby@${LATEST_RUBY}"
-green "Installed Ruby ${LATEST_RUBY}"
-
-# Reshim to make ruby/gem available
-eval "$(mise activate bash)"
-eval "$(mise hook-env -s bash)"
+# Use the global version from init, never a calling project's Ruby or a new
+# major release selected implicitly on every setup run.
+cd "${HOME}"
+green "Installing configured Ruby via mise..."
+mise install ruby
 
 # Update RubyGems and install latest Bundler
 green "Updating RubyGems..."
@@ -39,7 +29,7 @@ mise exec -- bundle --version
 echo
 
 # Pause for confirmation before proceeding
-if [ -r /dev/tty ]; then
+if [ -t 0 ]; then
   printf "Press Enter to continue..." >&2
   read -r </dev/tty
 fi

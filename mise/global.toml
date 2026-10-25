@@ -1,0 +1,13 @@
+# Global config template, not a project config for the dotfiles checkout.
+# Trust paths and account settings stay machine-local.
+[tools]
+go = "1.27.1"
+java = "temurin-21"
+# Firebase's dependencies support the LTS line, not Homebrew's current Node.
+node = "24"
+"npm:@rails-blocks/mcp" = "0.1.1"
+"npm:firebase-tools" = "latest"
+ruby = "4.0.7"
+
+[settings.ruby]
+compile = false

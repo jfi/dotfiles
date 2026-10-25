@@ -77,12 +77,18 @@
   smudge = git-lfs smudge -- %f
 [help]
   autocorrect = prompt
+# Homebrew runs git with a minimal PATH (no /opt/homebrew/bin), so put gh
+# on PATH here or tapping from GitHub fails with "gh: command not found".
 [credential "https://github.com"]
   helper =
-  helper = !gh auth git-credential
+  helper = !PATH=/opt/homebrew/bin:/usr/local/bin:$PATH gh auth git-credential
 [credential "https://gist.github.com"]
   helper =
-  helper = !gh auth git-credential
+  helper = !PATH=/opt/homebrew/bin:/usr/local/bin:$PATH gh auth git-credential
+[credential "https://dev.azure.com"]
+  helper =
+  helper = /usr/local/share/gcm-core/git-credential-manager
+  useHttpPath = true
 [init]
   defaultBranch = main
 [tag]

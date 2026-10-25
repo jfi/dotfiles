@@ -122,16 +122,21 @@ file, so this list is the fallback there.
   profiles.
 - **Detect an expired token before starting AWS work** with
   `aws sts get-caller-identity`.
-- **If the token has expired, start the sign-in for me and hand me the link.**
-  Only I can complete the browser device-authorisation step, so run
+- **If the token has expired, start the sign-in straight away; don't ask
+  first.** On the first expired-token error (`NoCredentials`,
+  `InvalidGrantException`, "please login using 'granted sso login'"), run
   `GRANTED_ALIAS_CONFIGURED=true AWS_REGION=eu-west-1 assume plat-prod/AdministratorAccess 2>&1 </dev/null`
-  in the background, relay the device URL and code it prints, wait for me to
-  say it's done, then re-probe with `aws sts get-caller-identity`. One sign-in
-  covers every role on that start URL. Don't use `assume --exec` inline; it
-  hangs without a TTY.
-- **After `granted sso populate`, re-add the explicit `region` keys.** Populate
-  regenerates profiles without `region`, which breaks region-dependent calls in
-  any shell that hasn't been through `assume`.
+  in the background. It opens the browser on this Mac by itself, so all I do
+  is approve. Post the link it prints as a fallback, then re-probe with
+  `aws sts get-caller-identity` and carry on once it passes. One sign-in
+  covers every role on that start URL. The callback waits only a few minutes:
+  if it times out, tell me and restart it when I'm back rather than looping.
+  Don't use `assume --exec` inline; it hangs without a TTY.
+- **Regenerate profiles with `granted-populate`, not `granted sso populate`.**
+  Populate rewrites every generated profile from scratch, dropping
+  `granted_sso_registration_scopes`. Without that key Granted gets a token it
+  cannot refresh, so every expiry needs a browser login. The wrapper passes
+  `--default-region` and re-adds the scopes.
 
 ## Context Compaction
 

@@ -1,0 +1,5 @@
+# History, encryption keys and account tokens are not dotfiles.
+enter_accept = true
+
+[sync]
+records = true

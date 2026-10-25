@@ -25,20 +25,42 @@ if [ ! -f "$BREWFILE" ]; then
   exit 1
 fi
 
-if ! command -v brew >/dev/null 2>&1; then
-  red "ERROR: brew not in PATH."
+if ! command -v brew >/dev/null 2>&1 || ! command -v python3 >/dev/null 2>&1; then
+  red "ERROR: brew and python3 must be in PATH."
   exit 1
 fi
 
 bold "Dumping current install..."
 brew bundle dump --file="$TMPDUMP" --force --no-vscode
 
-extract() {
-  grep -E '^(tap|brew|cask|mas)[[:space:]]+"' "$1" | sort -u
+# Compare package identity, not options or MAS display names. Keep the full
+# original declaration when proposing an addition/removal, including trust flags.
+missing_entries() {
+  python3 - "$1" "$2" <<'PY'
+import re
+import sys
+
+def entries(path):
+    result = {}
+    with open(path) as source:
+        for line in source:
+            match = re.match(r'^(tap|brew|cask|mas)\s+"([^"]+)"', line)
+            if not match:
+                continue
+            kind, name = match.groups()
+            if kind == "mas":
+                name = re.search(r'\bid:\s*(\d+)', line).group(1)
+            result.setdefault((kind, name), line.rstrip())
+    return result
+
+left, right = (entries(path) for path in sys.argv[1:])
+for key in sorted(left.keys() - right.keys()):
+    print(left[key])
+PY
 }
 
-ADDS="$(comm -23 <(extract "$TMPDUMP") <(extract "$BREWFILE") || true)"
-DROPS="$(comm -13 <(extract "$TMPDUMP") <(extract "$BREWFILE") || true)"
+ADDS="$(missing_entries "$TMPDUMP" "$BREWFILE")"
+DROPS="$(missing_entries "$BREWFILE" "$TMPDUMP")"
 
 if [ -z "$ADDS" ] && [ -z "$DROPS" ]; then
   green "Brewfile is in sync with current install."

@@ -4,8 +4,8 @@ set -euo pipefail
 # Always run Claude Code with full permissions
 # Find the real claude binary, excluding this wrapper
 real_claude=""
-for dir in /usr/local/bin /usr/bin "${HOME}/.local/bin"; do
-  if [[ -x "${dir}/claude" ]]; then
+for dir in "${HOME}/.local/bin" "${HOMEBREW_PREFIX:-/opt/homebrew}/bin" /usr/local/bin /usr/bin; do
+  if [[ -x "${dir}/claude" && ! "${dir}/claude" -ef "$0" ]]; then
     real_claude="${dir}/claude"
     break
   fi
