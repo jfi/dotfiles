@@ -138,6 +138,30 @@ file, so this list is the fallback there.
   cannot refresh, so every expiry needs a browser login. The wrapper passes
   `--default-region` and re-adds the scopes.
 
+## Keeping Context Lean
+
+Claude Code runs on Bedrock and is billed per token. Most of the spend is the
+prompt cache re-reading long contexts on every call and re-writing them after
+a gap, not output. You can't run `/compact` or `/clear` yourself, so tell me
+when to, in one line at the end of your reply:
+
+- **`/clear` or a new session** when a task is finished (PR pushed, question
+  answered) and the next request is unrelated. Before suggesting it, make sure
+  anything needed to resume lives outside the conversation: a commit, the PR
+  body, or a notes file.
+- **`/compact <focus>`** when the conversation has grown long but the work
+  carries on and the early exploration is no longer needed, e.g.
+  `/compact keep the migration plan and the open failures`.
+- **`/compact` before a long wait**, such as a CI run or a review I'll come
+  back to later. The cache lasts an hour; the next message after that re-sends
+  the whole context. Idle compaction covers some of this, but only once the
+  context passes 100k tokens.
+
+Keep the context small in the first place: read the part of a file you need,
+don't print large command output, and hand broad searches to a subagent so only
+its conclusion comes back. Each subagent call re-reads that subagent's own
+context, so don't spawn one for a lookup you can do in a few tool calls.
+
 ## Context Compaction
 
 When compacting or summarising conversation context, **always preserve**:
