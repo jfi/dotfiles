@@ -1,10 +1,13 @@
 {
   "general": {
+    "launcherShortcut": "cmd+space",
     "showInMenuBar": false,
+    "automaticallyCheckForUpdates": true,
     "popToRootSeconds": 0,
     "escapeKeyBehavior": "navigateBackOrClose",
     "autoSwitchInputSource": null,
-    "supportReminders": true
+    "supportReminders": true,
+    "language": "en"
   },
   "appearance": {
     "theme": "system",
@@ -17,7 +20,8 @@
   "hyperKey": {
     "key": "capsLock",
     "includesShift": true,
-    "quickPress": "originalKey"
+    "quickPress": "originalKey",
+    "secureInputCompatibility": false
   },
   "calculator": {
     "numberStyle": "english"
@@ -27,6 +31,7 @@
     "sensitivity": "medium"
   },
   "applications": {
+    "enabled": true,
     "searchScopes": [
       "/Applications",
       "/Applications/Utilities",
@@ -36,18 +41,30 @@
       "/System/Volumes/Preboot/Cryptexes/App/System/Applications",
       "/System/Library/CoreServices/Finder.app",
       "~/Applications"
-    ]
+    ],
+    "apps": {}
+  },
+  "systemSettings": {
+    "enabled": true,
+    "panes": {}
+  },
+  "systemActions": {
+    "enabled": true,
+    "actions": {}
   },
   "commands": {
-    "enabled": false,
+    "builtInEnabled": true,
+    "builtIn": {},
+    "enabled": true,
     "showInLauncher": true
   },
   "quicklinks": {
     "enabled": true,
     "showInLauncher": true,
     "opensNewWindow": false,
-    "selectionFallback": "ask",
-    "confirmsBeforeDelete": true
+    "passesSelectedText": false,
+    "confirmsBeforeDelete": true,
+    "commands": {}
   },
   "appleShortcuts": {
     "enabled": false
@@ -55,37 +72,57 @@
   "ai": {
     "enabled": false,
     "webSearch": false,
+    "choices": true,
     "systemPrompt": "",
     "systemPromptEnabled": true,
     "retentionDays": "forever",
     "opensTo": "recent",
     "newChatAfterMinutes": 5,
-    "toolRounds": 25
+    "toolRounds": 25,
+    "commands": {}
   },
   "quickActions": {
-    "targetLanguage": ""
+    "targetLanguage": "",
+    "commands": {}
+  },
+  "dictation": {
+    "mode": "toggle",
+    "shortcut": null,
+    "model": "redux",
+    "microphone": null,
+    "destination": "paste",
+    "adaptsCapitalization": true,
+    "liveInsertion": false,
+    "releaseAfterMinutes": 1,
+    "language": null
   },
   "fileSearch": {
     "enabled": true,
     "scopes": [
       "~"
     ],
-    "ignorePatterns": []
+    "ignorePatterns": [],
+    "removedDefaultPatterns": [],
+    "showInLauncher": false,
+    "commands": {}
   },
   "notes": {
     "enabled": false,
     "rendersMarkdown": true,
     "showsFormattingBar": true,
-    "folder": "~/Library/Mobile Documents/com~apple~CloudDocs/Tinycast/Notes"
+    "folder": "~/Library/Mobile Documents/com~apple~CloudDocs/Tinycast/Notes",
+    "commands": {}
   },
   "snippets": {
     "showInLauncher": true,
-    "folder": "~/Library/Mobile Documents/com~apple~CloudDocs/Tinycast/Snippets"
+    "folder": "~/Library/Mobile Documents/com~apple~CloudDocs/Tinycast/Snippets",
+    "commands": {}
   },
   "navigation": {
     "enabled": true,
     "menuSearchShowsAppleMenu": false,
-    "menuSearchDisabledApps": []
+    "menuSearchDisabledApps": [],
+    "commands": {}
   },
   "windowManagement": {
     "enabled": false,
@@ -131,9 +168,11 @@
       "previous-space": null,
       "next-space": null
     },
+    "aliases": {},
     "customSizes": [],
     "layouts": [],
-    "rooms": []
+    "rooms": [],
+    "commands": {}
   },
   "clipboard": {
     "enabled": true,
@@ -142,11 +181,13 @@
     "disabledApps": [
       "com.apple.keychainaccess",
       "com.apple.Passwords"
-    ]
+    ],
+    "commands": {}
   },
   "emoji": {
     "skinTone": "none",
-    "gridColumns": 8
+    "gridColumns": 8,
+    "commands": {}
   },
   "calendar": {
     "showInLauncher": true,
@@ -154,12 +195,14 @@
     "span": "todayAndTomorrow",
     "joinWindowMinutes": 5,
     "autoJoinConfirms": true,
+    "autoJoinNamedProvidersOnly": false,
     "meetingBrowser": null,
     "menuBar": "disabled",
     "menuBarUpcomingEvents": "today",
     "menuBarLinkedEventsOnly": true,
     "menuBarHidesWhenEmpty": false,
-    "hideCurrentEventAfterMinutes": "never"
+    "hideCurrentEventAfterMinutes": "never",
+    "commands": {}
   },
   "extensions": {
     "showInLauncher": true
