@@ -200,6 +200,7 @@ read that file, so the prose list is the fallback there.
     |-- brewfile-sync         # interactive Brewfile <-> install reconciler
     |-- check-baseline        # workstation health check
     |-- claude                # Claude Code wrapper
+    |-- claude-resume-cost    # SessionStart hook: warns before a cold-cache resume
     |-- label                 # address label PDF (Ruby/Prawn), -p prints
     |-- munbyn-p44s           # Munbyn P44S label printer driver + CUPS queue
     |-- scan-documents        # document scanning (see docs/scanning.md)

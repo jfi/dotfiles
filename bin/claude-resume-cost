@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# Claude Code SessionStart hook: warn before a resumed session re-writes a
+# cold prompt cache. Reads the hook input on stdin and, when the cache has
+# likely expired and the re-write would cost more than CLAUDE_RESUME_WARN_USD
+# (default 0.50), prints a systemMessage for the user. Prints nothing otherwise.
+set -euo pipefail
+
+threshold="${CLAUDE_RESUME_WARN_USD:-0.50}"
+
+jq -c --argjson threshold "${threshold}" '
+  select((.source == "resume" or .source == "fork")
+    and .prompt_cache_likely_expired == true
+    and (.estimated_cache_write_usd // 0) >= $threshold)
+  | {
+      systemMessage: (
+        "Prompt cache is cold (last response \((.seconds_since_last_response / 60) | floor) min ago). "
+        + "The next message re-sends \((.context_tokens / 1000) | floor)k tokens, about $\(.estimated_cache_write_usd * 100 | round / 100). "
+        + "If the old context is not needed, /clear or start a new session instead; "
+        + "/compact pays this once but makes every later turn cheaper."
+      )
+    }
+'

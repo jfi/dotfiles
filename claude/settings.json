@@ -44,7 +44,23 @@
     }
   },
   "env": {
-    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
+    "CLAUDE_CODE_PROMPT_CACHE_TTL": "1h",
+    "CLAUDE_CODE_SUBAGENT_PROMPT_CACHE_TTL": "1h",
+    "CLAUDE_CODE_IDLE_COMPACT_MIN_TOKENS": "100000"
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "resume|fork",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$HOME/.dotfiles/bin/claude-resume-cost\""
+          }
+        ]
+      }
+    ]
   },
   "model": "opus",
   "modelSettings": {
