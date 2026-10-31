@@ -62,6 +62,11 @@
   mnemonicprefix = true
   renamelimit = 0
   renames = true
+  tool = zed
+[difftool]
+  prompt = false
+[difftool "zed"]
+  cmd = zed-preview --wait --diff \"$LOCAL\" \"$REMOTE\"
 [diff "doc"]
   textconv = strings
 [diff "exif"]
