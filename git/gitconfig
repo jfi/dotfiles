@@ -51,6 +51,7 @@
   autocrlf = input
   editor = zed-preview --wait
   excludesfile = ~/.dotfiles/git/gitignore
+  attributesfile = ~/.dotfiles/git/gitattributes
 	fsmonitor = false
   quotepath = false
   safecrlf = false
@@ -97,6 +98,9 @@
   conflictstyle = zdiff3
   stat = true
   tool = opendiff
+[merge "railsschema"]
+  name = Rails schema.rb, newest version wins
+  driver = ~/.dotfiles/bin/git-merge-rails-schema %O %A %B
 [mergetool]
   keepBackup = false
 [pull]

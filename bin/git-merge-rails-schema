@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+# git-merge-rails-schema - git merge driver for Rails db/schema.rb.
+#
+# Usage (set up in git/gitconfig and git/gitattributes):
+#   git-merge-rails-schema BASE OURS THEIRS
+#
+# Does a normal three-way merge, except that the `version:` timestamp in the
+# `ActiveRecord::Schema...define(version: ...)` line is first set to the newer
+# of the two sides in all three inputs. If that version line was the only
+# conflict, the merge now succeeds with the latest timestamp. Any other
+# conflict is left in OURS with normal markers and a non-zero exit, exactly as
+# git's built-in driver would.
+set -euo pipefail
+
+base=$1 ours=$2 theirs=$3
+
+version_re='(define\(version: )([0-9_]+)'
+
+# Prints the timestamp from a schema file, or nothing if it has none.
+version_of() {
+  sed -nE "s/.*${version_re}.*/\2/p" "$1" | head -n 1
+}
+
+fallback() {
+  exec git merge-file "$ours" "$base" "$theirs"
+}
+
+v_base=$(version_of "$base")
+v_ours=$(version_of "$ours")
+v_theirs=$(version_of "$theirs")
+
+if [[ -z $v_base || -z $v_ours || -z $v_theirs ]]; then
+  fallback
+fi
+
+# Timestamps are 14 digits, so they compare safely as integers.
+newest=$v_ours
+if ((10#${v_theirs//_/} > 10#${v_ours//_/})); then
+  newest=$v_theirs
+fi
+
+tmp=$(mktemp -d)
+trap 'rm -rf "$tmp"' EXIT
+
+for f in base ours theirs; do
+  sed -E "s/${version_re}/\1${newest}/" "${!f}" >"$tmp/$f"
+done
+
+if git merge-file "$tmp/ours" "$tmp/base" "$tmp/theirs"; then
+  cp "$tmp/ours" "$ours"
+else
+  fallback
+fi
