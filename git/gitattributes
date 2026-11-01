@@ -1,3 +1,3 @@
 # Resolve version-only conflicts in Rails schemas by taking the newest timestamp.
 # Driver is defined in git/gitconfig; script is bin/git-merge-rails-schema.
-db/schema.rb merge=railsschema
+**/db/schema.rb merge=railsschema
