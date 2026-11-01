@@ -1,20 +1,9 @@
 #!/usr/bin/env bash
 # claude-no-attribution - Claude Code PreToolUse hook (matcher: Bash).
 #
-# Blocks `git commit`, `gh pr` and `gh issue` commands whose text carries an
-# agent attribution line (a Co-Authored-By trailer naming Claude/Anthropic, or
-# a "Generated with Claude Code" footer). The block message goes back to the
-# model so it retries without the line. Reads the hook JSON on stdin.
+# Inspect submitted commit, PR and issue messages, including message files.
+# Reads the hook JSON on stdin; never executes the command being inspected.
 set -euo pipefail
 
-command=$(jq -r '.tool_input.command // empty')
-
-if ! grep -qE '(git[[:space:]]+commit|gh[[:space:]]+(pr|issue))' <<<"$command"; then
-  exit 0
-fi
-
-pattern='co-authored-by:.*(claude|anthropic)|generated with.*claude code|claude\.com/claude-code'
-if grep -qiE "$pattern" <<<"$command"; then
-  echo "Blocked: remove the Claude Co-Authored-By trailer / 'Generated with Claude Code' footer. Global rule: no agent attribution in commits or PR bodies." >&2
-  exit 2
-fi
+script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+exec python3 "${script_dir}/../lib/claude_no_attribution.py"
