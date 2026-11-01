@@ -49,5 +49,6 @@ done
 if git merge-file "$tmp/ours" "$tmp/base" "$tmp/theirs"; then
   cp "$tmp/ours" "$ours"
 else
+  rm -rf "$tmp"
   fallback
 fi
