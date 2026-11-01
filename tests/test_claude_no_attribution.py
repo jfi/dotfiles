@@ -109,9 +109,51 @@ class AttributionHookTests(unittest.TestCase):
             self.check("echo Ready" + separator + "git commit -m " + shlex.quote(AGENT), 2)
         self.check("FLAG=1 git commit -m " + shlex.quote(AGENT), 2)
 
+    def test_comments_keep_command_boundaries(self):
+        self.check("git add . # stage\ngit commit -m " + shlex.quote(AGENT), 2)
+        self.check("# git commit -m " + shlex.quote(AGENT) + "\ngit status", 0)
+        self.check("git commit -m '# Title'", 0)
+
+    def test_heredocs_with_unmatched_quotes(self):
+        self.check("cat <<'EOF' > notes.txt\nit's fine\nEOF\ngit status", 0)
+        self.check("cat <<-EOF\n\tdon't\n\tEOF\ngit status", 0)
+        message = "$(cat <<'EOF'\nFix it\n\n" + AGENT.split("\n\n")[1] + "\nEOF\n)"
+        self.check('git commit -m "' + message + '"', 2)
+        self.check('git commit -m "$(cat <<\'EOF\'\nFix it\nEOF\n)"', 0)
+
+    def test_bundled_short_options(self):
+        for command in (
+            "git commit -am " + shlex.quote(AGENT),
+            "git commit -sm" + shlex.quote(AGENT),
+            "gh pr create -tx -b" + shlex.quote(FOOTER),
+        ):
+            with self.subTest(command=command):
+                self.check(command, 2)
+        (self.cwd / "m.txt").write_text(HUMAN)
+        self.check("git commit -Fm.txt", 0)
+        self.check("git commit -am " + shlex.quote(HUMAN), 0)
+
+    def test_merge_and_close_messages(self):
+        for command in (
+            "gh pr merge 3 --body ", "gh pr merge 3 --subject ", "gh pr merge 3 -b ",
+            "gh pr close 3 --comment ", "gh issue close 3 -c ",
+        ):
+            with self.subTest(command=command):
+                self.check(command + shlex.quote(FOOTER), 2)
+                self.check(command + "Clean", 0)
+
+    def test_git_trailers(self):
+        trailer = "Co-authored-by: Claude <noreply@anthropic.com>"
+        self.check("git commit -m Fix --trailer " + shlex.quote(trailer), 2)
+        self.check("git commit -m Fix --trailer=" + shlex.quote(trailer), 2)
+        self.check("git commit -m Fix --trailer 'Co-authored-by=Claude'", 2)
+        self.check("git commit -m Fix --trailer " + shlex.quote("Co-authored-by: jfi <j@example.com>"), 0)
+
     def test_unreadable_or_stdin_message_does_not_silently_pass(self):
+        for path in ("-", "/dev/stdin", "/dev/fd/0", "/proc/self/fd/0", "/dev//stdin"):
+            self.check("git commit -F " + path, 2)
+            self.check("gh pr create --body-file " + path, 2)
         self.check("git commit -F missing.txt", 2)
-        self.check("gh pr create --body-file -", 2)
 
     def test_empty_event(self):
         self.check("", 0)
