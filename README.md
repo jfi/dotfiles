@@ -128,7 +128,7 @@ read that file, so the prose list is the fallback there.
   - 1Password `allowed_signers` + `user.signingkey`
   - `~/.claude/AGENTS.md`, `~/.codex/AGENTS.md`,
     `~/.config/zed/{settings,keymap}.json`, `~/.config/ghostty/config`,
-    `~/.config/tinycast/settings.json` symlinks
+    `~/.config/tinycast/settings.json`, `~/.agents/agents.toml` symlinks
   - `~/.claude/CLAUDE.md` as a copy (via `bin/agents-sync`)
   - hk git hooks
 - seeds missing mise, Atuin, gh, Granted and Claude settings from portable
@@ -142,6 +142,7 @@ read that file, so the prose list is the fallback there.
 - enables Touch ID for `sudo`
 - enables the macOS Application Firewall
 - runs `mise install` from the home directory, not the caller's project
+- installs the global agent skills in `agents/agents.toml` with dotagents
 - selects Node 24 LTS for Firebase's supported runtime, independently of
   Homebrew's newer Node dependency
 

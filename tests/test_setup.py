@@ -21,7 +21,7 @@ class SetupTests(unittest.TestCase):
         self.repo = self.home / ".dotfiles"
         self.repo.mkdir()
         for name in ("setup", "bin", "zsh", "git", "claude", "cursor", "zed", "ghostty", "k9s",
-                     "tinycast"):
+                     "tinycast", "agents"):
             shutil.copytree(ROOT / name, self.repo / name)
         for name in ("mise", "atuin", "gh", "granted"):
             if (ROOT / name).exists():
@@ -94,6 +94,8 @@ esac
         self.assertTrue(any(p.read_text() == "font-size = 19\n" for p in backups))
         self.assertEqual(os.readlink(self.home / ".config/tinycast/settings.json"),
                          str(self.repo / "tinycast/settings.json"))
+        self.assertEqual(os.readlink(self.home / ".agents/agents.toml"),
+                         str(self.repo / "agents/agents.toml"))
         self.assertFalse((self.home / ".ssh/config").exists())
         self.assertEqual((self.home / ".config/mise/config.toml").read_text(),
                          (ROOT / "mise/global.toml").read_text())
@@ -157,6 +159,9 @@ esac
 ''')
         self.stub("mise", 'printf "%s\\n" "$*" >> "$HOME/mise-calls"')
         self.stub("gh", 'printf "%s\\n" "$*" >> "$HOME/gh-calls"')
+        (self.home / ".agents").mkdir()
+        (self.home / ".agents/agents.lock").write_text(
+            'version = 1\n\n[skills.impeccable]\nsource = "pbakaus/impeccable"\n')
         (self.home / ".gitconfig").write_text(
             "[credential]\n\thelper = \n\thelper = /usr/local/share/gcm-core/git-credential-manager\n"
             '[credential "https://dev.azure.com"]\n\tuseHttpPath = true\n')
@@ -175,6 +180,10 @@ esac
         self.assertIn("useHttpPath = true", gitconfig)
         self.assertNotIn("Spark", (self.home / "sudo-calls").read_text())
         self.assertNotIn("doctor", (self.home / "mise-calls").read_text())
+        self.assertIn("exec -- npx --yes @sentry/dotagents@3.4.0 install",
+                      (self.home / "mise-calls").read_text())
+        self.assertEqual(os.readlink(self.home / ".claude/skills/impeccable"),
+                         "../../.agents/skills/impeccable")
 
     def test_bootstrap_installs_gh_before_brew_bundle_and_warns_when_signed_out(self):
         gh = self.commands / "gh"
