@@ -68,6 +68,23 @@ fi
 green "Installing mise dependencies..."
 (cd "${HOME}" && mise install -y)
 
+# Install the global agent skills listed in agents/agents.toml (linked by init).
+green "Installing dotagents skills..."
+(cd "${HOME}" && mise exec -- npx --yes @sentry/dotagents@3.4.0 install)
+
+# Claude Code and Cursor read ~/.claude/skills, which dotagents would replace
+# wholesale; link each installed skill in instead, leaving other entries alone.
+if [ -f "${HOME}/.agents/agents.lock" ]; then
+  mkdir -p "${HOME}/.claude/skills"
+  sed -n 's/^\[skills\.\(.*\)\]$/\1/p' "${HOME}/.agents/agents.lock" |
+    while IFS= read -r skill; do
+      dest="${HOME}/.claude/skills/${skill}"
+      if [ ! -e "${dest}" ] && [ ! -L "${dest}" ]; then
+        ln -s "../../.agents/skills/${skill}" "${dest}"
+      fi
+    done
+fi
+
 echo
 green "bootstrap complete."
 echo

@@ -1,0 +1,17 @@
+# Global dotagents config, linked to ~/.agents/agents.toml by setup/init.
+# Edit it here, then apply with: npx @sentry/dotagents install
+version = 1
+# Codex reads ~/.agents/skills directly. Claude and Cursor read
+# ~/.claude/skills, which dotagents would replace with a link, clashing with
+# the Claude app's synced skills, so setup/bootstrap links each skill in.
+agents = ["codex"]
+
+[trust]
+github_repos = ["pbakaus/impeccable"]
+
+# Frontend design skill: init, shape, critique, audit, polish and friends.
+# The repo also ships plugin manifests, so point at the skill folder directly.
+[[skills]]
+name = "impeccable"
+source = "pbakaus/impeccable"
+path = ".agents/skills/impeccable"
