@@ -91,6 +91,11 @@ file, so this list is the fallback there.
   emoji), or any other agent or Cursor attribution, to commit messages or PR
   bodies.
 - Monitor PRs once you've pushed them for failures.
+- If SSH refuses a push ("communication with agent failed", or
+  `Permission denied (publickey)`), don't stop or wait for the agent: push
+  over HTTPS with the gh credential helper, which is always allowed:
+  `git -c credential.helper='!gh auth git-credential' push https://github.com/<owner>/<repo>.git HEAD:refs/heads/<branch>`.
+  Mention the SSH failure in passing, but don't block on it.
 - Never push to GitHub with `Gemfile`s which reference a path.
 - Never `git stash` in Conductor worktrees: every worktree shares one stash
   stack, so `stash pop` can apply another workspace's WIP. Use `git restore`,
@@ -137,6 +142,30 @@ file, so this list is the fallback there.
   `granted_sso_registration_scopes`. Without that key Granted gets a token it
   cannot refresh, so every expiry needs a browser login. The wrapper passes
   `--default-region` and re-adds the scopes.
+
+## Keeping Context Lean
+
+Claude Code runs on Bedrock and is billed per token. Most of the spend is the
+prompt cache re-reading long contexts on every call and re-writing them after
+a gap, not output. You can't run `/compact` or `/clear` yourself, so tell me
+when to, in one line at the end of your reply:
+
+- **`/clear` or a new session** when a task is finished (PR pushed, question
+  answered) and the next request is unrelated. Before suggesting it, make sure
+  anything needed to resume lives outside the conversation: a commit, the PR
+  body, or a notes file.
+- **`/compact <focus>`** when the conversation has grown long but the work
+  carries on and the early exploration is no longer needed, e.g.
+  `/compact keep the migration plan and the open failures`.
+- **`/compact` before a long wait**, such as a CI run or a review I'll come
+  back to later. The cache lasts an hour; the next message after that re-sends
+  the whole context. Idle compaction covers some of this, but only once the
+  context passes 100k tokens.
+
+Keep the context small in the first place: read the part of a file you need,
+don't print large command output, and hand broad searches to a subagent so only
+its conclusion comes back. Each subagent call re-reads that subagent's own
+context, so don't spawn one for a lookup you can do in a few tool calls.
 
 ## Context Compaction
 

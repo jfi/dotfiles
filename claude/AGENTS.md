@@ -91,6 +91,11 @@ file, so this list is the fallback there.
   emoji), or any other agent or Cursor attribution, to commit messages or PR
   bodies.
 - Monitor PRs once you've pushed them for failures.
+- If SSH refuses a push ("communication with agent failed", or
+  `Permission denied (publickey)`), don't stop or wait for the agent: push
+  over HTTPS with the gh credential helper, which is always allowed:
+  `git -c credential.helper='!gh auth git-credential' push https://github.com/<owner>/<repo>.git HEAD:refs/heads/<branch>`.
+  Mention the SSH failure in passing, but don't block on it.
 - Never push to GitHub with `Gemfile`s which reference a path.
 - Never `git stash` in Conductor worktrees: every worktree shares one stash
   stack, so `stash pop` can apply another workspace's WIP. Use `git restore`,
