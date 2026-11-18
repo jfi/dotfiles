@@ -208,6 +208,7 @@ mas "Expenses", id: 1492055171
 mas "FireShot - Full web page screenshots", id: 1541862561
 mas "GarageBand", id: 682658836
 mas "Goodnotes", id: 1444383602
+mas "iA Writer", id: 775737590
 mas "iMovie", id: 408981434
 mas "InYourFace", id: 1476964367
 mas "Keynote", id: 361285480
