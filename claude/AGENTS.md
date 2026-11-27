@@ -83,8 +83,8 @@ file, so this list is the fallback there.
 - Local commits are fine without asking. If the branch already has an open,
   unmerged PR, push the commits after checking the PR's status. Otherwise ask
   before pushing.
-- Don't push to main branches - create PRs, and open them as drafts unless I
-  say otherwise.
+- Don't push to main branches - create PRs, and open them as normal (not draft)
+  PRs unless I say otherwise.
 - Keep PR bodies to one or two short lines: what changed and why. Skip
   multi-section templates and test-plan sections on routine PRs.
 - Never add a "Generated with Claude Code" footer (with or without the robot
